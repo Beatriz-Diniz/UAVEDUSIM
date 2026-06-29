@@ -1,5 +1,7 @@
 # UAVJamSim
 
+#Dependencia para interface zenity
+
 # Observacao temporaria 
 para atualizar o repositorio agora que px4 é submodulo, antes ao clonar o repositorio dava problema com o make pela falta do .git dentro do PX4-Autopilot
 
