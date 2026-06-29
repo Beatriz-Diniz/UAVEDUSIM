@@ -2,6 +2,9 @@
 
 #Dependencia para interface zenity
 sudo dnf install -y rofi-wayland zenity kitty libnotify
+sudo dnf install -y python3-pip python3-tkinter
+python3 -m pip install --user ttkthemes
+sudo dnf install -y python3-tkinter tk
 
 # Observacao temporaria 
 para atualizar o repositorio agora que px4 é submodulo, antes ao clonar o repositorio dava problema com o make pela falta do .git dentro do PX4-Autopilot
