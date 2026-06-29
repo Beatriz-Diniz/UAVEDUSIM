@@ -1,98 +1,2127 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
 
-APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_DIR="${UAVEDUSIM_DIR:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)}"
 PX4_DIR="$APP_DIR/PX4-Autopilot"
 QGC_APP="$APP_DIR/QGroundControl-x86_64.AppImage"
+QGC_EXTRACTED="$APP_DIR/squashfs-root/usr/bin/QGroundControl"
+LOG="$APP_DIR/uavedusim_gui.log"
 
-if ! command -v zenity >/dev/null 2>&1; then
-    echo "zenity nao encontrado. Instale com: sudo dnf install zenity"
-    exit 1
-fi
+mkdir -p "$APP_DIR"
+rm -f "$LOG" "$APP_DIR/uavedusim_last_terminal.log"
+touch "$LOG"
+exec > >(tee -a "$LOG") 2>&1
+
+export GDK_BACKEND="${GDK_BACKEND:-wayland,x11}"
+
+UAVEDUSIM_SESSION_ID="${UAVEDUSIM_SESSION_ID:-$$}"
+UAVEDUSIM_RUNTIME_DIR="$APP_DIR/.uavedusim_runtime"
+UAVEDUSIM_PID_FILE="$UAVEDUSIM_RUNTIME_DIR/terminals_${UAVEDUSIM_SESSION_ID}.pids"
+UAVEDUSIM_SCRIPT_DIR="$UAVEDUSIM_RUNTIME_DIR/scripts_${UAVEDUSIM_SESSION_ID}"
+UAVEDUSIM_EXIT_CLEANUP_RAN=0
+
+mkdir -p "$UAVEDUSIM_RUNTIME_DIR" "$UAVEDUSIM_SCRIPT_DIR"
+: > "$UAVEDUSIM_PID_FILE"
+
+
+log() {
+    printf '[%s] %s\n' "$(date '+%F %T')" "$*"
+}
+
+notify_msg() {
+    local msg="$1"
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send "UAVEDUSIM" "$msg" >/dev/null 2>&1 || true
+    fi
+}
+
+show_error() {
+    local msg="$1"
+    log "ERRO: $msg"
+    notify_msg "$msg"
+    if command -v zenity >/dev/null 2>&1; then
+        zenity --error --title="UAVEDUSIM" --text="$msg\n\nLog: $LOG" >/dev/null 2>&1 || true
+    fi
+}
+
+
+register_terminal_pid() {
+    local pid="${1:-}"
+    local title="${2:-terminal}"
+
+    [ -n "$pid" ] || return 0
+    case "$pid" in
+        *[!0-9]*)
+            log "Aviso: PID invalido para terminal: $pid"
+            return 0
+            ;;
+    esac
+
+    printf '%s\t%s\n' "$pid" "$title" >> "$UAVEDUSIM_PID_FILE"
+    log "Terminal registrado: pid=$pid title=$title"
+}
+
+kill_tracked_terminals() {
+    local pid=""
+    local title=""
+
+    [ -f "$UAVEDUSIM_PID_FILE" ] || return 0
+
+    log "Encerrando terminais abertos pela sessao $UAVEDUSIM_SESSION_ID"
+
+    while IFS="$(printf '\t')" read -r pid title; do
+        [ -n "$pid" ] || continue
+
+        case "$pid" in
+            *[!0-9]*)
+                continue
+                ;;
+        esac
+
+        if kill -0 "$pid" >/dev/null 2>&1; then
+            log "Enviando TERM para terminal: pid=$pid title=${title:-terminal}"
+            kill -TERM -- "-$pid" >/dev/null 2>&1 || true
+            kill -TERM "$pid" >/dev/null 2>&1 || true
+        fi
+    done < "$UAVEDUSIM_PID_FILE"
+
+    sleep 1
+
+    while IFS="$(printf '\t')" read -r pid title; do
+        [ -n "$pid" ] || continue
+
+        case "$pid" in
+            *[!0-9]*)
+                continue
+                ;;
+        esac
+
+        if kill -0 "$pid" >/dev/null 2>&1; then
+            log "Forcando KILL para terminal restante: pid=$pid title=${title:-terminal}"
+            kill -KILL -- "-$pid" >/dev/null 2>&1 || true
+            kill -KILL "$pid" >/dev/null 2>&1 || true
+        fi
+    done < "$UAVEDUSIM_PID_FILE"
+}
+
+cleanup_uavedusim_processes_on_exit() {
+    if [ "${UAVEDUSIM_KILL_PROCESSES_ON_EXIT:-1}" != "1" ]; then
+        log "Cleanup de processos no encerramento desativado por UAVEDUSIM_KILL_PROCESSES_ON_EXIT=0"
+        return 0
+    fi
+
+    log "Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM"
+
+    if [ -x "$APP_DIR/cleanup_px4_gazebo.sh" ]; then
+        (
+            cd "$APP_DIR" || exit 0
+            ./cleanup_px4_gazebo.sh
+        ) >> "$LOG" 2>&1 || true
+    else
+        pkill -TERM -f 'px4_sitl_default/bin/px4|PX4-Autopilot/build/.*/bin/px4|gz sim|gzserver|gzclient|MicroXRCEAgent|QGroundControl' >/dev/null 2>&1 || true
+        sleep 1
+        pkill -KILL -f 'px4_sitl_default/bin/px4|PX4-Autopilot/build/.*/bin/px4|gz sim|gzserver|gzclient|MicroXRCEAgent|QGroundControl' >/dev/null 2>&1 || true
+    fi
+}
+
+uavedusim_on_exit() {
+    local code="$?"
+
+    trap - EXIT INT TERM HUP ERR
+    set +e
+
+    if [ "$UAVEDUSIM_EXIT_CLEANUP_RAN" = "1" ]; then
+        exit "$code"
+    fi
+
+    UAVEDUSIM_EXIT_CLEANUP_RAN=1
+
+    log "Encerrando UAVEDUSIM GUI. Codigo=$code"
+
+    kill_tracked_terminals
+    cleanup_uavedusim_processes_on_exit
+
+    rm -f "$UAVEDUSIM_PID_FILE" >/dev/null 2>&1 || true
+    rm -rf "$UAVEDUSIM_SCRIPT_DIR" >/dev/null 2>&1 || true
+
+    exit "$code"
+}
+
+uavedusim_on_signal() {
+    local sig="${1:-SIGNAL}"
+    log "Sinal recebido: $sig. Encerrando UAVEDUSIM GUI..."
+    exit 130
+}
+
+trap 'code=$?; show_error "Falha na linha $LINENO. Comando: $BASH_COMMAND. Codigo: $code"; exit $code' ERR
+trap 'uavedusim_on_exit' EXIT
+trap 'uavedusim_on_signal INT' INT
+trap 'uavedusim_on_signal TERM' TERM
+trap 'uavedusim_on_signal HUP' HUP
+
+choose_from_menu() {
+    local title="$1"
+    local prompt="$2"
+    local result=""
+    shift 2
+
+    if command -v python3 >/dev/null 2>&1 && python3 -c 'import tkinter' >/dev/null 2>&1; then
+        result="$(
+            UAVEDUSIM_TK_TITLE="$title" \
+            UAVEDUSIM_TK_PROMPT="$prompt" \
+            python3 - "$@" <<'PY_TK'
+import os
+import sys
+import tkinter as tk
+from tkinter import ttk
+import math
+
+options = sys.argv[1:]
+title   = os.environ.get("UAVEDUSIM_TK_TITLE",  "UAVEDUSIM")
+prompt  = os.environ.get("UAVEDUSIM_TK_PROMPT", "Escolha uma opcao")
+
+if not options:
+    sys.exit(0)
+
+selected     = {"value": ""}
+is_main_menu = prompt.strip() in {"O que voce quer abrir?", "O que voce quer executar?"}
+
+# ── Paleta "mission-control" ──────────────────────────────────────────────────
+BG          = "#0d1117"   # fundo geral (quase preto azulado)
+SURFACE     = "#161b22"   # card/painel
+SURFACE2    = "#21262d"   # área da lista
+BORDER      = "#30363d"   # bordas sutis
+TEXT        = "#e6edf3"   # texto principal
+MUTED       = "#7d8590"   # texto secundário
+ACCENT      = "#f05a28"   # laranja UAVEDUSIM
+ACCENT_DIM  = "#b34318"   # laranja mais escuro (hover do primário)
+TAG_BG      = "#1a2433"   # badge/tag azul escuro
+TAG_FG      = "#58a6ff"   # azul claro para badge
+SEL_BG      = "#1e3a2f"   # fundo do item selecionado (verde-escuro sutil)
+SEL_FG      = "#3fb950"   # texto do item selecionado (verde)
+ROW_EVEN    = "#161b22"
+ROW_ODD     = "#1a1f27"
+
+# ── Ícones por palavra-chave (unicode) ───────────────────────────────────────
+ICONS = {
+    "executar":    "▶",
+    "uavedusim":    "⬡",
+    "px4":         "⬡",
+    "gazebo":      "⬡",
+    "qground":     "◈",
+    "limpar":      "⊘",
+    "ataque":      "⚠",
+    "jamming":     "≈",
+    "noise":       "~",
+    "blackout":    "●",
+    "pulse":       "▮",
+    "mitig":       "◆",
+    "sair":        "⏻",
+    "modelo":      "◎",
+    "mundo":       "◉",
+    "default":     "◉",
+    "x500":        "⬡",
+    "forest":      "◈",
+    "baylands":    "◈",
+    "walls":       "◈",
+    "windy":       "◈",
+}
+
+def icon_for(label):
+    low = label.lower()
+    for kw, ico in ICONS.items():
+        if kw in low:
+            return ico
+    return "◦"
+
+# ── Janela raiz ───────────────────────────────────────────────────────────────
+root = tk.Tk()
+root.title(title)
+root.configure(bg=BG)
+root.resizable(True, True)
+
+# Layout adaptativo por resolucao/monitor.
+# Pode ajustar manualmente ao rodar:
+# UAVEDUSIM_UI_SCALE=1.35 ./uavedusim_gui.sh
+# UAVEDUSIM_UI_WIDTH_FRAC=0.85 UAVEDUSIM_UI_HEIGHT_FRAC=0.80 ./uavedusim_gui.sh
+def _clamp(value, low, high):
+    return max(low, min(value, high))
+
+def _env_float(name, default):
+    try:
+        return float(os.environ.get(name, str(default)))
+    except Exception:
+        return float(default)
+
+screen_w = max(root.winfo_screenwidth(), 800)
+screen_h = max(root.winfo_screenheight(), 600)
+
+base_scale = min(screen_w / 1600.0, screen_h / 900.0)
+UI_SCALE = _env_float("UAVEDUSIM_UI_SCALE", _clamp(base_scale, 0.95, 1.55))
+
+def px(value):
+    return max(1, int(round(value * UI_SCALE)))
+
+def fs(value):
+    return max(7, int(round(value * UI_SCALE)))
+
+width_frac_default = 0.72 if screen_w >= 1800 else 0.84
+height_frac_default = 0.74 if screen_h >= 1000 else 0.82
+
+width_frac = _env_float("UAVEDUSIM_UI_WIDTH_FRAC", width_frac_default)
+height_frac = _env_float("UAVEDUSIM_UI_HEIGHT_FRAC", height_frac_default)
+
+max_w_limit = int(_env_float("UAVEDUSIM_UI_MAX_W", 1800))
+max_h_limit = int(_env_float("UAVEDUSIM_UI_MAX_H", 1200))
+
+max_w = min(max(640, screen_w - px(32)), max_w_limit)
+max_h = min(max(420, screen_h - px(56)), max_h_limit)
+
+win_w = int(_clamp(screen_w * width_frac, px(720), max_w))
+win_h = int(_clamp(screen_h * height_frac, px(500), max_h))
+
+min_w = min(win_w, max(520, px(560)))
+min_h = min(win_h, max(340, px(360)))
+
+pos_x = max(0, (screen_w - win_w) // 2)
+pos_y = max(0, (screen_h - win_h) // 2)
+
+root.geometry(f"{win_w}x{win_h}+{pos_x}+{pos_y}")
+root.minsize(min_w, min_h)
+
+FONT_FAMILY = os.environ.get("UAVEDUSIM_FONT_FAMILY", "monospace")
+
+FS_TITLE = fs(15)
+FS_LOGO = fs(12)
+FS_SMALL = fs(9)
+FS_TINY = fs(8)
+FS_BUTTON = fs(10)
+FS_WIN = fs(11)
+FS_ROW = fs(11)
+FS_ICON = fs(14)
+FS_ARROW = fs(16)
+
+TITLEBAR_H = px(42)
+CONTENT_PAD = px(20)
+HEADER_TOP_PAD = px(16)
+LIST_TOP_PAD = px(10)
+FOOTER_TOP_PAD = px(12)
+FOOTER_BOTTOM_PAD = px(18)
+SIDEBAR_W = px(6)
+
+ROW_H = px(46)
+PADX = px(16)
+SEL_BAR_PADY = px(6)
+SEL_BAR_W = px(3)
+ICON_X = PADX + px(36)
+LABEL_X = PADX + px(58)
+
+try:
+    root.eval("tk::PlaceWindow . center")
+except Exception:
+    pass
+
+# Remove decorações nativas
+root.overrideredirect(True)
+
+style = ttk.Style(root)
+try:
+    style.theme_use("clam")
+except Exception:
+    pass
+
+# ── Estilos ttk ──────────────────────────────────────────────────────────────
+style.configure("BG.TFrame",      background=BG)
+style.configure("Surface.TFrame", background=SURFACE)
+
+style.configure("Title.TLabel",
+    background=BG, foreground=TEXT,
+    font=(FONT_FAMILY, FS_TITLE, "bold"))
+style.configure("Sub.TLabel",
+    background=BG, foreground=MUTED,
+    font=(FONT_FAMILY, FS_SMALL))
+style.configure("Prompt.TLabel",
+    background=SURFACE, foreground=MUTED,
+    font=(FONT_FAMILY, FS_SMALL))
+
+style.configure("WinBtn.TButton",
+    font=(FONT_FAMILY, FS_WIN, "bold"), padding=(px(6), px(2)),
+    background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
+style.map("WinBtn.TButton",
+    background=[("active", BORDER)],
+    foreground=[("active", TEXT)])
+
+style.configure("CloseBtn.TButton",
+    font=(FONT_FAMILY, FS_WIN, "bold"), padding=(px(6), px(2)),
+    background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
+style.map("CloseBtn.TButton",
+    background=[("active", "#8b1a1a")],
+    foreground=[("active", "#ff6b6b")])
+
+style.configure("Back.TButton",
+    font=(FONT_FAMILY, FS_BUTTON), padding=(px(10), px(6)),
+    background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
+style.map("Back.TButton",
+    background=[("active", BORDER)],
+    foreground=[("active", TEXT)])
+
+style.configure("Cancel.TButton",
+    font=(FONT_FAMILY, FS_BUTTON), padding=(px(14), px(8)),
+    background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
+style.map("Cancel.TButton",
+    background=[("active", BORDER)],
+    foreground=[("active", TEXT)])
+
+style.configure("Primary.TButton",
+    font=(FONT_FAMILY, FS_BUTTON, "bold"), padding=(px(18), px(8)),
+    background=ACCENT, foreground="#ffffff", relief="flat", borderwidth=0)
+style.map("Primary.TButton",
+    background=[("active", ACCENT_DIM)])
+
+# Scrollbar minimalista
+style.configure("Dark.Vertical.TScrollbar",
+    background=SURFACE2, troughcolor=BG,
+    arrowcolor=BORDER, borderwidth=0, arrowsize=10)
+style.map("Dark.Vertical.TScrollbar",
+    background=[("active", BORDER)])
+
+# ── Estado & lógica ───────────────────────────────────────────────────────────
+fullscreen = {"value": False}
+drag       = {"x": 0, "y": 0}
+
+def choose_current():
+    try:
+        idx = item_canvas.selected_idx
+        if idx is not None:
+            selected["value"] = options[idx]
+    except Exception:
+        selected["value"] = ""
+    root.destroy()
+
+def cancel():
+    selected["value"] = ""
+    root.destroy()
+
+def go_back():
+    selected["value"] = ""
+    root.destroy()
+
+def toggle_fullscreen():
+    fullscreen["value"] = not fullscreen["value"]
+    if fullscreen["value"]:
+        root.overrideredirect(False)
+        root.attributes("-fullscreen", True)
+    else:
+        root.attributes("-fullscreen", False)
+        root.overrideredirect(True)
+
+def minimize():
+    root.overrideredirect(False)
+    root.iconify()
+    root.after(200, lambda: root.overrideredirect(True))
+
+def on_escape(_event):
+    if fullscreen["value"]:
+        fullscreen["value"] = False
+        root.attributes("-fullscreen", False)
+        root.overrideredirect(True)
+    else:
+        cancel()
+
+def start_drag(event):
+    drag["x"] = event.x_root - root.winfo_x()
+    drag["y"] = event.y_root - root.winfo_y()
+
+def do_drag(event):
+    if not fullscreen["value"]:
+        root.geometry(f"+{event.x_root - drag['x']}+{event.y_root - drag['y']}")
+
+# ── Layout principal ──────────────────────────────────────────────────────────
+outer = tk.Frame(root, bg=BG, highlightbackground=BORDER,
+                 highlightthickness=1, bd=0)
+outer.pack(fill="both", expand=True)
+
+# Barra de título customizada
+titlebar = tk.Frame(outer, bg=BG, height=TITLEBAR_H)
+titlebar.pack(fill="x", side="top")
+titlebar.pack_propagate(False)
+
+# Ícone / logo à esquerda
+logo_lbl = tk.Label(titlebar, text="⬡ UAVEDUSIM", bg=BG,
+                    fg=ACCENT, font=(FONT_FAMILY, FS_LOGO, "bold"), cursor="fleur")
+logo_lbl.pack(side="left", padx=(px(16), 0))
+logo_lbl.bind("<ButtonPress-1>",   start_drag)
+logo_lbl.bind("<B1-Motion>",       do_drag)
+
+# Badge de versão / contexto
+badge_text = "MAIN MENU" if is_main_menu else prompt.upper()
+badge = tk.Label(titlebar, text=f"  {badge_text}  ",
+                 bg=TAG_BG, fg=TAG_FG,
+                 font=(FONT_FAMILY, FS_TINY, "bold"), padx=px(6), pady=px(2))
+badge.pack(side="left", padx=(px(10), 0))
+
+# Área arrastável central
+drag_area = tk.Frame(titlebar, bg=BG, cursor="fleur")
+drag_area.pack(side="left", fill="both", expand=True)
+drag_area.bind("<ButtonPress-1>", start_drag)
+drag_area.bind("<B1-Motion>",     do_drag)
+
+# Botões de janela
+win_btns = tk.Frame(titlebar, bg=BG)
+win_btns.pack(side="right", padx=(0, px(8)))
+
+ttk.Button(win_btns, text="−", style="WinBtn.TButton",
+           command=minimize).pack(side="left", padx=1)
+ttk.Button(win_btns, text="□", style="WinBtn.TButton",
+           command=toggle_fullscreen).pack(side="left", padx=1)
+ttk.Button(win_btns, text="×", style="CloseBtn.TButton",
+           command=cancel).pack(side="left", padx=(1, 0))
+
+# Linha separadora accent
+sep = tk.Frame(outer, bg=ACCENT, height=px(2))
+sep.pack(fill="x")
+
+# Corpo
+body_frame = tk.Frame(outer, bg=SURFACE)
+body_frame.pack(fill="both", expand=True)
+
+# Painel lateral (sidebar decorativa)
+sidebar = tk.Frame(body_frame, bg=BG, width=SIDEBAR_W)
+sidebar.pack(side="left", fill="y")
+
+# Conteúdo principal
+content = tk.Frame(body_frame, bg=SURFACE)
+content.pack(side="left", fill="both", expand=True, padx=0, pady=0)
+
+# Cabeçalho do conteúdo
+header = tk.Frame(content, bg=SURFACE)
+header.pack(fill="x", padx=CONTENT_PAD, pady=(HEADER_TOP_PAD, 0))
+
+if not is_main_menu:
+    back_btn = ttk.Button(header, text="← voltar",
+                          style="Back.TButton", command=go_back)
+    back_btn.pack(side="left", pady=(0, px(10)))
+    header_pad = tk.Frame(header, bg=SURFACE)
+    header_pad.pack(side="left", fill="x", expand=True)
+else:
+    tk.Label(header, text=prompt, bg=SURFACE, fg=MUTED,
+             font=(FONT_FAMILY, FS_SMALL)).pack(anchor="w")
+
+# Área da lista com canvas (custom rendering)
+list_frame = tk.Frame(content, bg=SURFACE2,
+                      highlightbackground=BORDER, highlightthickness=1)
+list_frame.pack(fill="both", expand=True, padx=CONTENT_PAD, pady=(LIST_TOP_PAD, 0))
+
+# ROW_H e PADX agora sao definidos no bloco adaptativo acima.
+class ItemCanvas(tk.Canvas):
+    def __init__(self, parent, opts, **kw):
+        super().__init__(parent, bg=SURFACE2, highlightthickness=0,
+                         bd=0, **kw)
+        self.opts        = opts
+        self.selected_idx = 0
+        self.hover_idx    = None
+        self._item_ids    = []
+        self.bind("<Configure>",       self._redraw)
+        self.bind("<ButtonPress-1>",   self._on_click)
+        self.bind("<Double-Button-1>", self._on_dbl)
+        self.bind("<Motion>",          self._on_motion)
+        self.bind("<Leave>",           self._on_leave)
+        self.bind("<Up>",              self._on_up)
+        self.bind("<Down>",            self._on_down)
+        self.bind("<Return>",          lambda e: choose_current())
+        self.focus_set()
+        self._draw()
+
+    def _total_height(self):
+        return len(self.opts) * ROW_H
+
+    def _draw(self):
+        self.delete("all")
+        self._item_ids = []
+        w = self.winfo_width() or 680
+        for i, label in enumerate(self.opts):
+            y0 = i * ROW_H
+            y1 = y0 + ROW_H
+            is_sel   = (i == self.selected_idx)
+            is_hover = (i == self.hover_idx) and not is_sel
+
+            row_bg = SEL_BG if is_sel else (BORDER if is_hover else
+                     (ROW_ODD if i % 2 else ROW_EVEN))
+            fg     = SEL_FG if is_sel else (TEXT if is_hover else TEXT)
+
+            self.create_rectangle(0, y0, w, y1, fill=row_bg, outline="")
+
+            # Barra lateral colorida no item selecionado
+            if is_sel:
+                self.create_rectangle(0, y0+SEL_BAR_PADY, SEL_BAR_W, y1-SEL_BAR_PADY, fill=ACCENT, outline="")
+
+            # Número de ordem
+            idx_tag = f"#{i+1:02d}"
+            self.create_text(PADX, y0 + ROW_H//2,
+                             text=idx_tag, anchor="w",
+                             fill=MUTED if not is_sel else SEL_FG,
+                             font=(FONT_FAMILY, FS_TINY))
+
+            # Ícone
+            ico = icon_for(label)
+            ico_color = ACCENT if is_sel else (TAG_FG if is_hover else MUTED)
+            self.create_text(ICON_X, y0 + ROW_H//2,
+                             text=ico, anchor="w",
+                             fill=ico_color,
+                             font=(FONT_FAMILY, FS_ICON))
+
+            # Rótulo
+            self.create_text(LABEL_X, y0 + ROW_H//2,
+                             text=label, anchor="w",
+                             fill=fg,
+                             font=(FONT_FAMILY, FS_ROW, "bold" if is_sel else "normal"))
+
+            # Seta no item selecionado
+            if is_sel:
+                self.create_text(w - PADX, y0 + ROW_H//2,
+                                 text="›", anchor="e",
+                                 fill=ACCENT, font=(FONT_FAMILY, FS_ARROW, "bold"))
+
+            # Separador
+            if i < len(self.opts) - 1:
+                self.create_line(PADX, y1, w - PADX, y1,
+                                 fill=BORDER, width=1)
+
+        self.configure(scrollregion=(0, 0, w, self._total_height()))
+
+    def _redraw(self, _e=None):
+        self._draw()
+
+    def _idx_at(self, y):
+        cy = self.canvasy(y)
+        i = int(cy // ROW_H)
+        return i if 0 <= i < len(self.opts) else None
+
+    def _on_click(self, e):
+        i = self._idx_at(e.y)
+        if i is not None:
+            self.selected_idx = i
+            self._draw()
+
+    def _on_dbl(self, e):
+        i = self._idx_at(e.y)
+        if i is not None:
+            self.selected_idx = i
+            choose_current()
+
+    def _on_motion(self, e):
+        i = self._idx_at(e.y)
+        if i != self.hover_idx:
+            self.hover_idx = i
+            self._draw()
+
+    def _on_leave(self, _e):
+        if self.hover_idx is not None:
+            self.hover_idx = None
+            self._draw()
+
+    def _on_up(self, _e):
+        if self.selected_idx > 0:
+            self.selected_idx -= 1
+            self._ensure_visible(self.selected_idx)
+            self._draw()
+
+    def _on_down(self, _e):
+        if self.selected_idx < len(self.opts) - 1:
+            self.selected_idx += 1
+            self._ensure_visible(self.selected_idx)
+            self._draw()
+
+    def _ensure_visible(self, idx):
+        top    = idx * ROW_H
+        bottom = top + ROW_H
+        h      = self.winfo_height()
+        cy_top = self.canvasy(0)
+        if top < cy_top:
+            self.yview_moveto(top / max(self._total_height(), 1))
+        elif bottom > cy_top + h:
+            self.yview_moveto((bottom - h) / max(self._total_height(), 1))
+
+scrollbar = ttk.Scrollbar(list_frame, orient="vertical",
+                           style="Dark.Vertical.TScrollbar")
+scrollbar.pack(side="right", fill="y")
+
+item_canvas = ItemCanvas(list_frame, options,
+                         yscrollcommand=scrollbar.set)
+total_h = len(options) * ROW_H
+canvas_h = min(total_h, max(ROW_H * 4, int(win_h * 0.55)))
+item_canvas.configure(height=canvas_h)
+item_canvas.pack(side="left", fill="both", expand=True)
+scrollbar.config(command=item_canvas.yview)
+
+# Rodapé: contador + botões
+footer = tk.Frame(content, bg=SURFACE)
+footer.pack(fill="x", padx=CONTENT_PAD, pady=(FOOTER_TOP_PAD, FOOTER_BOTTOM_PAD))
+
+count_lbl = tk.Label(footer,
+    text=f"{len(options)} opç{'ão' if len(options)==1 else 'ões'}",
+    bg=SURFACE, fg=MUTED, font=(FONT_FAMILY, FS_TINY))
+count_lbl.pack(side="left")
+
+hint_lbl = tk.Label(footer,
+    text="↑↓ navegar · Enter confirmar · Esc fechar",
+    bg=SURFACE, fg=BORDER, font=(FONT_FAMILY, FS_TINY))
+hint_lbl.pack(side="left", padx=(px(12), 0))
+
+btn_frame = tk.Frame(footer, bg=SURFACE)
+btn_frame.pack(side="right")
+
+ttk.Button(btn_frame, text="Fechar",
+           style="Cancel.TButton", command=cancel).pack(side="left", padx=(0, px(8)))
+ttk.Button(btn_frame, text="Selecionar →",
+           style="Primary.TButton", command=choose_current).pack(side="left")
+
+# ── Bindings globais ──────────────────────────────────────────────────────────
+root.bind("<Return>",  lambda e: choose_current())
+root.bind("<Escape>",  on_escape)
+
+root.lift()
+root.attributes("-topmost", True)
+root.after(400, lambda: root.attributes("-topmost", False))
+
+root.mainloop()
+
+if selected["value"]:
+    print(selected["value"])
+PY_TK
+        )"
+        printf '%s' "$result"
+        return 0
+    fi
+
+    if command -v zenity >/dev/null 2>&1; then
+        result="$(zenity --list \
+            --title="$title" \
+            --text="$prompt" \
+            --column="Opcao" \
+            --height=460 \
+            --width=720 \
+            "$@" || true)"
+        printf '%s' "$result"
+        return 0
+    fi
+
+    if command -v rofi >/dev/null 2>&1; then
+        result="$(printf '%s
+' "$@" | rofi -dmenu -i -p "$prompt" -mesg "$title" || true)"
+        printf '%s' "$result"
+        return 0
+    fi
+
+    show_error "Nao encontrei Tkinter, zenity nem rofi. Instale com: sudo dnf install python3-tkinter zenity"
+    return 1
+}
+
+
+
 
 open_terminal() {
     local title="$1"
-    local command="$2"
+    local command_body="$2"
+    local terminal_hold="${3:-1}"
+    local tmp_script
+    local term_pid=""
+
+    mkdir -p "$UAVEDUSIM_SCRIPT_DIR"
+    tmp_script="$(mktemp "$UAVEDUSIM_SCRIPT_DIR/uavedusim_cmd_XXXXXX.sh")"
+
+    cat > "$tmp_script" <<'EOF_HEAD'
+#!/usr/bin/env bash
+set -u
+
+finish() {
+    local status="$?"
+    trap - EXIT
+
+    echo
+    echo "[UAVEDUSIM] Comando finalizado com codigo: $status"
+
+    rm -f "$0" >/dev/null 2>&1 || true
+
+    if [ "${UAVEDUSIM_TERMINAL_HOLD:-1}" = "1" ]; then
+        echo "[UAVEDUSIM] Pressione ENTER para fechar este terminal."
+        if [ -t 0 ]; then
+            read -r _ || true
+        else
+            sleep 3600
+        fi
+    else
+        echo "[UAVEDUSIM] Fechando terminal automaticamente."
+    fi
+
+    exit "$status"
+}
+
+trap finish EXIT
+trap 'exit 130' INT TERM HUP
+
+exec > >(tee -a "${UAVEDUSIM_LOG:-/tmp/uavedusim.log}") 2>&1
+
+cd "${UAVEDUSIM_APP_DIR:?}" || exit 1
+
+echo "[UAVEDUSIM] ${UAVEDUSIM_TITLE:-Terminal}"
+echo "[UAVEDUSIM] Log: ${UAVEDUSIM_LOG:-}"
+echo "[UAVEDUSIM] Session: ${UAVEDUSIM_SESSION_ID:-}"
+echo
+
+set +e
+EOF_HEAD
+
+    printf '%s\n' "$command_body" >> "$tmp_script"
+
+    cat >> "$tmp_script" <<'EOF_TAIL'
+status=$?
+exit "$status"
+EOF_TAIL
+
+    chmod +x "$tmp_script"
+
+    log "Abrindo terminal: $title"
+    log "Script temporario: $tmp_script"
+    log "Log: $LOG"
+    log "Terminal hold: $terminal_hold"
 
     if command -v kitty >/dev/null 2>&1; then
-        kitty --title "$title" bash -lc "$command; exec bash" &
-    elif command -v gnome-terminal >/dev/null 2>&1; then
-        gnome-terminal --title="$title" -- bash -lc "$command; exec bash" &
-    elif command -v konsole >/dev/null 2>&1; then
-        konsole --new-tab --workdir "$APP_DIR" -e bash -lc "$command; exec bash" &
-    elif command -v xterm >/dev/null 2>&1; then
-        xterm -T "$title" -e bash -lc "$command; exec bash" &
+        if [ "$terminal_hold" = "1" ]; then
+            setsid env \
+                UAVEDUSIM_APP_DIR="$APP_DIR" \
+                UAVEDUSIM_LOG="$LOG" \
+                UAVEDUSIM_TITLE="$title" \
+                UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" \
+                UAVEDUSIM_TERMINAL_HOLD="$terminal_hold" \
+                kitty --hold --title "$title" bash "$tmp_script" >> "$LOG" 2>&1 &
+        else
+            setsid env \
+                UAVEDUSIM_APP_DIR="$APP_DIR" \
+                UAVEDUSIM_LOG="$LOG" \
+                UAVEDUSIM_TITLE="$title" \
+                UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" \
+                UAVEDUSIM_TERMINAL_HOLD="$terminal_hold" \
+                kitty --title "$title" bash "$tmp_script" >> "$LOG" 2>&1 &
+        fi
+
+        term_pid="$!"
+        register_terminal_pid "$term_pid" "$title"
+        return 0
+    fi
+
+    if command -v foot >/dev/null 2>&1; then
+        if [ "$terminal_hold" = "1" ]; then
+            setsid env \
+                UAVEDUSIM_APP_DIR="$APP_DIR" \
+                UAVEDUSIM_LOG="$LOG" \
+                UAVEDUSIM_TITLE="$title" \
+                UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" \
+                UAVEDUSIM_TERMINAL_HOLD="$terminal_hold" \
+                foot --hold --title "$title" bash "$tmp_script" >> "$LOG" 2>&1 &
+        else
+            setsid env \
+                UAVEDUSIM_APP_DIR="$APP_DIR" \
+                UAVEDUSIM_LOG="$LOG" \
+                UAVEDUSIM_TITLE="$title" \
+                UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" \
+                UAVEDUSIM_TERMINAL_HOLD="$terminal_hold" \
+                foot --title "$title" bash "$tmp_script" >> "$LOG" 2>&1 &
+        fi
+
+        term_pid="$!"
+        register_terminal_pid "$term_pid" "$title"
+        return 0
+    fi
+
+    if command -v alacritty >/dev/null 2>&1; then
+        if [ "$terminal_hold" = "1" ]; then
+            setsid env \
+                UAVEDUSIM_APP_DIR="$APP_DIR" \
+                UAVEDUSIM_LOG="$LOG" \
+                UAVEDUSIM_TITLE="$title" \
+                UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" \
+                UAVEDUSIM_TERMINAL_HOLD="$terminal_hold" \
+                alacritty --hold --title "$title" -e bash "$tmp_script" >> "$LOG" 2>&1 &
+        else
+            setsid env \
+                UAVEDUSIM_APP_DIR="$APP_DIR" \
+                UAVEDUSIM_LOG="$LOG" \
+                UAVEDUSIM_TITLE="$title" \
+                UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" \
+                UAVEDUSIM_TERMINAL_HOLD="$terminal_hold" \
+                alacritty --title "$title" -e bash "$tmp_script" >> "$LOG" 2>&1 &
+        fi
+
+        term_pid="$!"
+        register_terminal_pid "$term_pid" "$title"
+        return 0
+    fi
+
+    if command -v gnome-terminal >/dev/null 2>&1; then
+        setsid env \
+            UAVEDUSIM_APP_DIR="$APP_DIR" \
+            UAVEDUSIM_LOG="$LOG" \
+            UAVEDUSIM_TITLE="$title" \
+            UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" \
+            UAVEDUSIM_TERMINAL_HOLD="$terminal_hold" \
+            gnome-terminal --title="$title" -- bash "$tmp_script" >> "$LOG" 2>&1 &
+
+        term_pid="$!"
+        register_terminal_pid "$term_pid" "$title"
+        return 0
+    fi
+
+    show_error "Nenhum terminal encontrado. Instale kitty: sudo dnf install kitty"
+    return 1
+}
+
+
+ensure_px4_git_metadata() {
+    if [ ! -d "$PX4_DIR" ]; then
+        return 0
+    fi
+
+    if ! git -C "$PX4_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        log "Aviso: PX4 nao parece ser repositorio Git. Pulando verificacao de tags."
+        return 0
+    fi
+
+    local desc=""
+    local is_shallow="false"
+    local fallback_tag=""
+
+    desc="$(git -C "$PX4_DIR" describe --tags --match 'v[0-9]*' --dirty --always 2>/dev/null || true)"
+
+    if git -C "$PX4_DIR" describe --tags --match 'v[0-9]*' --abbrev=0 >/dev/null 2>&1; then
+        log "PX4 Git version detectada: ${desc:-indisponivel}"
+        return 0
+    fi
+
+    log "PX4 sem tags semanticas. Tentando buscar tags do remoto..."
+
+    git -C "$PX4_DIR" config remote.origin.tagOpt --tags || true
+
+    is_shallow="$(git -C "$PX4_DIR" rev-parse --is-shallow-repository 2>/dev/null || printf false)"
+
+    if [ "$is_shallow" = "true" ]; then
+        git -C "$PX4_DIR" fetch --unshallow --tags --force origin || true
+    fi
+
+    git -C "$PX4_DIR" fetch --tags --force --prune origin '+refs/tags/*:refs/tags/*' || true
+
+    desc="$(git -C "$PX4_DIR" describe --tags --match 'v[0-9]*' --dirty --always 2>/dev/null || true)"
+
+    if git -C "$PX4_DIR" describe --tags --match 'v[0-9]*' --abbrev=0 >/dev/null 2>&1; then
+        log "PX4 Git version apos fetch: ${desc:-indisponivel}"
+        return 0
+    fi
+
+    # Fallback offline:
+    # Se nao for possivel buscar tags, criamos uma tag local para evitar PX4_GIT_TAG=v0.0.0.
+    # Nao sobrescrevemos a tag oficial v1.17.0 se ela ja existir.
+    if git -C "$PX4_DIR" show-ref --verify --quiet "refs/tags/v1.17.0"; then
+        fallback_tag="v1.17.0-uavedusim"
     else
-        zenity --error --text="Nenhum terminal suportado encontrado: kitty, gnome-terminal, konsole ou xterm."
-        return 1
+        fallback_tag="v1.17.0"
+    fi
+
+    log "Criando tag local fallback: $fallback_tag"
+    git -C "$PX4_DIR" tag -f "$fallback_tag" HEAD >/dev/null 2>&1 || true
+
+    desc="$(git -C "$PX4_DIR" describe --tags --match 'v[0-9]*' --dirty --always 2>/dev/null || true)"
+    log "PX4 Git version final: ${desc:-indisponivel}"
+}
+
+ensure_px4_submodules() {
+    if [ ! -d "$PX4_DIR" ]; then
+        return 0
+    fi
+
+    ensure_px4_git_metadata
+
+    if [ ! -d "$PX4_DIR/Tools/simulation/gz/models/x500" ]; then
+        log "Submodulo Tools/simulation/gz ausente. Inicializando submodulos do PX4..."
+        git -C "$PX4_DIR" submodule sync --recursive || true
+        git -C "$PX4_DIR" submodule update --init --recursive Tools/simulation/gz || \
+            git -C "$PX4_DIR" submodule update --init --recursive || true
     fi
 }
+
+ensure_uavjamsim_links() {
+    local strict="${1:-0}"
+    local uav_dir="$APP_DIR/UAVJamSim"
+    local model_src="$uav_dir/x500_uavjamsim"
+    local model_dst_dir="$PX4_DIR/Tools/simulation/gz/models"
+    local model_dst="$model_dst_dir/x500_uavjamsim"
+    local world_src_dir="$uav_dir/worlds"
+    local default_world_src="$world_src_dir/default.sdf"
+    local world_dst_dir="$PX4_DIR/Tools/simulation/gz/worlds"
+    local default_world_dst="$world_dst_dir/default.sdf"
+    local px4_link="$uav_dir/px4"
+    local airframe_src_dir="$uav_dir/airframes"
+    local airframe_src="$airframe_src_dir/4020_gz_x500_uavjamsim"
+    local airframe_dst_dir="$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes"
+    local airframe_dst="$airframe_dst_dir/4020_gz_x500_uavjamsim"
+    local airframe_cmake="$airframe_dst_dir/CMakeLists.txt"
+
+    if [ ! -d "$PX4_DIR" ]; then
+        if [ "$strict" = "1" ]; then
+            show_error "Nao encontrei a pasta: $PX4_DIR"
+            return 1
+        fi
+        log "Aviso: pasta PX4 nao encontrada: $PX4_DIR"
+        return 0
+    fi
+
+    ensure_px4_submodules
+
+    if [ ! -d "$uav_dir" ]; then
+        if [ "$strict" = "1" ]; then
+            show_error "Nao encontrei a pasta: $uav_dir"
+            return 1
+        fi
+        log "Aviso: pasta UAVJamSim nao encontrada: $uav_dir"
+        return 0
+    fi
+
+    if [ -d "$model_src" ]; then
+        mkdir -p "$model_dst_dir"
+        rm -rf "$model_dst"
+        (
+            cd "$model_dst_dir"
+            ln -s ../../../../../UAVJamSim/x500_uavjamsim x500_uavjamsim
+        )
+        log "Link modelo: $model_dst -> ../../../../../UAVJamSim/x500_uavjamsim"
+    elif [ "$strict" = "1" ]; then
+        show_error "Nao encontrei o modelo: $model_src"
+        return 1
+    else
+        log "Aviso: modelo x500_uavjamsim nao encontrado: $model_src"
+    fi
+
+    if [ -f "$default_world_src" ] || [ -L "$default_world_src" ]; then
+        mkdir -p "$world_dst_dir"
+        rm -rf "$default_world_dst"
+        (
+            cd "$world_dst_dir"
+            ln -s ../../../../../UAVJamSim/worlds/default.sdf default.sdf
+        )
+        log "Link mundo default: $default_world_dst -> ../../../../../UAVJamSim/worlds/default.sdf"
+    else
+        log "Aviso: mundo customizado nao encontrado: $default_world_src. Mantendo default do PX4, se existir."
+    fi
+
+    mkdir -p "$airframe_src_dir" "$airframe_dst_dir"
+
+    cat > "$airframe_src" <<'AIRFRAME'
+#!/bin/sh
+#
+# @name Gazebo x500 UAVJamSim
+#
+# @type Quadrotor
+#
+
+PX4_SIM_MODEL=${PX4_SIM_MODEL:=x500_uavjamsim}
+
+. ${R}etc/init.d-posix/airframes/4001_gz_x500
+AIRFRAME
+    chmod 644 "$airframe_src"
+
+    # Importante: o airframe NAO pode ser link simbolico.
+    # O PX4 copia o ROMFS para build/.../rootfs; se este arquivo for um symlink
+    # apontando para fora do ROMFS, o autostart 4020 quebra em tempo de execucao.
+    # Por isso mantemos a copia fonte em UAVJamSim/airframes, mas instalamos
+    # um arquivo real dentro de ROMFS/px4fmu_common/init.d-posix/airframes.
+    rm -rf "$airframe_dst"
+    cp -f "$airframe_src" "$airframe_dst"
+    chmod 644 "$airframe_dst"
+    log "Airframe instalado: $airframe_dst"
+
+    if [ -f "$airframe_cmake" ]; then
+        python3 - "$airframe_cmake" <<'PY'
+from pathlib import Path
+import sys
+
+p = Path(sys.argv[1])
+s = p.read_text()
+entry = "\t4020_gz_x500_uavjamsim"
+
+if "4020_gz_x500_uavjamsim" not in s:
+    if "\t4021_gz_x500_flow" in s:
+        s = s.replace("\t4021_gz_x500_flow", entry + "\n\t4021_gz_x500_flow", 1)
+    elif "\t4019_gz_x500_gimbal" in s:
+        s = s.replace("\t4019_gz_x500_gimbal", "\t4019_gz_x500_gimbal\n" + entry, 1)
+    else:
+        idx = s.rfind(")")
+        if idx == -1:
+            raise SystemExit("Nao encontrei fechamento da lista de airframes no CMakeLists.txt")
+        s = s[:idx] + entry + "\n" + s[idx:]
+    p.write_text(s)
+    print("[UAVEDUSIM] CMakeLists atualizado com 4020_gz_x500_uavjamsim.")
+else:
+    print("[UAVEDUSIM] CMakeLists ja contem 4020_gz_x500_uavjamsim.")
+PY
+    else
+        if [ "$strict" = "1" ]; then
+            show_error "Nao encontrei: $airframe_cmake"
+            return 1
+        fi
+        log "Aviso: CMakeLists de airframes nao encontrado: $airframe_cmake"
+    fi
+
+    if [ -L "$px4_link" ]; then
+        rm -f "$px4_link"
+        (
+            cd "$uav_dir"
+            ln -s ../PX4-Autopilot px4
+        )
+        log "Link px4: $px4_link -> ../PX4-Autopilot"
+    elif [ -e "$px4_link" ]; then
+        log "Aviso: $px4_link ja existe e nao e link. Mantendo como esta."
+    else
+        (
+            cd "$uav_dir"
+            ln -s ../PX4-Autopilot px4
+        )
+        log "Link px4: $px4_link -> ../PX4-Autopilot"
+    fi
+}
+
 
 run_cleanup() {
-    if [ -x "$APP_DIR/run_with_cleanup.sh" ]; then
-        open_terminal "UAVEDUSIM Cleanup" "cd '$APP_DIR' && ./run_with_cleanup.sh"
-    elif [ -x "$APP_DIR/cleanup_px4_gazebo.sh" ]; then
-        open_terminal "UAVEDUSIM Cleanup" "cd '$APP_DIR' && ./cleanup_px4_gazebo.sh"
+    local cmd
+
+    if [ -x "$APP_DIR/cleanup_px4_gazebo.sh" ]; then
+        cmd="cd '$APP_DIR' && ./cleanup_px4_gazebo.sh"
     else
-        zenity --error --text="Nao encontrei run_with_cleanup.sh ou cleanup_px4_gazebo.sh executavel."
+        cmd="pkill -f 'px4|gz sim|gzserver|gzclient|MicroXRCEAgent|QGroundControl' || true"
     fi
+
+    open_terminal "Limpar processos UAVEDUSIM" "$cmd" "0"
 }
 
-open_qgc() {
-    if [ ! -f "$QGC_APP" ]; then
-        zenity --error --text="Nao encontrei: $QGC_APP"
+
+
+run_clean_build() {
+    local cmd
+
+    if [ ! -d "$PX4_DIR" ]; then
+        show_error "Nao encontrei a pasta: $PX4_DIR"
         return 1
     fi
 
-    chmod +x "$QGC_APP"
-    open_terminal "QGroundControl" "cd '$APP_DIR' && ./QGroundControl-x86_64.AppImage"
+    cmd="cd '$PX4_DIR'
+echo '[UAVEDUSIM] Limpando build...'
+rm -rf build
+echo '[UAVEDUSIM] Rodando make clean...'
+make clean || true
+echo '[UAVEDUSIM] Build limpo. Terminal sera fechado automaticamente.'"
+
+    open_terminal "Limpar build (se necessário)" "$cmd" "0"
+}
+
+
+load_gazebo_env_current() {
+    local setup_file=""
+    local source_status=0
+
+    if [ -n "${UAVEDUSIM_GAZEBO_ENV_LOADED:-}" ]; then
+        return 0
+    fi
+
+    if [ -f "$HOME/gazebo_workspace/install/setup.bash" ]; then
+        setup_file="$HOME/gazebo_workspace/install/setup.bash"
+        log "Carregando Gazebo no launcher: $setup_file"
+        set +u
+        . "$setup_file"
+        source_status=$?
+        set -u
+        if [ "$source_status" -ne 0 ]; then
+            show_error "Falha ao carregar $setup_file"
+            return "$source_status"
+        fi
+    elif [ -f "$HOME/gazebo_workspace/install/setup.sh" ]; then
+        setup_file="$HOME/gazebo_workspace/install/setup.sh"
+        log "Carregando Gazebo no launcher: $setup_file"
+        set +u
+        . "$setup_file"
+        source_status=$?
+        set -u
+        if [ "$source_status" -ne 0 ]; then
+            show_error "Falha ao carregar $setup_file"
+            return "$source_status"
+        fi
+    elif [ -f "$HOME/gazebo_workspace/install/setup.zsh" ]; then
+        setup_file="$HOME/gazebo_workspace/install/setup.zsh"
+        log "Carregando Gazebo via zsh no launcher: $setup_file"
+        if command -v zsh >/dev/null 2>&1; then
+            while IFS= read -r -d "" env_line; do
+                case "$env_line" in
+                    *=*) export "$env_line" ;;
+                esac
+            done < <(zsh -lc "source \"$setup_file\" >/dev/null && env -0")
+        else
+            show_error "Encontrei setup.zsh, mas zsh nao esta instalado."
+            return 1
+        fi
+    else
+        log "Aviso: setup do gazebo_workspace nao encontrado para o painel de ataques. Usando ambiente atual."
+    fi
+
+    export GZ_IP="${GZ_IP:-127.0.0.1}"
+    export UAVEDUSIM_GAZEBO_ENV_LOADED=1
+}
+
+ensure_spoofer_tools() {
+    local spoofer_dir="$APP_DIR/UAVJamSim/spoofer"
+    local build_dir="$spoofer_dir/build"
+    local spoofer_bin="$build_dir/spoofer"
+    local mitigator_bin="$build_dir/attack_mitigator"
+    local jobs=2
+
+    if [ ! -d "$spoofer_dir" ]; then
+        show_error "Nao encontrei a pasta do spoofer: $spoofer_dir"
+        return 1
+    fi
+
+    load_gazebo_env_current || return 1
+
+    if [ -x "$spoofer_bin" ] && [ -x "$mitigator_bin" ]; then
+        return 0
+    fi
+
+    log "Compilando ferramentas do UAVJamSim/spoofer..."
+
+    if [ -x "$spoofer_dir/build.sh" ]; then
+        (cd "$spoofer_dir" && ./build.sh)
+    else
+        command -v nproc >/dev/null 2>&1 && jobs="$(nproc)"
+        mkdir -p "$build_dir"
+        (cd "$build_dir" && cmake .. && make -j"$jobs")
+    fi
+
+    chmod +x "$spoofer_bin" "$mitigator_bin" 2>/dev/null || true
+
+    if [ ! -x "$spoofer_bin" ]; then
+        show_error "Nao encontrei o executavel: $spoofer_bin"
+        return 1
+    fi
+
+    if [ ! -x "$mitigator_bin" ]; then
+        show_error "Nao encontrei o executavel: $mitigator_bin"
+        return 1
+    fi
+}
+
+
+run_uavedusim_cmd() {
+    local output=""
+    local code=0
+
+    log "Executando: $*"
+    set +e
+    output="$("$@" 2>&1)"
+    code=$?
+    set -e
+
+    if [ -n "$output" ]; then
+        while IFS= read -r line; do
+            log "$line"
+        done <<< "$output"
+    fi
+
+    log "Codigo de retorno: $code"
+    return "$code"
+}
+
+send_mitigation_state() {
+    local mitigator_bin="$1"
+    local state="$2"
+
+    case "$state" in
+        on)
+            run_uavedusim_cmd "$mitigator_bin" --on
+            ;;
+        off)
+            run_uavedusim_cmd "$mitigator_bin" --off
+            ;;
+        *)
+            log "Estado de mitigacao invalido: $state"
+            return 1
+            ;;
+    esac
+}
+
+choose_jamming_intensity() {
+    local attack_label="$1"
+    local choice=""
+
+    choice="$(choose_from_menu "UAVEDUSIM" "Intensidade para $attack_label" \
+        "0.10" \
+        "0.25" \
+        "0.50" \
+        "0.75" \
+        "0.80 (indicado)" \
+        "1.00" \
+        "Voltar")"
+
+    case "${choice:-}" in
+        ""|"Voltar") return 1 ;;
+        *) printf '%s' "${choice%% *}" ;;
+    esac
+}
+
+apply_jamming_attack() {
+    local spoofer_bin="$1"
+    local mitigator_bin="$2"
+    local mitigation_state="$3"
+    local attack_key="$4"
+    local intensity="${5:-}"
+    local jam_type=""
+
+    case "$attack_key" in
+        noise)
+            jam_type="1"
+            ;;
+        blackout)
+            jam_type="2"
+            ;;
+        pulse)
+            jam_type="3"
+            ;;
+        *)
+            log "Ataque invalido: $attack_key"
+            return 1
+            ;;
+    esac
+
+    send_mitigation_state "$mitigator_bin" "$mitigation_state" || return 1
+
+    if [ -n "$intensity" ]; then
+        run_uavedusim_cmd "$spoofer_bin" --jam "$jam_type" "$intensity"
+    else
+        run_uavedusim_cmd "$spoofer_bin" --jam "$jam_type"
+    fi
+}
+
+stop_jamming_attack() {
+    local spoofer_bin="$1"
+    local mitigator_bin="$2"
+    local mitigation_state="$3"
+
+    send_mitigation_state "$mitigator_bin" "$mitigation_state" || true
+    run_uavedusim_cmd "$spoofer_bin" --jam 0
+}
+
+wait_for_px4_started() {
+    local timeout="${UAVEDUSIM_WAIT_PX4_TIMEOUT:-900}"
+    local pattern="${UAVEDUSIM_PX4_PATTERN:-px4_sitl_default/bin/px4}"
+    local wait_status=0
+
+    log "Aguardando PX4/Gazebo iniciar dentro da interface. Timeout visual=${timeout}s"
+
+    if command -v python3 >/dev/null 2>&1 && python3 -c 'import tkinter' >/dev/null 2>&1; then
+        set +e
+        UAVEDUSIM_WAIT_TIMEOUT="$timeout" \
+        UAVEDUSIM_WAIT_PATTERN="$pattern" \
+        UAVEDUSIM_WAIT_LOG="$LOG" \
+        UAVEDUSIM_APP_DIR="$APP_DIR" \
+        UAVEDUSIM_PX4_DIR="$PX4_DIR" \
+        python3 - <<'PY_WAIT'
+import os
+import re
+import sys
+import time
+import subprocess
+import tkinter as tk
+from tkinter import ttk
+
+soft_timeout = int(os.environ.get("UAVEDUSIM_WAIT_TIMEOUT", "900"))
+pattern = os.environ.get("UAVEDUSIM_WAIT_PATTERN", "px4_sitl_default/bin/px4")
+log_path = os.environ.get("UAVEDUSIM_WAIT_LOG", "/tmp/uavedusim_gui.log")
+px4_dir = os.environ.get("UAVEDUSIM_PX4_DIR", "")
+
+BG          = "#0d1117"
+SURFACE     = "#161b22"
+SURFACE2    = "#21262d"
+BORDER      = "#30363d"
+TEXT        = "#e6edf3"
+MUTED       = "#7d8590"
+ACCENT      = "#f05a28"
+TAG_BG      = "#1a2433"
+TAG_FG      = "#58a6ff"
+OK          = "#3fb950"
+WARN        = "#d29922"
+DANGER      = "#f85149"
+
+root = tk.Tk()
+root.title("UAVEDUSIM")
+root.configure(bg=BG)
+root.resizable(True, True)
+root.overrideredirect(True)
+
+def _clamp(value, low, high):
+    return max(low, min(value, high))
+
+def _env_float(name, default):
+    try:
+        return float(os.environ.get(name, str(default)))
+    except Exception:
+        return float(default)
+
+screen_w = max(root.winfo_screenwidth(), 800)
+screen_h = max(root.winfo_screenheight(), 600)
+base_scale = min(screen_w / 1600.0, screen_h / 900.0)
+UI_SCALE = _env_float("UAVEDUSIM_UI_SCALE", _clamp(base_scale, 0.95, 1.55))
+
+def px(value):
+    return max(1, int(round(value * UI_SCALE)))
+
+def fs(value):
+    return max(7, int(round(value * UI_SCALE)))
+
+width_frac_default = 0.72 if screen_w >= 1800 else 0.84
+height_frac_default = 0.74 if screen_h >= 1000 else 0.82
+width_frac = _env_float("UAVEDUSIM_UI_WIDTH_FRAC", width_frac_default)
+height_frac = _env_float("UAVEDUSIM_UI_HEIGHT_FRAC", height_frac_default)
+
+max_w_limit = int(_env_float("UAVEDUSIM_UI_MAX_W", 1800))
+max_h_limit = int(_env_float("UAVEDUSIM_UI_MAX_H", 1200))
+
+max_w = min(max(640, screen_w - px(32)), max_w_limit)
+max_h = min(max(420, screen_h - px(56)), max_h_limit)
+
+win_w = int(_clamp(screen_w * width_frac, px(720), max_w))
+win_h = int(_clamp(screen_h * height_frac, px(500), max_h))
+
+min_w = min(win_w, max(520, px(560)))
+min_h = min(win_h, max(340, px(360)))
+
+pos_x = max(0, (screen_w - win_w) // 2)
+pos_y = max(0, (screen_h - win_h) // 2)
+
+root.geometry(f"{win_w}x{win_h}+{pos_x}+{pos_y}")
+root.minsize(min_w, min_h)
+
+FONT_FAMILY = os.environ.get("UAVEDUSIM_FONT_FAMILY", "monospace")
+
+FS_LOGO = fs(12)
+FS_TITLE = fs(16)
+FS_TEXT = fs(10)
+FS_SMALL = fs(9)
+FS_TINY = fs(8)
+FS_BUTTON = fs(10)
+FS_WIN = fs(11)
+
+TITLEBAR_H = px(42)
+CONTENT_PAD = px(24)
+SIDEBAR_W = px(6)
+
+result = {"code": 1}
+start = time.monotonic()
+fullscreen = {"value": False}
+drag = {"x": 0, "y": 0}
+soft_timeout_reached = {"value": False}
+
+def append_log(text):
+    stamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(f"[{stamp}] {text}\n")
+    except Exception:
+        pass
+
+def read_recent_log(max_bytes=400000):
+    try:
+        size = os.path.getsize(log_path)
+        with open(log_path, "rb") as f:
+            if size > max_bytes:
+                f.seek(size - max_bytes)
+            return f.read().decode("utf-8", errors="replace")
+    except Exception:
+        return ""
+
+def log_indicates_px4_ready():
+    data = read_recent_log()
+    if not data:
+        return False, ""
+
+    failure_markers = [
+        "ERROR [px4] Startup script returned",
+        "ninja: build stopped: subcommand failed",
+        "make: ***",
+    ]
+    last_failure = max((data.rfind(m) for m in failure_markers), default=-1)
+
+    ready_markers = [
+        "px4 starting.",
+        "INFO  [px4] startup script:",
+        "INFO  [init] found model autostart file",
+        "INFO  [logger] Opened full log file:",
+        "INFO  [gz_bridge]",
+    ]
+
+    last_ready = -1
+    matched = ""
+    for marker in ready_markers:
+        idx = data.rfind(marker)
+        if idx > last_ready:
+            last_ready = idx
+            matched = marker
+
+    if last_ready >= 0 and last_ready > last_failure:
+        return True, f"log: {matched}"
+
+    return False, ""
+
+def process_indicates_px4_ready():
+    try:
+        proc = subprocess.run(
+            ["ps", "-eo", "pid=,comm=,args="],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=3,
+        )
+    except Exception:
+        proc = None
+
+    if proc and proc.returncode == 0:
+        for raw in proc.stdout.splitlines():
+            line = raw.strip()
+            low = line.lower()
+
+            if "uavedusim_wait_pattern" in low or "py_wait" in low:
+                continue
+
+            if "px4_sitl_default/bin/px4" in line:
+                return True, "processo: px4_sitl_default/bin/px4"
+
+            if px4_dir and f"{px4_dir}/build/px4_sitl_default/bin/px4" in line:
+                return True, "processo: PX4-Autopilot/build/.../bin/px4"
+
+            if re.search(r"(^|[/\s])px4(\s|$)", line) and "px4-autopilot" in low:
+                return True, "processo: px4"
+
+            if "gz sim" in low or "gzserver" in low:
+                return True, "processo: Gazebo"
+
+    try:
+        proc = subprocess.run(
+            ["pgrep", "-x", "px4"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=2,
+        )
+        if proc.returncode == 0 and proc.stdout.strip():
+            return True, "processo: pgrep -x px4"
+    except Exception:
+        pass
+
+    return False, ""
+
+def simulation_ready():
+    ok, reason = process_indicates_px4_ready()
+    if ok:
+        return True, reason
+
+    ok, reason = log_indicates_px4_ready()
+    if ok:
+        return True, reason
+
+    return False, ""
+
+def cancel_wait():
+    result["code"] = 130
+    append_log("[UAVEDUSIM] Espera pelo PX4/Gazebo cancelada pelo usuario.")
+    root.destroy()
+
+def continue_now():
+    result["code"] = 0
+    append_log("[UAVEDUSIM] Usuario abriu menu de ataques manualmente pela tela de espera.")
+    root.destroy()
+
+def toggle_fullscreen():
+    fullscreen["value"] = not fullscreen["value"]
+    if fullscreen["value"]:
+        root.overrideredirect(False)
+        root.attributes("-fullscreen", True)
+    else:
+        root.attributes("-fullscreen", False)
+        root.overrideredirect(True)
+
+def minimize():
+    root.overrideredirect(False)
+    root.iconify()
+    root.after(200, lambda: root.overrideredirect(True))
+
+def start_drag(event):
+    drag["x"] = event.x_root - root.winfo_x()
+    drag["y"] = event.y_root - root.winfo_y()
+
+def do_drag(event):
+    if not fullscreen["value"]:
+        root.geometry(f"+{event.x_root - drag['x']}+{event.y_root - drag['y']}")
+
+style = ttk.Style(root)
+try:
+    style.theme_use("clam")
+except Exception:
+    pass
+
+style.configure("WinBtn.TButton", font=(FONT_FAMILY, FS_WIN, "bold"), padding=(px(6), px(2)), background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
+style.map("WinBtn.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
+
+style.configure("CloseBtn.TButton", font=(FONT_FAMILY, FS_WIN, "bold"), padding=(px(6), px(2)), background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
+style.map("CloseBtn.TButton", background=[("active", "#8b1a1a")], foreground=[("active", "#ff6b6b")])
+
+style.configure("Cancel.TButton", font=(FONT_FAMILY, FS_BUTTON), padding=(px(14), px(8)), background=SURFACE2, foreground=TEXT, relief="flat", borderwidth=0)
+style.map("Cancel.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
+
+style.configure("Primary.TButton", font=(FONT_FAMILY, FS_BUTTON, "bold"), padding=(px(18), px(8)), background=ACCENT, foreground="#ffffff", relief="flat", borderwidth=0)
+style.map("Primary.TButton", background=[("active", "#b34318")])
+
+style.configure("UAVEDUSIM.Horizontal.TProgressbar", troughcolor=BG, background=ACCENT, bordercolor=BORDER, lightcolor=ACCENT, darkcolor=ACCENT)
+
+outer = tk.Frame(root, bg=BG, highlightbackground=BORDER, highlightthickness=1, bd=0)
+outer.pack(fill="both", expand=True)
+
+titlebar = tk.Frame(outer, bg=BG, height=TITLEBAR_H)
+titlebar.pack(fill="x", side="top")
+titlebar.pack_propagate(False)
+
+logo_lbl = tk.Label(titlebar, text="⬡ UAVEDUSIM", bg=BG, fg=ACCENT, font=(FONT_FAMILY, FS_LOGO, "bold"), cursor="fleur")
+logo_lbl.pack(side="left", padx=(px(16), 0))
+logo_lbl.bind("<ButtonPress-1>", start_drag)
+logo_lbl.bind("<B1-Motion>", do_drag)
+
+badge = tk.Label(titlebar, text="  AGUARDANDO PX4/GAZEBO  ", bg=TAG_BG, fg=TAG_FG, font=(FONT_FAMILY, FS_TINY, "bold"), padx=px(6), pady=px(2))
+badge.pack(side="left", padx=(px(10), 0))
+
+drag_area = tk.Frame(titlebar, bg=BG, cursor="fleur")
+drag_area.pack(side="left", fill="both", expand=True)
+drag_area.bind("<ButtonPress-1>", start_drag)
+drag_area.bind("<B1-Motion>", do_drag)
+
+win_btns = tk.Frame(titlebar, bg=BG)
+win_btns.pack(side="right", padx=(0, px(8)))
+
+ttk.Button(win_btns, text="−", style="WinBtn.TButton", command=minimize).pack(side="left", padx=1)
+ttk.Button(win_btns, text="□", style="WinBtn.TButton", command=toggle_fullscreen).pack(side="left", padx=1)
+ttk.Button(win_btns, text="×", style="CloseBtn.TButton", command=cancel_wait).pack(side="left", padx=(1, 0))
+
+tk.Frame(outer, bg=ACCENT, height=px(2)).pack(fill="x")
+
+body_frame = tk.Frame(outer, bg=SURFACE)
+body_frame.pack(fill="both", expand=True)
+
+sidebar = tk.Frame(body_frame, bg=BG, width=SIDEBAR_W)
+sidebar.pack(side="left", fill="y")
+
+content = tk.Frame(body_frame, bg=SURFACE)
+content.pack(side="left", fill="both", expand=True)
+
+header = tk.Frame(content, bg=SURFACE)
+header.pack(fill="x", padx=CONTENT_PAD, pady=(px(24), 0))
+
+tk.Label(header, text="Aguardando PX4/Gazebo abrir...", bg=SURFACE, fg=TEXT, font=(FONT_FAMILY, FS_TITLE, "bold")).pack(anchor="w")
+
+tk.Label(
+    header,
+    text="O PX4 esta compilando/iniciando no terminal. Esta tela continua verificando o processo e o log; quando a simulacao for detectada, o menu de ataques sera aberto automaticamente.",
+    bg=SURFACE,
+    fg=MUTED,
+    font=(FONT_FAMILY, FS_SMALL),
+    justify="left",
+    wraplength=max(px(540), win_w - px(120)),
+).pack(anchor="w", pady=(px(8), 0))
+
+panel = tk.Frame(content, bg=SURFACE2, highlightbackground=BORDER, highlightthickness=1)
+panel.pack(fill="both", expand=True, padx=CONTENT_PAD, pady=(px(22), 0))
+
+center = tk.Frame(panel, bg=SURFACE2)
+center.place(relx=0.5, rely=0.48, anchor="center", relwidth=0.82)
+
+tk.Label(center, text="Inicializando simulacao", bg=SURFACE2, fg=TAG_FG, font=(FONT_FAMILY, FS_SMALL, "bold")).pack(anchor="w")
+
+progress = ttk.Progressbar(center, mode="indeterminate", style="UAVEDUSIM.Horizontal.TProgressbar")
+progress.pack(fill="x", pady=(px(14), px(10)))
+progress.start(12)
+
+status_lbl = tk.Label(center, text="Verificando processo do PX4 e log do terminal...", bg=SURFACE2, fg=WARN, font=(FONT_FAMILY, FS_TEXT, "bold"))
+status_lbl.pack(anchor="w")
+
+detail_lbl = tk.Label(center, text=f"Log: {log_path}", bg=SURFACE2, fg=MUTED, font=(FONT_FAMILY, FS_TINY))
+detail_lbl.pack(anchor="w", pady=(px(6), 0))
+
+footer = tk.Frame(content, bg=SURFACE)
+footer.pack(fill="x", padx=CONTENT_PAD, pady=(px(14), px(18)))
+
+hint_lbl = tk.Label(footer, text="A espera nao fecha sozinha; se a deteccao falhar, use Abrir menu de ataques agora.", bg=SURFACE, fg=BORDER, font=(FONT_FAMILY, FS_TINY))
+hint_lbl.pack(side="left")
+
+btn_frame = tk.Frame(footer, bg=SURFACE)
+btn_frame.pack(side="right")
+
+ttk.Button(btn_frame, text="Cancelar espera", style="Cancel.TButton", command=cancel_wait).pack(side="left", padx=(0, px(8)))
+ttk.Button(btn_frame, text="Abrir menu de ataques agora", style="Primary.TButton", command=continue_now).pack(side="left")
+
+def check():
+    elapsed = int(time.monotonic() - start)
+    ok, reason = simulation_ready()
+
+    if ok:
+        result["code"] = 0
+        progress.stop()
+        status_lbl.configure(text=f"PX4/Gazebo detectado ({reason}). Abrindo menu de ataques...", fg=OK)
+        append_log(f"[UAVEDUSIM] PX4/Gazebo detectado: {reason}. Abrindo menu de ataques.")
+        root.after(700, root.destroy)
+        return
+
+    if elapsed >= soft_timeout and not soft_timeout_reached["value"]:
+        soft_timeout_reached["value"] = True
+        status_lbl.configure(text=f"Ainda nao detectado apos {soft_timeout}s. Vou continuar verificando.", fg=DANGER)
+        append_log(f"[UAVEDUSIM] Aviso: PX4/Gazebo ainda nao detectado apos {soft_timeout}s. Continuando a espera.")
+    else:
+        status_lbl.configure(text=f"Aguardando PX4/Gazebo... {elapsed}s", fg=WARN)
+
+    root.after(1000, check)
+
+root.bind("<Escape>", lambda _e: cancel_wait())
+
+root.lift()
+root.attributes("-topmost", True)
+root.after(600, lambda: root.attributes("-topmost", False))
+root.after(400, check)
+root.mainloop()
+
+sys.exit(result["code"])
+PY_WAIT
+        wait_status=$?
+        set -e
+
+        case "$wait_status" in
+            0)
+                log "PX4/Gazebo detectado. Abrindo menu de ataques."
+                return 0
+                ;;
+            130)
+                log "Espera pelo PX4/Gazebo cancelada pelo usuario."
+                return 1
+                ;;
+            *)
+                log "Tela de espera terminou sem detectar PX4/Gazebo."
+                return 1
+                ;;
+        esac
+    fi
+
+    local step=2
+    local elapsed=0
+
+    log "Aguardando PX4/Gazebo abrir sem Tkinter."
+
+    while true; do
+        if pgrep -af "px4_sitl_default/bin/px4|build/px4_sitl_default/bin/px4|gz sim|gzserver" >/dev/null 2>&1; then
+            log "PX4/Gazebo detectado em execucao. Abrindo menu de ataques."
+            return 0
+        fi
+
+        if grep -qE 'px4 starting\.|INFO  \[px4\] startup script:|INFO  \[init\] found model autostart file|INFO  \[logger\] Opened full log file:' "$LOG" 2>/dev/null; then
+            log "PX4 detectado pelo log. Abrindo menu de ataques."
+            return 0
+        fi
+
+        sleep "$step"
+        elapsed=$((elapsed + step))
+
+        if [ "$elapsed" -ge "$timeout" ]; then
+            log "Ainda aguardando PX4/Gazebo apos ${elapsed}s. Continuando..."
+            elapsed=0
+        fi
+    done
+}
+
+run_attack_control_panel() {
+    local spoofer_dir="$APP_DIR/UAVJamSim/spoofer"
+    local build_dir="$spoofer_dir/build"
+    local spoofer_bin="$build_dir/spoofer"
+    local mitigator_bin="$build_dir/attack_mitigator"
+    local mitigation_state="off"
+    local choice=""
+    local intensity=""
+    local status_text="PX4/Gazebo detectado. Escolha um ataque de jamming."
+    local mitigation_label=""
+
+    ensure_spoofer_tools || return 1
+
+    while true; do
+        if [ "$mitigation_state" = "on" ]; then
+            mitigation_label="Mitigacao: ON"
+        else
+            mitigation_label="Mitigacao: OFF"
+        fi
+
+        choice="$(choose_from_menu "UAVEDUSIM" "Ataques GPS Jamming | $status_text" \
+            "Jamming Noise" \
+            "Jamming Blackout" \
+            "Jamming Pulse" \
+            "$mitigation_label" \
+            "Desligar jamming" \
+            "Voltar ao menu principal")"
+
+        case "${choice:-}" in
+            "Jamming Noise")
+                intensity="$(choose_jamming_intensity "Jamming Noise")" || {
+                    status_text="Selecao de intensidade cancelada."
+                    continue
+                }
+
+                if apply_jamming_attack "$spoofer_bin" "$mitigator_bin" "$mitigation_state" "noise" "$intensity"; then
+                    status_text="Aplicado: Jamming Noise | intensidade=$intensity | mitigacao=${mitigation_state^^}"
+                    notify_msg "$status_text"
+                else
+                    status_text="Falha ao aplicar Jamming Noise. Veja o log."
+                    notify_msg "$status_text"
+                fi
+                ;;
+            "Jamming Blackout")
+                if apply_jamming_attack "$spoofer_bin" "$mitigator_bin" "$mitigation_state" "blackout"; then
+                    status_text="Aplicado: Jamming Blackout | mitigacao=${mitigation_state^^}"
+                    notify_msg "$status_text"
+                else
+                    status_text="Falha ao aplicar Jamming Blackout. Veja o log."
+                    notify_msg "$status_text"
+                fi
+                ;;
+            "Jamming Pulse")
+                intensity="$(choose_jamming_intensity "Jamming Pulse")" || {
+                    status_text="Selecao de intensidade cancelada."
+                    continue
+                }
+
+                if apply_jamming_attack "$spoofer_bin" "$mitigator_bin" "$mitigation_state" "pulse" "$intensity"; then
+                    status_text="Aplicado: Jamming Pulse | intensidade=$intensity | mitigacao=${mitigation_state^^}"
+                    notify_msg "$status_text"
+                else
+                    status_text="Falha ao aplicar Jamming Pulse. Veja o log."
+                    notify_msg "$status_text"
+                fi
+                ;;
+            "Mitigacao: ON"|"Mitigacao: OFF")
+                if [ "$mitigation_state" = "on" ]; then
+                    mitigation_state="off"
+                else
+                    mitigation_state="on"
+                fi
+
+                if send_mitigation_state "$mitigator_bin" "$mitigation_state"; then
+                    status_text="Mitigacao ${mitigation_state^^}."
+                    notify_msg "$status_text"
+                else
+                    status_text="Falha ao alterar mitigacao. Veja o log."
+                    notify_msg "$status_text"
+                fi
+                ;;
+            "Desligar jamming")
+                if stop_jamming_attack "$spoofer_bin" "$mitigator_bin" "$mitigation_state"; then
+                    status_text="Jamming desligado | mitigacao=${mitigation_state^^}"
+                    notify_msg "$status_text"
+                else
+                    status_text="Falha ao desligar jamming. Veja o log."
+                    notify_msg "$status_text"
+                fi
+                ;;
+            "Voltar ao menu principal"|"")
+                return 0
+                ;;
+            *)
+                log "Opcao de ataque ignorada: ${choice:-vazia}"
+                ;;
+        esac
+    done
 }
 
 run_px4() {
-    local model
-
-    model="$(zenity --list \
-        --title="UAVEDUSIM" \
-        --text="Escolha o modelo PX4/Gazebo:" \
-        --column="Modelo" \
-        "gz_x500" \
-        "gz_x500_vision" \
-        "gz_x500_uavjamsim" \
-        --height=260 --width=360)"
-
-    [ -z "${model:-}" ] && return 0
+    local model_label=""
+    local model=""
+    local world_label=""
+    local world=""
+    local models_dir="$PX4_DIR/Tools/simulation/gz/models"
+    local worlds_dir="$PX4_DIR/Tools/simulation/gz/worlds"
+    local -a models
+    local -a worlds
+    local gazebo_env_cmd
+    local px4_launch_status=0
 
     if [ ! -d "$PX4_DIR" ]; then
-        zenity --error --text="Nao encontrei a pasta: $PX4_DIR"
+        show_error "Nao encontrei a pasta: $PX4_DIR"
         return 1
     fi
 
-    open_terminal "PX4 SITL - $model" "cd '$PX4_DIR' && make px4_sitl $model"
+    ensure_uavjamsim_links "0" || true
+
+    models=()
+
+    if [ ! -d "$models_dir" ]; then
+        show_error "Nao encontrei a pasta de modelos do Gazebo: $models_dir"
+        return 1
+    fi
+
+    # Lista gerada sempre a partir de Tools/simulation/gz/models.
+    # Por padrao, mostra apenas modelos que tambem possuem airframe/target gz_* no PX4,
+    # evitando listar componentes/sensores como gimbal, optical_flow, OakD-Lite, etc.
+    # Para listar literalmente todas as pastas do diretorio, rode com:
+    # UAVEDUSIM_SHOW_ALL_GZ_MODELS=1 ./uavedusim_gui.sh
+    if [ -e "$models_dir/x500_uavjamsim" ] || [ -L "$models_dir/x500_uavjamsim" ]; then
+        models+=("gz_x500_uavjamsim (modelo indicado)")
+    fi
+
+    while IFS= read -r model_name; do
+        [ -n "$model_name" ] || continue
+        [ "$model_name" = "x500_uavjamsim" ] && continue
+
+        case "$model_name" in
+            .* ) continue ;;
+        esac
+
+        local label="gz_$model_name"
+
+        if [ "${UAVEDUSIM_SHOW_ALL_GZ_MODELS:-0}" != "1" ]; then
+            if ! compgen -G "$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/*_${label}" >/dev/null; then
+                log "Ignorando modelo sem airframe/target PX4: $model_name"
+                continue
+            fi
+        fi
+
+        models+=("$label")
+    done < <(find "$models_dir" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -printf '%f\n' | LC_ALL=C sort)
+
+    if [ "${#models[@]}" -eq 0 ]; then
+        show_error "Nenhum modelo executavel foi encontrado em: $models_dir"
+        return 1
+    fi
+
+    model_label="$(choose_from_menu "UAVEDUSIM" "Modelo PX4/Gazebo" "${models[@]}")"
+    [ -z "${model_label:-}" ] && return 0
+    model="${model_label%% *}"
+
+    worlds=()
+
+    if [ ! -d "$worlds_dir" ]; then
+        show_error "Nao encontrei a pasta de mundos do Gazebo: $worlds_dir"
+        return 1
+    fi
+
+    # Lista gerada sempre a partir de Tools/simulation/gz/worlds.
+    if [ -f "$worlds_dir/default.sdf" ] || [ -L "$worlds_dir/default.sdf" ]; then
+        worlds+=("default (mundo indicado)")
+    fi
+
+    while IFS= read -r world_file; do
+        local world_name="${world_file%.sdf}"
+        [ -n "$world_name" ] || continue
+        [ "$world_name" = "default" ] && continue
+        worlds+=("$world_name")
+    done < <(find "$worlds_dir" -mindepth 1 -maxdepth 1 \( -type f -o -type l \) -name '*.sdf' -printf '%f\n' | LC_ALL=C sort)
+
+    if [ "${#worlds[@]}" -eq 0 ]; then
+        show_error "Nenhum mundo .sdf foi encontrado em: $worlds_dir"
+        return 1
+    fi
+
+    world_label="$(choose_from_menu "UAVEDUSIM" "Mundo Gazebo" "${worlds[@]}")"
+    [ -z "${world_label:-}" ] && return 0
+    world="${world_label%% *}"
+
+    log "PX4 selecionado: modelo=$model mundo=$world"
+
+    if [ "$model" = "gz_x500_uavjamsim" ]; then
+        ensure_uavjamsim_links "1" || return 1
+    else
+        ensure_uavjamsim_links "0" || true
+    fi
+
+    if [ "${UAVEDUSIM_OPEN_QGC_WITH_PX4:-0}" = "1" ]; then
+        log "Executar UAVEDUSIM: abrindo QGroundControl junto com PX4/Gazebo"
+        run_qgc || true
+        sleep 1
+    fi
+
+    gazebo_env_cmd='load_gazebo_env() {
+    local setup_file=""
+    local source_status=0
+
+    if [ -f "$HOME/gazebo_workspace/install/setup.bash" ]; then
+        setup_file="$HOME/gazebo_workspace/install/setup.bash"
+        echo "[UAVEDUSIM] Carregando Gazebo: $setup_file"
+        set +u
+        . "$setup_file"
+        source_status=$?
+        set -u
+        if [ "$source_status" -ne 0 ]; then
+            echo "[UAVEDUSIM] ERRO: falha ao carregar $setup_file"
+            exit "$source_status"
+        fi
+    elif [ -f "$HOME/gazebo_workspace/install/setup.sh" ]; then
+        setup_file="$HOME/gazebo_workspace/install/setup.sh"
+        echo "[UAVEDUSIM] Carregando Gazebo: $setup_file"
+        set +u
+        . "$setup_file"
+        source_status=$?
+        set -u
+        if [ "$source_status" -ne 0 ]; then
+            echo "[UAVEDUSIM] ERRO: falha ao carregar $setup_file"
+            exit "$source_status"
+        fi
+    elif [ -f "$HOME/gazebo_workspace/install/setup.zsh" ]; then
+        setup_file="$HOME/gazebo_workspace/install/setup.zsh"
+        echo "[UAVEDUSIM] Carregando Gazebo via zsh: $setup_file"
+        if command -v zsh >/dev/null 2>&1; then
+            while IFS= read -r -d "" env_line; do
+                case "$env_line" in
+                    *=*) export "$env_line" ;;
+                esac
+            done < <(zsh -lc "source \"$setup_file\" >/dev/null && env -0")
+        else
+            echo "[UAVEDUSIM] ERRO: encontrei setup.zsh, mas zsh nao esta instalado."
+            exit 1
+        fi
+    else
+        echo "[UAVEDUSIM] Aviso: setup do gazebo_workspace nao encontrado. Continuando com ambiente atual."
+    fi
+}
+load_gazebo_env'
+
+    open_terminal "PX4 SITL - $model - $world" \
+        "$gazebo_env_cmd
+cd '$PX4_DIR'
+if [ ! -d 'Tools/simulation/gz/models/x500' ]; then
+    echo '[UAVEDUSIM] Submodulo Tools/simulation/gz ausente. Inicializando submodulos...'
+    git submodule sync --recursive || true
+    git submodule update --init --recursive Tools/simulation/gz || git submodule update --init --recursive || true
+fi
+cd '$APP_DIR'
+echo '[UAVEDUSIM] Garantindo links simbolicos e airframe do UAVJamSim...'
+# O setup ja foi feito pela interface antes de abrir este terminal.
+ls -l '$PX4_DIR/Tools/simulation/gz/models/x500_uavjamsim' 2>/dev/null || true
+ls -l '$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim' 2>/dev/null || true
+
+if [ '$model' = 'gz_x500_uavjamsim' ]; then
+    if [ ! -f '$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim' ]; then
+        echo '[UAVEDUSIM] ERRO: airframe 4020_gz_x500_uavjamsim nao foi instalado no ROMFS.'
+        exit 1
+    fi
+    if [ -L '$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim' ]; then
+        echo '[UAVEDUSIM] ERRO: airframe 4020_gz_x500_uavjamsim ainda e link simbolico. Ele precisa ser arquivo real.'
+        exit 1
+    fi
+fi
+
+cd '$PX4_DIR'
+echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl $model PX4_GZ_WORLD=$world'
+make px4_sitl '$model' PX4_GZ_WORLD='$world'" || px4_launch_status=$?
+
+    if [ "$px4_launch_status" -eq 0 ] && [ "${UAVEDUSIM_ATTACK_PANEL_AFTER_PX4:-0}" = "1" ]; then
+        if wait_for_px4_started; then
+            run_attack_control_panel || true
+        fi
+    fi
+
+    return "$px4_launch_status"
 }
 
-while true; do
-    choice="$(zenity --list \
-        --title="UAVEDUSIM" \
-        --text="O que voce quer abrir?" \
-        --column="Opcao" \
-        "Abrir PX4/Gazebo" \
-        "Abrir QGroundControl" \
-        "Limpar processos PX4/Gazebo" \
-        "Sair" \
-        --height=300 --width=420)"
+run_qgc() {
+    local qgc_cmd
 
-    case "${choice:-}" in
-        "Abrir PX4/Gazebo")
-            run_px4
-            ;;
-        "Abrir QGroundControl")
-            open_qgc
-            ;;
-        "Limpar processos PX4/Gazebo")
-            run_cleanup
-            ;;
-        "Sair" | "")
-            exit 0
-            ;;
-    esac
-done
+    if [ -x "$QGC_EXTRACTED" ]; then
+        qgc_cmd="
+cd '$APP_DIR'
+APPDIR='$APP_DIR/squashfs-root'
+SCANNER=\"\$APPDIR/usr/lib/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner\"
+rm -rf \"\$HOME/.cache/gstreamer-1.0\"
+unset PYTHONHOME PYTHONPATH VIRTUAL_ENV CONDA_PREFIX CONDA_DEFAULT_ENV
+env \\
+  APPDIR=\"\$APPDIR\" \\
+  LD_LIBRARY_PATH=\"\$APPDIR/usr/lib\" \\
+  GST_PLUGIN_PATH=\"\$APPDIR/usr/lib/gstreamer-1.0\" \\
+  GST_PLUGIN_SCANNER=\"\$SCANNER\" \\
+  GST_PLUGIN_SCANNER_1_0=\"\$SCANNER\" \\
+  GST_REGISTRY_FORK=no \\
+  \"\$APPDIR/usr/bin/QGroundControl\"
+"
+        open_terminal "QGroundControl" "$qgc_cmd"
+        return 0
+    fi
+
+    if [ -f "$QGC_APP" ]; then
+        qgc_cmd="cd '$APP_DIR' && chmod +x './QGroundControl-x86_64.AppImage' && ./QGroundControl-x86_64.AppImage"
+        open_terminal "QGroundControl" "$qgc_cmd"
+        return 0
+    fi
+
+    show_error "Nao encontrei QGroundControl AppImage nem squashfs-root em: $APP_DIR"
+}
+
+
+run_uavedusim() {
+    local old_open_qgc="${UAVEDUSIM_OPEN_QGC_WITH_PX4:-0}"
+    local old_attack_panel="${UAVEDUSIM_ATTACK_PANEL_AFTER_PX4:-0}"
+    local status=0
+
+    UAVEDUSIM_OPEN_QGC_WITH_PX4=1
+    UAVEDUSIM_ATTACK_PANEL_AFTER_PX4=1
+    run_px4 || status=$?
+    UAVEDUSIM_OPEN_QGC_WITH_PX4="$old_open_qgc"
+    UAVEDUSIM_ATTACK_PANEL_AFTER_PX4="$old_attack_panel"
+
+    return "$status"
+}
+
+main_menu() {
+    local choice
+
+    while true; do
+        choice="$(choose_from_menu "UAVEDUSIM" "O que voce quer executar?" \
+            "Executar UAVEDUSIM" \
+            "Limpar build (se necessário)" \
+            "Limpar processos UAVEDUSIM")"
+
+        case "${choice:-}" in
+            "Executar UAVEDUSIM") run_uavedusim ;;
+            "Limpar build (se necessário)") run_clean_build ;;
+            "Limpar processos UAVEDUSIM") run_cleanup ;;
+            "") exit 0 ;;
+            *) log "Opcao ignorada: ${choice:-vazia}" ;;
+        esac
+    done
+}
+
+
+log "Iniciando UAVEDUSIM GUI"
+log "APP_DIR=$APP_DIR"
+log "Sessao: XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-vazio}, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-vazio}, DISPLAY=${DISPLAY:-vazio}"
+
+if ! command -v python3 >/dev/null 2>&1; then
+    show_error "python3 nao encontrado. Instale python3 para usar a interface persistente."
+    exit 1
+fi
+
+if ! python3 -c 'import tkinter' >/dev/null 2>&1; then
+    show_error "Tkinter nao encontrado. Instale com: sudo dnf install -y python3-tkinter tk"
+    exit 1
+fi
+
+if [ ! -f "$APP_DIR/uavedusim_gui_app.py" ]; then
+    show_error "Nao encontrei $APP_DIR/uavedusim_gui_app.py. Copie o arquivo da interface persistente para a pasta UAVEDUSIM."
+    exit 1
+fi
+
+set +e
+APP_DIR="$APP_DIR" PX4_DIR="$PX4_DIR" QGC_APP="$QGC_APP" QGC_EXTRACTED="$QGC_EXTRACTED" LOG="$LOG" UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" UAVEDUSIM_RUNTIME_DIR="$UAVEDUSIM_RUNTIME_DIR" UAVEDUSIM_PID_FILE="$UAVEDUSIM_PID_FILE" UAVEDUSIM_SCRIPT_DIR="$UAVEDUSIM_SCRIPT_DIR" python3 "$APP_DIR/uavedusim_gui_app.py"
+gui_status=$?
+set -e
+
+exit "$gui_status"

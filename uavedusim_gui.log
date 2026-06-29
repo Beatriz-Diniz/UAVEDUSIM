@@ -1,0 +1,17 @@
+[2026-06-29 15:47:05] Iniciando UAVEDUSIM GUI
+[2026-06-29 15:47:05] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-06-29 15:47:05] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-06-29 15:47:06] Iniciando UAVEDUSIM GUI persistente
+[2026-06-29 15:47:06] Iniciando UAVEDUSIM GUI persistente
+[2026-06-29 15:47:06] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-06-29 15:47:06] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-06-29 15:47:06] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-06-29 15:47:06] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-06-29 15:47:07] Fechando interface UAVEDUSIM.
+[2026-06-29 15:47:07] Fechando interface UAVEDUSIM.
+[2026-06-29 15:47:07] Encerrando UAVEDUSIM GUI. Codigo=0
+[2026-06-29 15:47:07] Encerrando terminais abertos pela sessao 278860
+[2026-06-29 15:47:08] Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM
+
+[cleanup] Stopping PX4/Gazebo processes...
+[cleanup] Done.
