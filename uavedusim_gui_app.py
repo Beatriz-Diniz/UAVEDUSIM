@@ -45,27 +45,54 @@ WARN        = "#d29922"
 DANGER      = "#f85149"
 
 ICONS = {
+    # Ações de menu (Lucide: play, rotate-ccw, power)
     "executar": "▶",
+    "limpar": "↺",
+    "sair": "⏻",
+
+    # Identidade do projeto / ferramentas externas (Lucide: cpu, box, radio-tower)
     "uavedusim": "⬡",
-    "px4": "⬡",
-    "gazebo": "⬡",
-    "qground": "◈",
-    "limpar": "⊘",
+    "px4": "⊡",
+    "gazebo": "⊞",
+    "qground": "▣",
+
+    # Categorias de modelo de VANT (Lucide: drone, plane, car, aperture, radar, camera)
+    "uavjamsim": "✛",
+    "vtol": "✈",
+    "tailsitter": "✈",
+    "tiltrotor": "✈",
+    "plane": "✈",
+    "cessna": "✈",
+    "rover": "▥",
+    "gimbal": "◍",
+    "lidar": "◉",
+    "depth": "◐",
+    "mono_cam": "◒",
+    "vision": "◑",
+    "x500": "✛",
+    "modelo": "◎",
+
+    # Tipos de ataque jamming, mais específicos primeiro (Lucide: audio-waveform, power-off, activity, shield-check, triangle-alert, radio)
+    "noise": "~",
+    "blackout": "⊗",
+    "pulse": "∿",
+    "mitig": "◈",
     "ataque": "⚠",
     "jamming": "≈",
-    "noise": "~",
-    "blackout": "●",
-    "pulse": "▮",
-    "mitig": "◆",
-    "sair": "⏻",
-    "modelo": "◎",
+
+    # Mundos de simulação (Lucide: circle, qr-code, waves, leaf, mountain, brick-wall, wind, move)
+    "default (mundo": "◦",
+    "aruco": "▦",
+    "baylands": "≋",
+    "bayland": "≋",
+    "lawn": "❀",
+    "ridge": "▲",
+    "walls": "▭",
+    "windy": "↝",
+    "moving_platform": "▬",
     "mundo": "◉",
-    "default": "◉",
-    "x500": "⬡",
-    "forest": "◈",
-    "baylands": "◈",
-    "walls": "◈",
-    "windy": "◈",
+
+    "default": "◦",
 }
 
 def icon_for(label: str) -> str:
@@ -3437,7 +3464,7 @@ def _uavedusim_responsive_setup_dimensions(self):
     self.SEL_BAR_W = self.px(3)
     self.ICON_X = self.PADX + self.px(30)
     self.LABEL_X = self.PADX + self.px(50)
-    self.SCROLLBAR_W = self.px(9)
+    self.SCROLLBAR_W = self.px(11)
 
 
 def _uavedusim_responsive_setup_styles(self):
@@ -5123,6 +5150,368 @@ UAVEDUSIMApp.get_worlds = _uavedusim_get_worlds_with_descriptions
 UAVEDUSIMApp.handle_world_choice = _uavedusim_handle_world_choice_with_description
 
 # === UAVEDUSIM WORLD DESCRIPTIONS PATCH END ===
+
+
+
+
+
+
+
+
+
+
+# === UAVEDUSIM HOME EDUCATIONAL SCREEN PATCH START ===
+
+UAVEDUSIM_HOME_TEXT = 'O UAVEDUSIM é um ambiente de simulação para estudar ataques de jamming em Veículos Aéreos Não Tripulados (VANTs) de forma segura, controlada e reprodutível. Ele utiliza PX4 SITL, Gazebo e QGroundControl para executar missões simuladas, observar o comportamento do drone e analisar como falhas ou ataques contra o sistema de navegação podem afetar o voo.\n\nEm um drone real, a navegação depende de diferentes fontes de informação, como GPS/GNSS, sensores inerciais, altitude, velocidade, telemetria e comandos de controle. Quando essas informações são degradadas, bloqueadas ou se tornam inconsistentes, o piloto automático pode ter dificuldade para estimar corretamente a posição do VANT. Isso pode causar desvios de trajetória, interrupção da missão, perda de continuidade na navegação ou acionamento de procedimentos de segurança.\n\nO UAVEDUSIM permite reproduzir esse tipo de situação dentro de um ambiente simulado, sem transmitir interferência eletromagnética real e sem colocar equipamentos, pessoas ou outros sistemas em risco. Assim, é possível repetir experimentos, comparar cenários, alterar parâmetros do ataque e avaliar mecanismos de mitigação de maneira mais segura do que em testes com rádio frequência no mundo real.\n\nO que é jamming?\n\nJamming é uma interferência intencional contra sinais utilizados por um sistema. No contexto de VANTs, esse ataque pode afetar sinais de GPS/GNSS, telemetria, comunicação de controle ou outros canais sem fio usados durante a missão. O objetivo do atacante é degradar, bloquear ou tornar instável a recepção desses sinais, prejudicando a capacidade do drone de navegar corretamente.\n\nNo caso do GPS/GNSS, o jamming pode fazer com que o VANT receba medições de posição com erro, fique sem atualizações de localização ou alterne entre períodos de funcionamento normal e falha. Por isso, mesmo sem invadir diretamente o software do drone, o atacante pode comprometer a missão ao explorar a dependência do VANT em relação aos sinais externos de navegação.\n\nNesta interface, você pode selecionar o modelo do VANT, escolher o mundo de simulação, iniciar o ambiente PX4/Gazebo e executar cenários de jamming GPS/GNSS. O UAVEDUSIM permite testar ataques como noise jamming, GPS blackout e pulsed jamming, além de avaliar estratégias de mitigação que buscam reduzir desvios de trajetória e preservar a continuidade da navegação.'
+
+
+def _uavedusim_home_run_choice(self, choice):
+    if getattr(self, "_home_choice_busy", False):
+        return
+
+    self._home_choice_busy = True
+
+    try:
+        self.handle_main_choice(choice)
+    finally:
+        try:
+            self.root.after(700, lambda: setattr(self, "_home_choice_busy", False))
+        except Exception:
+            self._home_choice_busy = False
+
+
+def _uavedusim_home_reflow_buttons(self, _event=None):
+    frame = getattr(self, "home_buttons_frame", None)
+    buttons = getattr(self, "home_action_buttons", [])
+
+    if frame is None or not frame.winfo_exists() or not buttons:
+        return
+
+    width = frame.winfo_width() or self.content.winfo_width() or self.px(900)
+    compact = width < self.px(620)
+
+    for btn in buttons:
+        try:
+            btn.grid_forget()
+        except Exception:
+            pass
+
+    for col in range(3):
+        frame.grid_columnconfigure(col, weight=0, uniform="")
+
+    if compact:
+        frame.grid_columnconfigure(0, weight=1)
+
+        for row, btn in enumerate(buttons):
+            btn.grid(row=row, column=0, sticky="ew", padx=0, pady=(0, self.px(10)))
+    else:
+        for col in range(3):
+            frame.grid_columnconfigure(col, weight=1, uniform="home_actions")
+
+        for col, btn in enumerate(buttons):
+            btn.grid(
+                row=0,
+                column=col,
+                sticky="ew",
+                padx=(0 if col == 0 else self.px(12), 0),
+                pady=0,
+            )
+
+
+def _uavedusim_home_show_main_menu(self):
+    self.page = "main"
+    self.selected_callback = None
+    self.back_callback = None
+    self.clear_content()
+    self.set_badge("MAIN MENU")
+
+    options = [
+        "Executar UAVEDUSIM",
+        "Limpar build (se necessário)",
+        "Limpar processos UAVEDUSIM",
+    ]
+
+    try:
+        self.style.configure(
+            "HomeAction.TButton",
+            font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
+            padding=(self.px(18), self.px(9)),
+            background="#2d5a6e",
+            foreground="#ffffff",
+            relief="flat",
+            borderwidth=0,
+        )
+        self.style.map(
+            "HomeAction.TButton",
+            background=[("active", "#3d7388"), ("pressed", "#234654")],
+            foreground=[("active", "#ffffff"), ("pressed", "#ffffff")],
+        )
+
+        self.style.configure(
+            "HomeAbout.TButton",
+            font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
+            padding=(self.px(18), self.px(11)),
+            background=ACCENT,
+            foreground="#ffffff",
+            relief="flat",
+            borderwidth=0,
+        )
+        self.style.map(
+            "HomeAbout.TButton",
+            background=[("active", ACCENT_DIM), ("pressed", ACCENT_DIM)],
+            foreground=[("active", "#ffffff"), ("pressed", "#ffffff")],
+        )
+    except Exception:
+        pass
+
+    main_box = tk.Frame(
+        self.content,
+        bg=SURFACE2,
+        highlightbackground=BORDER,
+        highlightthickness=1,
+    )
+    main_box.pack(
+        fill="both",
+        expand=True,
+        padx=self.CONTENT_PAD,
+        pady=(self.HEADER_TOP_PAD, 0),
+    )
+
+    scroll_outer = tk.Frame(main_box, bg=SURFACE2)
+    scroll_outer.pack(fill="both", expand=True)
+
+    text_canvas = tk.Canvas(scroll_outer, bg=SURFACE2, highlightthickness=0, bd=0)
+    text_scrollbar = tk.Scrollbar(
+        scroll_outer,
+        orient="vertical",
+        command=text_canvas.yview,
+        width=self.SCROLLBAR_W,
+        bg=BORDER,
+        troughcolor=SURFACE,
+        activebackground=MUTED,
+        bd=0,
+        highlightthickness=0,
+        relief="flat",
+        elementborderwidth=0,
+    )
+    text_canvas.configure(yscrollcommand=text_scrollbar.set)
+
+    text_canvas.pack(side="left", fill="both", expand=True)
+
+    self.home_text_canvas = text_canvas
+
+    text_area = tk.Frame(text_canvas, bg=SURFACE2)
+    text_area_id = text_canvas.create_window((0, 0), window=text_area, anchor="nw")
+
+    inner_pad = self.px(18)
+
+    self._home_scroll_enabled = False
+
+    def _content_overflows():
+        try:
+            content_h = text_area.winfo_reqheight()
+            visible_h = text_canvas.winfo_height()
+            return content_h > visible_h
+        except Exception:
+            return False
+
+    def _sync_text_scrollregion(_event=None):
+        text_canvas.configure(scrollregion=text_canvas.bbox("all"))
+
+        overflows = _content_overflows()
+        self._home_scroll_enabled = overflows
+
+        if overflows:
+            if not text_scrollbar.winfo_ismapped():
+                text_scrollbar.pack(side="right", fill="y")
+        else:
+            if text_scrollbar.winfo_ismapped():
+                text_scrollbar.pack_forget()
+            text_canvas.yview_moveto(0)
+
+    def _sync_text_width(event):
+        text_canvas.itemconfigure(text_area_id, width=event.width)
+        _sync_text_scrollregion()
+
+    def _text_wheel(event):
+        if not self._home_scroll_enabled:
+            return
+
+        if getattr(event, "num", None) == 4:
+            text_canvas.yview_scroll(-3, "units")
+        elif getattr(event, "num", None) == 5:
+            text_canvas.yview_scroll(3, "units")
+        elif getattr(event, "delta", 0):
+            text_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    text_area.bind("<Configure>", _sync_text_scrollregion)
+    text_canvas.bind(
+        "<Enter>",
+        lambda _e: (
+            text_canvas.bind_all("<MouseWheel>", _text_wheel),
+            text_canvas.bind_all("<Button-4>", _text_wheel),
+            text_canvas.bind_all("<Button-5>", _text_wheel),
+        ),
+    )
+    text_canvas.bind(
+        "<Leave>",
+        lambda _e: (
+            text_canvas.unbind_all("<MouseWheel>"),
+            text_canvas.unbind_all("<Button-4>"),
+            text_canvas.unbind_all("<Button-5>"),
+        ),
+    )
+
+    text_area_padded = tk.Frame(text_area, bg=SURFACE2)
+    text_area_padded.pack(
+        fill="both",
+        expand=True,
+        padx=inner_pad,
+        pady=(inner_pad, self.px(10)),
+    )
+
+    title = tk.Label(
+        text_area_padded,
+        text="UAVEDUSIM",
+        bg=SURFACE2,
+        fg=TEXT,
+        justify="center",
+        anchor="center",
+        font=(self.FONT_FAMILY, self.fs(24), "bold"),
+    )
+    title.pack(fill="x", pady=(0, self.px(14)))
+
+    blocks = UAVEDUSIM_HOME_TEXT.split("\n\n")
+    self._home_text_labels = []
+
+    for block in blocks:
+        block = block.strip()
+
+        if not block:
+            continue
+
+        is_subtitle = block == "O que é jamming?"
+
+        lbl = tk.Label(
+            text_area_padded,
+            text=block,
+            bg=SURFACE2,
+            fg=TEXT if is_subtitle else MUTED,
+            justify="left",
+            anchor="nw",
+            wraplength=max(self.px(500), self.win_w - self.px(140)),
+            font=(
+                self.FONT_FAMILY,
+                self.fs(13 if is_subtitle else 10),
+                "bold" if is_subtitle else "normal",
+            ),
+        )
+        lbl.pack(anchor="w", fill="x", pady=(0, self.px(12 if is_subtitle else 10)))
+        self._home_text_labels.append(lbl)
+
+    def _uavedusim_home_about_jamming_click():
+        # Decorativo por enquanto: futuramente vai abrir uma janela explicando
+        # os ataques de jamming simulados pelo UAVEDUSIM.
+        pass
+
+    self.home_about_button = ttk.Button(
+        text_area_padded,
+        text="Entenda os ataques de jamming simulados",
+        style="HomeAbout.TButton",
+        command=_uavedusim_home_about_jamming_click,
+    )
+    self.home_about_button.pack(fill="x", pady=(self.px(8), self.px(12)))
+
+    self.home_buttons_frame = tk.Frame(text_area_padded, bg=SURFACE2)
+    self.home_buttons_frame.pack(fill="x", pady=(0, self.px(8)))
+
+    self.home_action_buttons = []
+
+    action_items = [
+        ("Iniciar simulação do UAVEDUSIM", "Executar UAVEDUSIM"),
+        ("Apagar arquivos de build antigos", "Limpar build (se necessário)"),
+        ("Encerrar processos do UAVEDUSIM em execução", "Limpar processos UAVEDUSIM"),
+    ]
+
+    for label, choice in action_items:
+        btn = ttk.Button(
+            self.home_buttons_frame,
+            text=label,
+            style="HomeAction.TButton",
+            command=lambda choice=choice: _uavedusim_home_run_choice(self, choice),
+        )
+        self.home_action_buttons.append(btn)
+
+    self.home_buttons_frame.bind(
+        "<Configure>",
+        lambda event: _uavedusim_home_reflow_buttons(self, event),
+    )
+
+    def _reflow_home_text(_event=None):
+        try:
+            w = text_canvas.winfo_width()
+            wrap = max(self.px(420), w - self.px(24))
+
+            for lbl in getattr(self, "_home_text_labels", []):
+                lbl.configure(wraplength=wrap)
+        except Exception:
+            pass
+
+    text_canvas.bind("<Configure>", lambda event: (_sync_text_width(event), _reflow_home_text()))
+
+    self.root.after_idle(_reflow_home_text)
+    self.root.after_idle(_sync_text_scrollregion)
+    self.root.after_idle(lambda: _uavedusim_home_reflow_buttons(self))
+
+    footer = tk.Frame(self.content, bg=SURFACE)
+    footer.pack(
+        fill="x",
+        padx=self.CONTENT_PAD,
+        pady=(self.FOOTER_TOP_PAD, self.FOOTER_BOTTOM_PAD),
+    )
+
+    tk.Label(
+        footer,
+        text=f"{len(options)} opções",
+        bg=SURFACE,
+        fg=MUTED,
+        font=(self.FONT_FAMILY, self.FS_TINY),
+    ).pack(side="left")
+
+    tk.Label(
+        footer,
+        text="Clique nos botões · Enter executar · Esc fechar",
+        bg=SURFACE,
+        fg=BORDER,
+        font=(self.FONT_FAMILY, self.FS_TINY),
+    ).pack(side="left", padx=(self.px(12), 0))
+
+    btn_frame = tk.Frame(footer, bg=SURFACE)
+    btn_frame.pack(side="right")
+
+    ttk.Button(
+        btn_frame,
+        text="Fechar",
+        style="Cancel.TButton",
+        command=self.close_app,
+    ).pack(side="left", padx=(0, self.px(8)))
+
+
+_UAVEDUSIM_HOME_OLD_CHOOSE_CURRENT = UAVEDUSIMApp.choose_current
+
+
+def _uavedusim_home_choose_current(self):
+    if getattr(self, "page", "") == "main":
+        _uavedusim_home_run_choice(self, "Executar UAVEDUSIM")
+        return
+
+    return _UAVEDUSIM_HOME_OLD_CHOOSE_CURRENT(self)
+
+
+UAVEDUSIMApp.show_main_menu = _uavedusim_home_show_main_menu
+UAVEDUSIMApp.choose_current = _uavedusim_home_choose_current
+
+# === UAVEDUSIM HOME EDUCATIONAL SCREEN PATCH END ===
 
 
 if __name__ == "__main__":
