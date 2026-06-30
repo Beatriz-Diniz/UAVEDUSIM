@@ -1,33 +1,42 @@
 #!/usr/bin/env bash
+# Launcher principal do UAVEDUSIM GUI.
+# Inicia a interface Python (uavedusim_gui_app.py) e gerencia processos filhos.
 set -Eeuo pipefail
 
+# Diretórios e caminhos dos componentes do simulador
 APP_DIR="${UAVEDUSIM_DIR:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)}"
 PX4_DIR="$APP_DIR/PX4-Autopilot"
 QGC_APP="$APP_DIR/QGroundControl-x86_64.AppImage"
 QGC_EXTRACTED="$APP_DIR/squashfs-root/usr/bin/QGroundControl"
 LOG="$APP_DIR/uavedusim_gui.log"
 
+# Recria o log e redireciona stdout/stderr para ele
 mkdir -p "$APP_DIR"
 rm -f "$LOG" "$APP_DIR/uavedusim_last_terminal.log"
 touch "$LOG"
 exec > >(tee -a "$LOG") 2>&1
 
+# Permite abrir janelas tanto em Wayland quanto em X11
 export GDK_BACKEND="${GDK_BACKEND:-wayland,x11}"
 
+# Identificadores de sessão; cada execução tem arquivos de PID e scripts próprios
 UAVEDUSIM_SESSION_ID="${UAVEDUSIM_SESSION_ID:-$$}"
 UAVEDUSIM_RUNTIME_DIR="$APP_DIR/.uavedusim_runtime"
 UAVEDUSIM_PID_FILE="$UAVEDUSIM_RUNTIME_DIR/terminals_${UAVEDUSIM_SESSION_ID}.pids"
 UAVEDUSIM_SCRIPT_DIR="$UAVEDUSIM_RUNTIME_DIR/scripts_${UAVEDUSIM_SESSION_ID}"
 UAVEDUSIM_EXIT_CLEANUP_RAN=0
 
+# Cria diretórios de runtime e inicializa o arquivo de PIDs vazio
 mkdir -p "$UAVEDUSIM_RUNTIME_DIR" "$UAVEDUSIM_SCRIPT_DIR"
 : > "$UAVEDUSIM_PID_FILE"
 
 
+# Imprime mensagem com timestamp no stdout (e no log via tee acima)
 log() {
     printf '[%s] %s\n' "$(date '+%F %T')" "$*"
 }
 
+# Envia notificação de desktop via notify-send (silencioso se não disponível)
 notify_msg() {
     local msg="$1"
     if command -v notify-send >/dev/null 2>&1; then
@@ -35,6 +44,7 @@ notify_msg() {
     fi
 }
 
+# Registra erro no log, notifica e exibe diálogo zenity se disponível
 show_error() {
     local msg="$1"
     log "ERRO: $msg"
@@ -45,6 +55,7 @@ show_error() {
 }
 
 
+# Salva PID e título de um terminal aberto no arquivo de PIDs da sessão
 register_terminal_pid() {
     local pid="${1:-}"
     local title="${2:-terminal}"
@@ -61,6 +72,7 @@ register_terminal_pid() {
     log "Terminal registrado: pid=$pid title=$title"
 }
 
+# Encerra todos os terminais registrados: TERM primeiro, KILL após 1s para os restantes
 kill_tracked_terminals() {
     local pid=""
     local title=""
@@ -104,6 +116,7 @@ kill_tracked_terminals() {
     done < "$UAVEDUSIM_PID_FILE"
 }
 
+# Encerra processos PX4/Gazebo/QGC ao fechar; usa cleanup_px4_gazebo.sh se disponível
 cleanup_uavedusim_processes_on_exit() {
     if [ "${UAVEDUSIM_KILL_PROCESSES_ON_EXIT:-1}" != "1" ]; then
         log "Cleanup de processos no encerramento desativado por UAVEDUSIM_KILL_PROCESSES_ON_EXIT=0"
@@ -124,6 +137,7 @@ cleanup_uavedusim_processes_on_exit() {
     fi
 }
 
+# Handler de EXIT: garante que terminais e processos são encerrados uma única vez
 uavedusim_on_exit() {
     local code="$?"
 
@@ -147,18 +161,22 @@ uavedusim_on_exit() {
     exit "$code"
 }
 
+# Handler para sinais INT/TERM/HUP: loga e sai com código 130
 uavedusim_on_signal() {
     local sig="${1:-SIGNAL}"
     log "Sinal recebido: $sig. Encerrando UAVEDUSIM GUI..."
     exit 130
 }
 
+# Registra handlers: ERR mostra linha com falha; EXIT/INT/TERM/HUP fazem cleanup
 trap 'code=$?; show_error "Falha na linha $LINENO. Comando: $BASH_COMMAND. Codigo: $code"; exit $code' ERR
 trap 'uavedusim_on_exit' EXIT
 trap 'uavedusim_on_signal INT' INT
 trap 'uavedusim_on_signal TERM' TERM
 trap 'uavedusim_on_signal HUP' HUP
 
+# Exibe um menu de seleção ao usuário (Tkinter → zenity → rofi como fallback)
+# e imprime a opção escolhida no stdout
 choose_from_menu() {
     local title="$1"
     local prompt="$2"
@@ -204,34 +222,181 @@ ROW_ODD     = "#1a1f27"
 
 # ── Ícones por palavra-chave (unicode) ───────────────────────────────────────
 ICONS = {
-    "executar":    "▶",
-    "uavedusim":    "⬡",
-    "px4":         "⬡",
-    "gazebo":      "⬡",
-    "qground":     "◈",
-    "limpar":      "⊘",
-    "ataque":      "⚠",
-    "jamming":     "≈",
-    "noise":       "~",
-    "blackout":    "●",
-    "pulse":       "▮",
-    "mitig":       "◆",
-    "sair":        "⏻",
-    "modelo":      "◎",
-    "mundo":       "◉",
-    "default":     "◉",
-    "x500":        "⬡",
-    "forest":      "◈",
-    "baylands":    "◈",
-    "walls":       "◈",
-    "windy":       "◈",
+    # Acoes principais
+    "executar": "▶",
+    "limpar": "↺",
+    "voltar": "←",
+    "fechar": "×",
+    "sair": "⏻",
+
+    # Ferramentas / identidade
+    "uavedusim": "⬡",
+    "px4": "⊡",
+    "gazebo": "▣",
+    "qground": "◈",
+
+    # Modelos
+    "drone": "✛",
+    "aircraft": "✈",
+    "rover": "▥",
+    "modelo": "✛",
+
+    # Ataques e seguranca
+    "noise": "≈",
+    "blackout": "⊘",
+    "pulse": "∿",
+    "mitig": "◆",
+    "ataque": "⚠",
+    "jamming": "≈",
+
+    # Mundos
+    "default": "○",
+    "aruco": "▦",
+    "baylands": "≋",
+    "bayland": "≋",
+    "lawn": "▤",
+    "forest": "♣",
+    "ridge": "▲",
+    "walls": "▭",
+    "windy": "↝",
+    "moving_platform": "⇄",
+    "frictionless": "◇",
+    "underwater": "≈",
+    "kth": "▣",
+    "mundo": "◉",
 }
 
+MODEL_AIRCRAFT_PATTERNS = (
+    "standard_vtol",
+    "vtol",
+    "evtol",
+    "tailsitter",
+    "tail_sitter",
+    "tiltrotor",
+    "tilt_rotor",
+    "plane",
+    "cessna",
+    "fixedwing",
+    "fixed_wing",
+)
+
+MODEL_ROVER_PATTERNS = (
+    "rover",
+    "r1_rover",
+    "ackermann",
+    "mecanum",
+    "differential",
+)
+
+MODEL_DRONE_PATTERNS = (
+    "x500",
+    "uavjamsim",
+    "quad",
+    "quadrotor",
+    "multicopter",
+    "multirotor",
+    "hex",
+    "iris",
+    "typhoon",
+    "lidar",
+    "depth",
+    "vision",
+    "mono_cam",
+    "camera",
+    "cam",
+    "gimbal",
+    "flow",
+)
+
+ACTION_ICON_PATTERNS = (
+    ("executar", ICONS["executar"]),
+    ("takeoff", ICONS["executar"]),
+    ("limpar", ICONS["limpar"]),
+    ("reiniciar", ICONS["limpar"]),
+    ("voltar", ICONS["voltar"]),
+    ("fechar", ICONS["fechar"]),
+    ("sair", ICONS["sair"]),
+)
+
+ATTACK_ICON_PATTERNS = (
+    ("blackout", ICONS["blackout"]),
+    ("noise", ICONS["noise"]),
+    ("pulse", ICONS["pulse"]),
+    ("pulsed", ICONS["pulse"]),
+    ("mitig", ICONS["mitig"]),
+    ("ataque", ICONS["ataque"]),
+    ("jamming", ICONS["jamming"]),
+)
+
+WORLD_ICON_PATTERNS = (
+    ("moving_platform", ICONS["moving_platform"]),
+    ("default", ICONS["default"]),
+    ("aruco", ICONS["aruco"]),
+    ("baylands", ICONS["baylands"]),
+    ("bayland", ICONS["bayland"]),
+    ("lawn", ICONS["lawn"]),
+    ("forest", ICONS["forest"]),
+    ("ridge", ICONS["ridge"]),
+    ("walls", ICONS["walls"]),
+    ("windy", ICONS["windy"]),
+    ("frictionless", ICONS["frictionless"]),
+    ("underwater", ICONS["underwater"]),
+    ("kth", ICONS["kth"]),
+    ("mundo", ICONS["mundo"]),
+)
+
+TOOL_ICON_PATTERNS = (
+    ("uavedusim", ICONS["uavedusim"]),
+    ("qground", ICONS["qground"]),
+    ("gazebo", ICONS["gazebo"]),
+    ("px4", ICONS["px4"]),
+)
+
+
 def icon_for(label):
-    low = label.lower()
-    for kw, ico in ICONS.items():
-        if kw in low:
-            return ico
+    text = str(label or "")
+    low = text.lower()
+    first_line = low.splitlines()[0].strip()
+    normalized = first_line.replace("-", "_").replace(" ", "_")
+
+    # Modelos PX4/Gazebo.
+    # Regra didatica:
+    # - multirrotores/drones: simbolo de drone
+    # - VTOL/eVTOL/avioes: simbolo de aviao
+    # - rovers: simbolo terrestre, caso aparecam em modo debug
+    is_model = normalized.startswith("gz_") or "modelo" in normalized
+
+    if is_model:
+        if any(pattern in normalized for pattern in MODEL_AIRCRAFT_PATTERNS):
+            return ICONS["aircraft"]
+
+        if any(pattern in normalized for pattern in MODEL_ROVER_PATTERNS):
+            return ICONS["rover"]
+
+        if any(pattern in normalized for pattern in MODEL_DRONE_PATTERNS):
+            return ICONS["drone"]
+
+        if normalized.startswith("gz_"):
+            return ICONS["drone"]
+
+        return ICONS["modelo"]
+
+    for pattern, icon in ACTION_ICON_PATTERNS:
+        if pattern in normalized:
+            return icon
+
+    for pattern, icon in ATTACK_ICON_PATTERNS:
+        if pattern in normalized:
+            return icon
+
+    for pattern, icon in WORLD_ICON_PATTERNS:
+        if pattern in normalized:
+            return icon
+
+    for pattern, icon in TOOL_ICON_PATTERNS:
+        if pattern in normalized:
+            return icon
+
     return "◦"
 
 # ── Janela raiz ───────────────────────────────────────────────────────────────
@@ -720,6 +885,8 @@ PY_TK
 
 
 
+# Cria um script temporário com o comando e o abre em um terminal gráfico
+# (kitty → foot → alacritty → gnome-terminal como fallback)
 open_terminal() {
     local title="$1"
     local command_body="$2"
@@ -877,6 +1044,7 @@ EOF_TAIL
 }
 
 
+# Garante que o repositório PX4 tenha tags semânticas (vX.Y.Z); cria tag local de fallback se necessário
 ensure_px4_git_metadata() {
     if [ ! -d "$PX4_DIR" ]; then
         return 0
@@ -917,9 +1085,7 @@ ensure_px4_git_metadata() {
         return 0
     fi
 
-    # Fallback offline:
-    # Se nao for possivel buscar tags, criamos uma tag local para evitar PX4_GIT_TAG=v0.0.0.
-    # Nao sobrescrevemos a tag oficial v1.17.0 se ela ja existir.
+    # Se não for possível buscar tags, cria tag local para evitar PX4_GIT_TAG=v0.0.0
     if git -C "$PX4_DIR" show-ref --verify --quiet "refs/tags/v1.17.0"; then
         fallback_tag="v1.17.0-uavedusim"
     else
@@ -933,6 +1099,7 @@ ensure_px4_git_metadata() {
     log "PX4 Git version final: ${desc:-indisponivel}"
 }
 
+# Inicializa submódulos do PX4 (modelos Gazebo) se ainda não existirem
 ensure_px4_submodules() {
     if [ ! -d "$PX4_DIR" ]; then
         return 0
@@ -948,147 +1115,58 @@ ensure_px4_submodules() {
     fi
 }
 
+# Verifica se modelo, mundo e airframe do UAVJamSim estão presentes no PX4;
+# em modo strict (modelo gz_x500_uavjamsim selecionado), falha se ausentes
 ensure_uavjamsim_links() {
     local strict="${1:-0}"
-    local uav_dir="$APP_DIR/UAVJamSim"
-    local model_src="$uav_dir/x500_uavjamsim"
-    local model_dst_dir="$PX4_DIR/Tools/simulation/gz/models"
-    local model_dst="$model_dst_dir/x500_uavjamsim"
-    local world_src_dir="$uav_dir/worlds"
-    local default_world_src="$world_src_dir/default.sdf"
-    local world_dst_dir="$PX4_DIR/Tools/simulation/gz/worlds"
-    local default_world_dst="$world_dst_dir/default.sdf"
-    local px4_link="$uav_dir/px4"
-    local airframe_src_dir="$uav_dir/airframes"
-    local airframe_src="$airframe_src_dir/4020_gz_x500_uavjamsim"
-    local airframe_dst_dir="$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes"
-    local airframe_dst="$airframe_dst_dir/4020_gz_x500_uavjamsim"
-    local airframe_cmake="$airframe_dst_dir/CMakeLists.txt"
+    local model_path="$PX4_DIR/Tools/simulation/gz/models/x500_uavjamsim"
+    local world_path="$PX4_DIR/Tools/simulation/gz/worlds/default.sdf"
+    local airframe_path="$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim"
 
     if [ ! -d "$PX4_DIR" ]; then
         if [ "$strict" = "1" ]; then
             show_error "Nao encontrei a pasta: $PX4_DIR"
             return 1
         fi
+
         log "Aviso: pasta PX4 nao encontrada: $PX4_DIR"
         return 0
     fi
 
     ensure_px4_submodules
 
-    if [ ! -d "$uav_dir" ]; then
-        if [ "$strict" = "1" ]; then
-            show_error "Nao encontrei a pasta: $uav_dir"
+    if [ "$strict" = "1" ]; then
+        if [ ! -e "$model_path" ] && [ ! -L "$model_path" ]; then
+            show_error "Nao encontrei o modelo x500_uavjamsim em: $model_path"
             return 1
         fi
-        log "Aviso: pasta UAVJamSim nao encontrada: $uav_dir"
-        return 0
-    fi
 
-    if [ -d "$model_src" ]; then
-        mkdir -p "$model_dst_dir"
-        rm -rf "$model_dst"
-        (
-            cd "$model_dst_dir"
-            ln -s ../../../../../UAVJamSim/x500_uavjamsim x500_uavjamsim
-        )
-        log "Link modelo: $model_dst -> ../../../../../UAVJamSim/x500_uavjamsim"
-    elif [ "$strict" = "1" ]; then
-        show_error "Nao encontrei o modelo: $model_src"
-        return 1
-    else
-        log "Aviso: modelo x500_uavjamsim nao encontrado: $model_src"
-    fi
-
-    if [ -f "$default_world_src" ] || [ -L "$default_world_src" ]; then
-        mkdir -p "$world_dst_dir"
-        rm -rf "$default_world_dst"
-        (
-            cd "$world_dst_dir"
-            ln -s ../../../../../UAVJamSim/worlds/default.sdf default.sdf
-        )
-        log "Link mundo default: $default_world_dst -> ../../../../../UAVJamSim/worlds/default.sdf"
-    else
-        log "Aviso: mundo customizado nao encontrado: $default_world_src. Mantendo default do PX4, se existir."
-    fi
-
-    mkdir -p "$airframe_src_dir" "$airframe_dst_dir"
-
-    cat > "$airframe_src" <<'AIRFRAME'
-#!/bin/sh
-#
-# @name Gazebo x500 UAVJamSim
-#
-# @type Quadrotor
-#
-
-PX4_SIM_MODEL=${PX4_SIM_MODEL:=x500_uavjamsim}
-
-. ${R}etc/init.d-posix/airframes/4001_gz_x500
-AIRFRAME
-    chmod 644 "$airframe_src"
-
-    # Importante: o airframe NAO pode ser link simbolico.
-    # O PX4 copia o ROMFS para build/.../rootfs; se este arquivo for um symlink
-    # apontando para fora do ROMFS, o autostart 4020 quebra em tempo de execucao.
-    # Por isso mantemos a copia fonte em UAVJamSim/airframes, mas instalamos
-    # um arquivo real dentro de ROMFS/px4fmu_common/init.d-posix/airframes.
-    rm -rf "$airframe_dst"
-    cp -f "$airframe_src" "$airframe_dst"
-    chmod 644 "$airframe_dst"
-    log "Airframe instalado: $airframe_dst"
-
-    if [ -f "$airframe_cmake" ]; then
-        python3 - "$airframe_cmake" <<'PY'
-from pathlib import Path
-import sys
-
-p = Path(sys.argv[1])
-s = p.read_text()
-entry = "\t4020_gz_x500_uavjamsim"
-
-if "4020_gz_x500_uavjamsim" not in s:
-    if "\t4021_gz_x500_flow" in s:
-        s = s.replace("\t4021_gz_x500_flow", entry + "\n\t4021_gz_x500_flow", 1)
-    elif "\t4019_gz_x500_gimbal" in s:
-        s = s.replace("\t4019_gz_x500_gimbal", "\t4019_gz_x500_gimbal\n" + entry, 1)
-    else:
-        idx = s.rfind(")")
-        if idx == -1:
-            raise SystemExit("Nao encontrei fechamento da lista de airframes no CMakeLists.txt")
-        s = s[:idx] + entry + "\n" + s[idx:]
-    p.write_text(s)
-    print("[UAVEDUSIM] CMakeLists atualizado com 4020_gz_x500_uavjamsim.")
-else:
-    print("[UAVEDUSIM] CMakeLists ja contem 4020_gz_x500_uavjamsim.")
-PY
-    else
-        if [ "$strict" = "1" ]; then
-            show_error "Nao encontrei: $airframe_cmake"
+        if [ ! -f "$airframe_path" ] && [ ! -L "$airframe_path" ]; then
+            show_error "Nao encontrei o airframe 4020_gz_x500_uavjamsim em: $airframe_path"
             return 1
         fi
-        log "Aviso: CMakeLists de airframes nao encontrado: $airframe_cmake"
     fi
 
-    if [ -L "$px4_link" ]; then
-        rm -f "$px4_link"
-        (
-            cd "$uav_dir"
-            ln -s ../PX4-Autopilot px4
-        )
-        log "Link px4: $px4_link -> ../PX4-Autopilot"
-    elif [ -e "$px4_link" ]; then
-        log "Aviso: $px4_link ja existe e nao e link. Mantendo como esta."
+    if [ -e "$model_path" ] || [ -L "$model_path" ]; then
+        log "Modelo UAVEDUSIM encontrado no PX4: $model_path"
     else
-        (
-            cd "$uav_dir"
-            ln -s ../PX4-Autopilot px4
-        )
-        log "Link px4: $px4_link -> ../PX4-Autopilot"
+        log "Aviso: modelo UAVEDUSIM nao encontrado no PX4: $model_path"
+    fi
+
+    if [ -f "$world_path" ] || [ -L "$world_path" ]; then
+        log "Mundo default encontrado no PX4: $world_path"
+    else
+        log "Aviso: mundo default nao encontrado no PX4: $world_path"
+    fi
+
+    if [ -f "$airframe_path" ] || [ -L "$airframe_path" ]; then
+        log "Airframe UAVEDUSIM encontrado no PX4: $airframe_path"
+    else
+        log "Aviso: airframe UAVEDUSIM nao encontrado no PX4: $airframe_path"
     fi
 }
 
-
+# Abre terminal para encerrar processos PX4/Gazebo/QGC (usa script externo se disponível)
 run_cleanup() {
     local cmd
 
@@ -1103,6 +1181,7 @@ run_cleanup() {
 
 
 
+# Remove a pasta build/ e executa make clean no PX4 para forçar recompilação
 run_clean_build() {
     local cmd
 
@@ -1122,6 +1201,8 @@ echo '[UAVEDUSIM] Build limpo. Terminal sera fechado automaticamente.'"
 }
 
 
+# Carrega variáveis de ambiente do workspace do Gazebo no processo atual do launcher
+# (setup.bash → setup.sh → setup.zsh como fallback)
 load_gazebo_env_current() {
     local setup_file=""
     local source_status=0
@@ -1173,6 +1254,7 @@ load_gazebo_env_current() {
     export UAVEDUSIM_GAZEBO_ENV_LOADED=1
 }
 
+# Compila spoofer e attack_mitigator se os binários ainda não existirem
 ensure_spoofer_tools() {
     local spoofer_dir="$APP_DIR/UAVJamSim/spoofer"
     local build_dir="$spoofer_dir/build"
@@ -1215,6 +1297,7 @@ ensure_spoofer_tools() {
 }
 
 
+# Executa um comando do simulador logando saída e código de retorno
 run_uavedusim_cmd() {
     local output=""
     local code=0
@@ -1235,6 +1318,7 @@ run_uavedusim_cmd() {
     return "$code"
 }
 
+# Ativa ou desativa o mitigador de ataques GPS (--on / --off)
 send_mitigation_state() {
     local mitigator_bin="$1"
     local state="$2"
@@ -1253,6 +1337,7 @@ send_mitigation_state() {
     esac
 }
 
+# Exibe menu para o usuário escolher a intensidade do jamming (0.10 a 1.00)
 choose_jamming_intensity() {
     local attack_label="$1"
     local choice=""
@@ -1272,6 +1357,7 @@ choose_jamming_intensity() {
     esac
 }
 
+# Aplica ataque de jamming GPS (noise=1, blackout=2, pulse=3) com mitigação configurada
 apply_jamming_attack() {
     local spoofer_bin="$1"
     local mitigator_bin="$2"
@@ -1305,6 +1391,7 @@ apply_jamming_attack() {
     fi
 }
 
+# Desliga o jamming ativo enviando --jam 0 ao spoofer
 stop_jamming_attack() {
     local spoofer_bin="$1"
     local mitigator_bin="$2"
@@ -1314,6 +1401,8 @@ stop_jamming_attack() {
     run_uavedusim_cmd "$spoofer_bin" --jam 0
 }
 
+# Aguarda o PX4 e o Gazebo iniciarem; exibe tela de espera Tkinter se disponível,
+# caso contrário verifica processo e log em loop (fallback sem GUI)
 wait_for_px4_started() {
     local timeout="${UAVEDUSIM_WAIT_PX4_TIMEOUT:-900}"
     local pattern="${UAVEDUSIM_PX4_PATTERN:-px4_sitl_default/bin/px4}"
@@ -1744,6 +1833,7 @@ PY_WAIT
     done
 }
 
+# Painel de controle de ataques GPS: loop de menu para escolher jamming, mitigação e intensidade
 run_attack_control_panel() {
     local spoofer_dir="$APP_DIR/UAVJamSim/spoofer"
     local build_dir="$spoofer_dir/build"
@@ -1844,6 +1934,7 @@ run_attack_control_panel() {
     done
 }
 
+# Lista modelos e mundos disponíveis, abre terminal PX4 SITL e aguarda o painel de ataques
 run_px4() {
     local model_label=""
     local model=""
@@ -1870,11 +1961,8 @@ run_px4() {
         return 1
     fi
 
-    # Lista gerada sempre a partir de Tools/simulation/gz/models.
-    # Por padrao, mostra apenas modelos que tambem possuem airframe/target gz_* no PX4,
-    # evitando listar componentes/sensores como gimbal, optical_flow, OakD-Lite, etc.
-    # Para listar literalmente todas as pastas do diretorio, rode com:
-    # UAVEDUSIM_SHOW_ALL_GZ_MODELS=1 ./uavedusim_gui.sh
+    # Coloca o modelo indicado no topo; ignora modelos sem airframe PX4 por padrão
+    # (UAVEDUSIM_SHOW_ALL_GZ_MODELS=1 lista todos)
     if [ -e "$models_dir/x500_uavjamsim" ] || [ -L "$models_dir/x500_uavjamsim" ]; then
         models+=("gz_x500_uavjamsim (modelo indicado)")
     fi
@@ -1904,7 +1992,7 @@ run_px4() {
         return 1
     fi
 
-    model_label="$(choose_from_menu "UAVEDUSIM" "Modelo PX4/Gazebo" "${models[@]}")"
+    model_label="$(choose_from_menu "UAVEDUSIM" "Escolha o modelo de drone para a simulação" "${models[@]}")"
     [ -z "${model_label:-}" ] && return 0
     model="${model_label%% *}"
 
@@ -1915,7 +2003,7 @@ run_px4() {
         return 1
     fi
 
-    # Lista gerada sempre a partir de Tools/simulation/gz/worlds.
+    # Coloca o mundo "default" no topo da lista
     if [ -f "$worlds_dir/default.sdf" ] || [ -L "$worlds_dir/default.sdf" ]; then
         worlds+=("default (mundo indicado)")
     fi
@@ -1932,7 +2020,7 @@ run_px4() {
         return 1
     fi
 
-    world_label="$(choose_from_menu "UAVEDUSIM" "Mundo Gazebo" "${worlds[@]}")"
+    world_label="$(choose_from_menu "UAVEDUSIM" "Escolha o mundo de simulação onde o drone vai voar" "${worlds[@]}")"
     [ -z "${world_label:-}" ] && return 0
     world="${world_label%% *}"
 
@@ -2005,7 +2093,6 @@ if [ ! -d 'Tools/simulation/gz/models/x500' ]; then
 fi
 cd '$APP_DIR'
 echo '[UAVEDUSIM] Garantindo links simbolicos e airframe do UAVJamSim...'
-# O setup ja foi feito pela interface antes de abrir este terminal.
 ls -l '$PX4_DIR/Tools/simulation/gz/models/x500_uavjamsim' 2>/dev/null || true
 ls -l '$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim' 2>/dev/null || true
 
@@ -2033,6 +2120,7 @@ make px4_sitl '$model' PX4_GZ_WORLD='$world'" || px4_launch_status=$?
     return "$px4_launch_status"
 }
 
+# Abre o QGroundControl em terminal; prefere versão extraída (squashfs-root) ao AppImage
 run_qgc() {
     local qgc_cmd
 
@@ -2066,6 +2154,7 @@ env \\
 }
 
 
+# Atalho que executa o fluxo completo: QGC + PX4 + painel de ataques
 run_uavedusim() {
     local old_open_qgc="${UAVEDUSIM_OPEN_QGC_WITH_PX4:-0}"
     local old_attack_panel="${UAVEDUSIM_ATTACK_PANEL_AFTER_PX4:-0}"
@@ -2080,6 +2169,7 @@ run_uavedusim() {
     return "$status"
 }
 
+# Loop principal do menu de texto: repete até o usuário fechar ou cancelar
 main_menu() {
     local choice
 
@@ -2104,6 +2194,7 @@ log "Iniciando UAVEDUSIM GUI"
 log "APP_DIR=$APP_DIR"
 log "Sessao: XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-vazio}, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-vazio}, DISPLAY=${DISPLAY:-vazio}"
 
+# Verificações de dependências obrigatórias antes de iniciar
 if ! command -v python3 >/dev/null 2>&1; then
     show_error "python3 nao encontrado. Instale python3 para usar a interface persistente."
     exit 1
@@ -2119,6 +2210,7 @@ if [ ! -f "$APP_DIR/uavedusim_gui_app.py" ]; then
     exit 1
 fi
 
+# Lança a interface GUI Python passando todas as variáveis de sessão via ambiente
 set +e
 APP_DIR="$APP_DIR" PX4_DIR="$PX4_DIR" QGC_APP="$QGC_APP" QGC_EXTRACTED="$QGC_EXTRACTED" LOG="$LOG" UAVEDUSIM_SESSION_ID="$UAVEDUSIM_SESSION_ID" UAVEDUSIM_RUNTIME_DIR="$UAVEDUSIM_RUNTIME_DIR" UAVEDUSIM_PID_FILE="$UAVEDUSIM_PID_FILE" UAVEDUSIM_SCRIPT_DIR="$UAVEDUSIM_SCRIPT_DIR" python3 "$APP_DIR/uavedusim_gui_app.py"
 gui_status=$?
