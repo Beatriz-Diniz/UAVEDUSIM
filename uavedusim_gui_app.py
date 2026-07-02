@@ -26,23 +26,25 @@ SCRIPT_DIR.mkdir(parents=True, exist_ok=True)
 PID_FILE.touch(exist_ok=True)
 LOG.touch(exist_ok=True)
 
-BG          = "#0d1117"
-SURFACE     = "#161b22"
-SURFACE2    = "#21262d"
-BORDER      = "#30363d"
-TEXT        = "#e6edf3"
-MUTED       = "#7d8590"
-ACCENT      = "#f05a28"
-ACCENT_DIM  = "#b34318"
-TAG_BG      = "#1a2433"
-TAG_FG      = "#58a6ff"
-SEL_BG      = "#1e3a2f"
-SEL_FG      = "#3fb950"
-ROW_EVEN    = "#161b22"
-ROW_ODD     = "#1a1f27"
-OK          = "#3fb950"
-WARN        = "#d29922"
-DANGER      = "#f85149"
+BG          = "#1e1e2e"
+SURFACE     = "#313244"
+SURFACE2    = "#45475a"
+BORDER      = "#585b70"
+TEXT        = "#cdd6f4"
+MUTED       = "#bac2de"
+ACCENT      = "#cba6f7"
+ACCENT_DIM  = "#776394"
+DISABLED_BG = "#313244"
+DISABLED_FG = "#6c7086"
+TAG_BG      = "#293248"
+TAG_FG      = "#89b4fa"
+SEL_BG      = "#35433b"
+SEL_FG      = "#a6e3a1"
+ROW_EVEN    = "#313244"
+ROW_ODD     = "#181825"
+OK          = "#a6e3a1"
+WARN        = "#f9e2af"
+DANGER      = "#f38ba8"
 
 ICONS = {
     # Icones das acoes principais do menu.
@@ -88,6 +90,208 @@ ICONS = {
     "kth": "▣",
     "mundo": "◉",
 }
+
+# Textos curtos exibidos no balao de informacao (icone "i") de cada ataque.
+ATTACK_INFO_TEXT = {
+    "noise": (
+        "Jamming Noise: o GPS parece continuar funcionando, mas as medicoes de "
+        "posicao, velocidade e altitude chegam degradadas por ruido. Quanto maior "
+        "a intensidade (ex: 80), maior a diferenca entre a posicao estimada e a "
+        "posicao real do VANT."
+    ),
+    "blackout": (
+        "Jamming Blackout: bloqueia por completo o sinal de GPS/GNSS. O VANT "
+        "deixa de receber novas atualizacoes de posicao, podendo interromper a "
+        "navegacao autonoma ou acionar mecanismos de seguranca (failsafe)."
+    ),
+    "pulse": (
+        "Jamming Pulse: ataque intermitente que alterna entre degradacao, "
+        "bloqueio e recuperacao parcial do GPS. A intensidade (ex: 0.3) afeta o "
+        "padrao do ciclo, causando oscilacoes na navegacao do VANT."
+    ),
+}
+
+
+class _AttackInfoTooltip:
+    """Balao de informacao (hover ou clique) para o icone 'i' de cada ataque.
+
+    O balao e desenhado como um widget dentro da propria janela do app
+    (via place()), e nao como uma janela separada do sistema operacional.
+    Isso garante que ele sempre aparece dentro dos limites da janela do
+    UAVEDUSIM, proximo do ataque que o usuario esta consultando.
+    """
+
+    _active = None  # garante um unico balao visivel por vez
+
+    def __init__(self, widget, text, app):
+        self.widget = widget
+        self.text = text
+        self.app = app
+        self._tip = None
+        self._after_id = None
+        widget.bind("<Enter>", self._schedule_show, add="+")
+        widget.bind("<Leave>", self._on_leave, add="+")
+        widget.bind("<Button-1>", self._on_click, add="+")
+        widget.bind("<Destroy>", self._on_destroy, add="+")
+
+    def _schedule_show(self, _event=None):
+        self._cancel_schedule()
+        self._after_id = self.widget.after(300, self._show)
+
+    def _cancel_schedule(self):
+        if self._after_id is not None:
+            try:
+                self.widget.after_cancel(self._after_id)
+            except Exception:
+                pass
+            self._after_id = None
+
+    def _on_leave(self, _event=None):
+        self._cancel_schedule()
+        self._hide()
+
+    def _on_click(self, _event=None):
+        self._cancel_schedule()
+        if self._tip is not None:
+            self._hide()
+        else:
+            self._show()
+        return "break"
+
+    def _on_destroy(self, _event=None):
+        self._cancel_schedule()
+        self._hide()
+
+    def _show(self):
+        self._after_id = None
+        if self._tip is not None:
+            return
+
+        if _AttackInfoTooltip._active is not None and _AttackInfoTooltip._active is not self:
+            _AttackInfoTooltip._active._hide()
+
+        app = self.app
+        root = getattr(app, "root", None)
+        if root is None:
+            return
+
+        try:
+            self.widget.update_idletasks()
+            root.update_idletasks()
+            icon_x = self.widget.winfo_rootx() - root.winfo_rootx()
+            icon_y = self.widget.winfo_rooty() - root.winfo_rooty()
+            icon_w = self.widget.winfo_width()
+            icon_h = self.widget.winfo_height()
+        except Exception:
+            return
+
+        # Balao construido como filho direto de "root" (a janela do app),
+        # posicionado com place() em coordenadas relativas a propria janela.
+        tip = tk.Frame(root, bg=BORDER, bd=0, highlightthickness=0)
+
+        inner = tk.Frame(tip, bg="#233241", bd=0)
+        inner.pack(fill="both", expand=True, padx=1, pady=1)
+
+        tk.Label(
+            inner,
+            text=self.text,
+            bg="#233241",
+            fg=TEXT,
+            font=(app.FONT_FAMILY, getattr(app, "FS_TINY", 8)),
+            justify="left",
+            anchor="w",
+            wraplength=app.px(260),
+            padx=app.px(10),
+            pady=app.px(8),
+        ).pack()
+
+        tip.update_idletasks()
+        tip_w = tip.winfo_reqwidth()
+        tip_h = tip.winfo_reqheight()
+
+        root_w = max(root.winfo_width(), 1)
+        root_h = max(root.winfo_height(), 1)
+        margin = app.px(8)
+
+        # Centraliza horizontalmente sob o icone, sem ultrapassar as bordas da janela.
+        pos_x = icon_x + icon_w // 2 - tip_w // 2
+        pos_x = max(margin, min(pos_x, root_w - tip_w - margin))
+
+        # Prefere exibir abaixo do icone; se nao couber, exibe acima dele.
+        pos_y = icon_y + icon_h + app.px(6)
+        if pos_y + tip_h > root_h - margin:
+            pos_y = icon_y - tip_h - app.px(6)
+        pos_y = max(margin, min(pos_y, root_h - tip_h - margin))
+
+        tip.place(x=pos_x, y=pos_y, width=tip_w, height=tip_h)
+        tip.lift()
+
+        # Fecha o balao automaticamente se a janela for redimensionada,
+        # para evitar que ele fique posicionado incorretamente. Guarda o
+        # tamanho atual para ignorar eventos <Configure> "espurios" que nao
+        # representam uma mudanca real de tamanho da janela.
+        self._shown_size = (root_w, root_h)
+        if not getattr(root, "_attack_tooltip_bound", False):
+            root.bind("<Configure>", _uavedusim_hide_active_attack_tooltip, add="+")
+            root._attack_tooltip_bound = True
+
+        self._tip = tip
+        _AttackInfoTooltip._active = self
+
+    def _hide(self):
+        if self._tip is not None:
+            try:
+                self._tip.destroy()
+            except Exception:
+                pass
+            self._tip = None
+        if _AttackInfoTooltip._active is self:
+            _AttackInfoTooltip._active = None
+
+
+def _uavedusim_hide_active_attack_tooltip(event=None):
+    active = _AttackInfoTooltip._active
+    if active is None:
+        return
+    if event is not None:
+        # Em Tkinter, um bind de <Configure> feito diretamente na janela raiz
+        # tambem e acionado por eventos <Configure> de QUALQUER widget filho
+        # (o pathname da janela raiz faz parte das bindtags de todos os seus
+        # descendentes, incluindo o proprio balao recem-criado). Por isso,
+        # so tratamos o evento se ele vier realmente da janela raiz.
+        root = getattr(active.app, "root", None)
+        if root is not None and event.widget is not root:
+            return
+        new_size = (getattr(event, "width", None), getattr(event, "height", None))
+        if new_size == getattr(active, "_shown_size", None):
+            return  # tamanho nao mudou de fato; ignora o evento espurio
+    active._hide()
+
+
+def _uavedusim_make_info_icon(app, parent, attack_key):
+    """Cria o icone 'i' (canto do card do ataque) com balao de informacao."""
+    size = app.px(18)
+    icon = tk.Canvas(
+        parent,
+        width=size,
+        height=size,
+        bg=SURFACE2,
+        highlightthickness=0,
+        cursor="hand2",
+    )
+    pad = 1
+    icon.create_oval(pad, pad, size - pad, size - pad, outline=TAG_FG, width=1)
+    icon.create_text(
+        size / 2,
+        size / 2,
+        text="i",
+        fill=TAG_FG,
+        font=(app.FONT_FAMILY, app.fs(9), "bold"),
+    )
+    text = ATTACK_INFO_TEXT.get(attack_key, "")
+    _AttackInfoTooltip(icon, text, app)
+    return icon
+
 
 MODEL_AIRCRAFT_PATTERNS = (
     "standard_vtol",
@@ -400,24 +604,41 @@ def log_has_commander_ready(data: str):
     return True
 
 # Valida se o PX4 chegou ao estado pronto para decolar.
+def log_has_takeoff_detected(data: str):
+    clean = strip_ansi(data)
+
+    if not clean:
+        return False
+
+    low = clean.lower()
+    compact = re.sub(r"\s+", "", low)
+
+    # O PX4 confirma que a decolagem realmente iniciou com:
+    # INFO  [commander] Takeoff detected
+    if "takeoffdetected" not in compact:
+        return False
+
+    if "commander" not in low:
+        return False
+
+    return True
+
+def log_indicates_takeoff_detected(log_offset=0):
+    data = read_log_since(log_offset, max_bytes=900000)
+
+    if log_has_takeoff_detected(data):
+        return True, "PX4 confirmou Takeoff detected"
+
+    return False, "PX4 ainda nao confirmou Takeoff detected"
+
 def log_indicates_commander_ready(log_offset=0):
     data = read_log_since(log_offset)
 
     if not data:
         return False, "PX4 aguardando Ready for takeoff"
 
-    failure_markers = [
-        "ERROR [px4] Startup script returned",
-        "ninja: build stopped: subcommand failed",
-        "make: ***",
-    ]
-
     clean = strip_ansi(data)
     low = clean.lower()
-    last_failure = -1
-
-    for marker in failure_markers:
-        last_failure = max(last_failure, low.rfind(marker.lower()))
 
     # Procura o Ready no trecho de log da execucao atual.
     if log_has_commander_ready(data):
@@ -439,16 +660,6 @@ def log_indicates_commander_ready(log_offset=0):
         return False, "PX4 iniciado; aguardando Ready for takeoff"
 
     return False, "PX4 ainda nao detectado"
-
-def process_indicates_ready():
-    # Mantem compatibilidade com chamadas antigas.
-    # A prontidao agora tambem considera o Gazebo.
-    return process_indicates_gazebo_ready()
-
-def log_indicates_ready():
-    # Mantem compatibilidade com chamadas antigas.
-    # A prontidao agora exige o evento Ready for takeoff.
-    return log_indicates_commander_ready(0)
 
 # Confirma readiness combinando PX4 pronto e Gazebo aberto.
 def simulation_ready(log_offset=0):
@@ -535,41 +746,11 @@ class ItemCanvas(tk.Canvas):
         self.hover_idx = None
         self._draw()
 
-    def _total_height(self):
-        return len(self.opts) * self.app.ROW_H
-
     # Desenha linhas, icones e destaque do item selecionado.
-    def _draw(self):
-        self.delete("all")
-        w = self.winfo_width() or 680
-        for i, label in enumerate(self.opts):
-            y0 = i * self.app.ROW_H
-            y1 = y0 + self.app.ROW_H
-            is_sel = i == self.selected_idx
-            is_hover = i == self.hover_idx and not is_sel
-            row_bg = SEL_BG if is_sel else (BORDER if is_hover else (ROW_ODD if i % 2 else ROW_EVEN))
-            fg = SEL_FG if is_sel else TEXT
-            self.create_rectangle(0, y0, w, y1, fill=row_bg, outline="")
-            if is_sel:
-                self.create_rectangle(0, y0 + self.app.SEL_BAR_PADY, self.app.SEL_BAR_W, y1 - self.app.SEL_BAR_PADY, fill=ACCENT, outline="")
-            self.create_text(self.app.PADX, y0 + self.app.ROW_H // 2, text=f"#{i+1:02d}", anchor="w", fill=MUTED if not is_sel else SEL_FG, font=(self.app.FONT_FAMILY, self.app.FS_TINY))
-            self.create_text(self.app.ICON_X, y0 + self.app.ROW_H // 2, text=icon_for(label), anchor="w", fill=ACCENT if is_sel else (TAG_FG if is_hover else MUTED), font=(self.app.FONT_FAMILY, self.app.FS_ICON))
-            self.create_text(self.app.LABEL_X, y0 + self.app.ROW_H // 2, text=label, anchor="w", fill=fg, font=(self.app.FONT_FAMILY, self.app.FS_ROW, "bold" if is_sel else "normal"))
-            if is_sel:
-                self.create_text(w - self.app.PADX, y0 + self.app.ROW_H // 2, text="›", anchor="e", fill=ACCENT, font=(self.app.FONT_FAMILY, self.app.FS_ARROW, "bold"))
-            if i < len(self.opts) - 1:
-                self.create_line(self.app.PADX, y1, w - self.app.PADX, y1, fill=BORDER, width=1)
-        self.configure(scrollregion=(0, 0, w, self._total_height()))
-
     def _redraw(self, _e=None):
         self._draw()
 
     # Converte a posicao do mouse no indice da lista.
-    def _idx_at(self, y):
-        cy = self.canvasy(y)
-        i = int(cy // self.app.ROW_H)
-        return i if 0 <= i < len(self.opts) else None
-
     # Seleciona um item com clique simples.
     def _on_click(self, e):
         i = self._idx_at(e.y)
@@ -608,17 +789,6 @@ class ItemCanvas(tk.Canvas):
             self._draw()
 
     # Ajusta o scroll para manter o item selecionado visivel.
-    def _ensure_visible(self, idx):
-        top = idx * self.app.ROW_H
-        bottom = top + self.app.ROW_H
-        h = self.winfo_height()
-        cy_top = self.canvasy(0)
-        total = max(self._total_height(), 1)
-        if top < cy_top:
-            self.yview_moveto(top / total)
-        elif bottom > cy_top + h:
-            self.yview_moveto((bottom - h) / total)
-
 # Janela principal da interface UAVEDUSIM.
 class UAVEDUSIMApp:
     def __init__(self):
@@ -639,15 +809,19 @@ class UAVEDUSIMApp:
         self.attack_pulse_value = "0.3"
         self.active_attack_key = None
         self.jamming_active = False
-        self.status_box_enabled = False
+        self.status_box_enabled = True
         self.attack_status = ""
+        self.status_log_entries = []
         self.attack_warning = ""
         self.takeoff_sent = False
+        self.takeoff_waiting = False
+        self.destination_release_pending = False
+        self.destination_release_until = 0.0
+        self.destination_release_after_id = None
         self.destination_sent = False
         self.destination_forward_value = os.environ.get("UAVEDUSIM_DEST_DISTANCE_M") or os.environ.get("UAVEDUSIM_DEST_FORWARD_M", "350")
         self.destination_right_value = os.environ.get("UAVEDUSIM_DEST_ROTATION_DEG") or os.environ.get("UAVEDUSIM_DEST_DIRECTION_DEG") or os.environ.get("UAVEDUSIM_DEST_RIGHT_M", "0")
         self.destination_altitude_value = os.environ.get("UAVEDUSIM_DEST_ALT_M", "2.5")
-        self.destination_status = "Destino padrao: dist=350 m, rot=0 graus, alt=2.5 m."
         self.px4_console_fifo = RUNTIME_DIR / f"px4_console_{SESSION_ID}.fifo"
         self.wait_start = 0.0
         self.wait_soft_timeout = int(os.environ.get("UAVEDUSIM_WAIT_PX4_TIMEOUT", "900"))
@@ -675,76 +849,7 @@ class UAVEDUSIMApp:
         return max(low, min(value, high))
 
     # Calcula escala, tamanho da janela e fontes responsivas.
-    def _setup_dimensions(self):
-        screen_w = max(self.root.winfo_screenwidth(), 800)
-        screen_h = max(self.root.winfo_screenheight(), 600)
-        base_scale = min(screen_w / 1600.0, screen_h / 900.0)
-        self.UI_SCALE = self._env_float("UAVEDUSIM_UI_SCALE", self._clamp(base_scale, 0.95, 1.55))
-        self.px = lambda value: max(1, int(round(value * self.UI_SCALE)))
-        self.fs = lambda value: max(7, int(round(value * self.UI_SCALE)))
-
-        width_frac_default = 0.72 if screen_w >= 1800 else 0.84
-        height_frac_default = 0.74 if screen_h >= 1000 else 0.82
-        width_frac = self._env_float("UAVEDUSIM_UI_WIDTH_FRAC", width_frac_default)
-        height_frac = self._env_float("UAVEDUSIM_UI_HEIGHT_FRAC", height_frac_default)
-        max_w_limit = int(self._env_float("UAVEDUSIM_UI_MAX_W", 1800))
-        max_h_limit = int(self._env_float("UAVEDUSIM_UI_MAX_H", 1200))
-        max_w = min(max(640, screen_w - self.px(32)), max_w_limit)
-        max_h = min(max(420, screen_h - self.px(56)), max_h_limit)
-        win_w = int(self._clamp(screen_w * width_frac, self.px(720), max_w))
-        win_h = int(self._clamp(screen_h * height_frac, self.px(500), max_h))
-        min_w = min(win_w, max(520, self.px(560)))
-        min_h = min(win_h, max(340, self.px(360)))
-        pos_x = max(0, (screen_w - win_w) // 2)
-        pos_y = max(0, (screen_h - win_h) // 2)
-        self.root.geometry(f"{win_w}x{win_h}+{pos_x}+{pos_y}")
-        self.root.minsize(min_w, min_h)
-        self.win_h = win_h
-        self.FONT_FAMILY = os.environ.get("UAVEDUSIM_FONT_FAMILY", "monospace")
-        self.FS_TITLE = self.fs(15)
-        self.FS_LOGO = self.fs(12)
-        self.FS_SMALL = self.fs(9)
-        self.FS_TINY = self.fs(8)
-        self.FS_BUTTON = self.fs(10)
-        self.FS_WIN = self.fs(9)
-        self.FS_ROW = self.fs(11)
-        self.FS_ICON = self.fs(14)
-        self.FS_ARROW = self.fs(16)
-        self.TITLEBAR_H = self.px(42)
-        self.CONTENT_PAD = self.px(20)
-        self.HEADER_TOP_PAD = self.px(16)
-        self.LIST_TOP_PAD = self.px(10)
-        self.FOOTER_TOP_PAD = self.px(12)
-        self.FOOTER_BOTTOM_PAD = self.px(18)
-        self.SIDEBAR_W = self.px(6)
-        self.ROW_H = self.px(46)
-        self.PADX = self.px(16)
-        self.SEL_BAR_PADY = self.px(6)
-        self.SEL_BAR_W = self.px(3)
-        self.ICON_X = self.PADX + self.px(36)
-        self.LABEL_X = self.PADX + self.px(58)
-
     # Configura estilos visuais dos widgets ttk.
-    def _setup_styles(self):
-        self.style = ttk.Style(self.root)
-        try:
-            self.style.theme_use("clam")
-        except Exception:
-            pass
-        self.style.configure("WinBtn.TButton", font=(self.FONT_FAMILY, self.FS_WIN, "bold"), padding=(self.px(3), self.px(0)), background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
-        self.style.map("WinBtn.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
-        self.style.configure("CloseBtn.TButton", font=(self.FONT_FAMILY, self.FS_WIN, "bold"), padding=(self.px(3), self.px(0)), background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
-        self.style.map("CloseBtn.TButton", background=[("active", "#8b1a1a")], foreground=[("active", "#ff6b6b")])
-        self.style.configure("Back.TButton", font=(self.FONT_FAMILY, self.FS_BUTTON), padding=(self.px(10), self.px(6)), background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
-        self.style.map("Back.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
-        self.style.configure("Cancel.TButton", font=(self.FONT_FAMILY, self.FS_BUTTON), padding=(self.px(14), self.px(8)), background=SURFACE2, foreground=MUTED, relief="flat", borderwidth=0)
-        self.style.map("Cancel.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
-        self.style.configure("Primary.TButton", font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"), padding=(self.px(18), self.px(8)), background=ACCENT, foreground="#ffffff", relief="flat", borderwidth=0)
-        self.style.map("Primary.TButton", background=[("active", ACCENT_DIM)])
-        self.style.configure("Dark.Vertical.TScrollbar", background=SURFACE2, troughcolor=BG, arrowcolor=BORDER, borderwidth=0, arrowsize=10)
-        self.style.map("Dark.Vertical.TScrollbar", background=[("active", BORDER)])
-        self.style.configure("UAVEDUSIM.Horizontal.TProgressbar", troughcolor=BG, background=ACCENT, bordercolor=BORDER, lightcolor=ACCENT, darkcolor=ACCENT)
-
     # Monta a moldura da janela, barra superior e area de conteudo.
     def _build_shell(self):
         self.outer = tk.Frame(self.root, bg=BG, highlightbackground=BORDER, highlightthickness=1, bd=0)
@@ -784,50 +889,7 @@ class UAVEDUSIMApp:
         self.badge.configure(text=f"  {text}  ")
 
     # Renderiza uma tela de menu com lista, rodape e botoes.
-    def render_menu(self, prompt, options, on_select, *, badge=None, on_back=None, is_main=False):
-        self.page = "menu"
-        self.selected_callback = on_select
-        self.back_callback = on_back
-        self.clear_content()
-        self.set_badge("MAIN MENU" if is_main else (badge or prompt.upper()))
-
-        header = tk.Frame(self.content, bg=SURFACE)
-        header.pack(fill="x", padx=self.CONTENT_PAD, pady=(self.HEADER_TOP_PAD, 0))
-        if not is_main and on_back is not None:
-            ttk.Button(header, text="← voltar", style="Back.TButton", command=on_back).pack(side="left", pady=(0, self.px(10)))
-            tk.Frame(header, bg=SURFACE).pack(side="left", fill="x", expand=True)
-        else:
-            tk.Label(header, text=prompt, bg=SURFACE, fg=MUTED, font=(self.FONT_FAMILY, self.FS_SMALL)).pack(anchor="w")
-
-        list_frame = tk.Frame(self.content, bg=SURFACE2, highlightbackground=BORDER, highlightthickness=1)
-        list_frame.pack(fill="both", expand=True, padx=self.CONTENT_PAD, pady=(self.LIST_TOP_PAD, 0))
-        scrollbar = ttk.Scrollbar(list_frame, orient="vertical", style="Dark.Vertical.TScrollbar")
-        scrollbar.pack(side="right", fill="y")
-        self.item_canvas = ItemCanvas(self, list_frame, yscrollcommand=scrollbar.set)
-        self.item_canvas.set_options(options)
-        total_h = len(options) * self.ROW_H
-        canvas_h = min(total_h, max(self.ROW_H * 4, int(self.win_h * 0.55)))
-        self.item_canvas.configure(height=canvas_h)
-        self.item_canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.config(command=self.item_canvas.yview)
-
-        footer = tk.Frame(self.content, bg=SURFACE)
-        footer.pack(fill="x", padx=self.CONTENT_PAD, pady=(self.FOOTER_TOP_PAD, self.FOOTER_BOTTOM_PAD))
-        tk.Label(footer, text=f"{len(options)} {'opção' if len(options) == 1 else 'opções'}", bg=SURFACE, fg=MUTED, font=(self.FONT_FAMILY, self.FS_TINY)).pack(side="left")
-        tk.Label(footer, text="↑↓ navegar · Enter confirmar · Esc fechar", bg=SURFACE, fg=BORDER, font=(self.FONT_FAMILY, self.FS_TINY)).pack(side="left", padx=(self.px(12), 0))
-        btn_frame = tk.Frame(footer, bg=SURFACE)
-        btn_frame.pack(side="right")
-        ttk.Button(btn_frame, text="Fechar", style="Cancel.TButton", command=(self.close_app if is_main else (on_back or self.show_main_menu))).pack(side="left", padx=(0, self.px(8)))
-        ttk.Button(btn_frame, text="Selecionar →", style="Primary.TButton", command=self.choose_current).pack(side="left")
-        self.item_canvas.focus_set()
-
     # Executa a acao associada ao item selecionado.
-    def choose_current(self):
-        if hasattr(self, "item_canvas") and self.selected_callback:
-            idx = self.item_canvas.selected_idx
-            if 0 <= idx < len(self.item_canvas.opts):
-                self.selected_callback(self.item_canvas.opts[idx])
-
     # Define o comportamento da tecla Esc em cada tela.
     def on_escape(self, _event=None):
         if self.fullscreen:
@@ -1184,19 +1246,27 @@ class UAVEDUSIMApp:
     def restart_simulation_from_attack(self):
         if not self.model or not self.world:
             msg = "Nao ha modelo/mundo selecionado para reiniciar."
-            self._set_attack_status_ui(msg)
+            self._set_attack_status_ui(msg, level="danger")
             notify_msg(msg)
             return
 
         msg = f"Reiniciando simulacao: {self.model} / {self.world}..."
         log(msg)
-        self.attack_status = msg
+        self._log_status_event(
+            "Reiniciando simulacao",
+            "PX4 e Gazebo estao sendo encerrados e vao subir novamente do zero. "
+            "Takeoff, destino, ataque e mitigacao vao precisar ser configurados de novo.",
+            level="warn",
+        )
         notify_msg(msg)
 
         if hasattr(self, "restart_button"):
             self.restart_button.configure(state="disabled", cursor="watch")
 
         self.takeoff_sent = False
+        self.takeoff_waiting = False
+        self.destination_release_pending = False
+        self.destination_release_until = 0.0
         self.destination_sent = False
         self.active_attack_key = None
         self.jamming_active = False
@@ -1257,7 +1327,12 @@ class UAVEDUSIMApp:
 
                     return
 
-                self.attack_status = "Simulacao reiniciada. Envie commander takeoff e destino para liberar os ataques."
+                self._log_status_event(
+                    "Simulacao reiniciada",
+                    "PX4/Gazebo foram encerrados e vao abrir novamente. Envie commander takeoff e "
+                    "destino para liberar os ataques.",
+                    level="ok",
+                )
 
                 try:
                     self.wait_log_offset = LOG.stat().st_size
@@ -1289,10 +1364,14 @@ class UAVEDUSIMApp:
             log(f"Aviso: falha ao encerrar processos UAVEDUSIM: {e}")
 
         self.takeoff_sent = False
+        self.takeoff_waiting = False
+        self.destination_release_pending = False
+        self.destination_release_until = 0.0
         self.destination_sent = False
         self.active_attack_key = None
         self.jamming_active = False
         self.attack_status = ""
+        self.status_log_entries = []
 
         self.show_main_menu()
 
@@ -1315,15 +1394,6 @@ class UAVEDUSIMApp:
         self.render_menu(title, options, on_select, badge=badge, on_back=self.back_callback, is_main=False)
 
     # Exibe o menu inicial da aplicacao.
-    def show_main_menu(self):
-        self.page = "main"
-        self.render_menu(
-            "O que voce quer executar?",
-            ["Executar UAVEDUSIM", "Limpar build (se necessário)", "Limpar processos UAVEDUSIM"],
-            self.handle_main_choice,
-            is_main=True,
-        )
-
     # Despacha a acao escolhida no menu inicial.
     def handle_main_choice(self, choice):
         if choice == "Executar UAVEDUSIM":
@@ -1717,73 +1787,9 @@ PX4_SIM_MODEL=${PX4_SIM_MODEL:=x500_uavjamsim}
         self.render_menu("Escolha o modelo de drone para a simulação", models, self.handle_model_choice, badge="ESCOLHER DRONE", on_back=self.show_main_menu)
 
     # Lista modelos Gazebo executaveis pelo PX4.
-    def get_models(self):
-        models_dir = PX4_DIR / "Tools/simulation/gz/models"
-        if not models_dir.is_dir():
-            raise RuntimeError(f"Nao encontrei a pasta de modelos do Gazebo: {models_dir}")
-        models = []
-        if (models_dir / "x500_uavjamsim").exists() or (models_dir / "x500_uavjamsim").is_symlink():
-            models.append("gz_x500_uavjamsim (modelo indicado)")
-        for item in sorted(models_dir.iterdir(), key=lambda p: p.name):
-            if item.name.startswith(".") or item.name == "x500_uavjamsim":
-                continue
-            if not (item.is_dir() or item.is_symlink()):
-                continue
-            label = f"gz_{item.name}"
-            if os.environ.get("UAVEDUSIM_SHOW_ALL_GZ_MODELS", "0") != "1":
-                airframes = list((PX4_DIR / "ROMFS/px4fmu_common/init.d-posix/airframes").glob(f"*_{label}"))
-                if not airframes:
-                    log(f"Ignorando modelo sem airframe/target PX4: {item.name}")
-                    continue
-            models.append(label)
-        if not models:
-            raise RuntimeError(f"Nenhum modelo executavel foi encontrado em: {models_dir}")
-        return models
-
     # Salva o modelo escolhido e abre a selecao de mundo.
-    def handle_model_choice(self, choice):
-        self.model = choice.split()[0]
-        try:
-            worlds = self.get_worlds()
-        except Exception as e:
-            self.show_error(str(e))
-            return
-        self.render_menu("Escolha o mundo de simulação onde o drone vai voar", worlds, self.handle_world_choice, badge="ESCOLHER MUNDO", on_back=self.start_uavedusim_flow)
-
     # Lista mundos .sdf disponiveis para a simulacao.
-    def get_worlds(self):
-        worlds_dir = PX4_DIR / "Tools/simulation/gz/worlds"
-        if not worlds_dir.is_dir():
-            raise RuntimeError(f"Nao encontrei a pasta de mundos do Gazebo: {worlds_dir}")
-        worlds = []
-        default_path = worlds_dir / "default.sdf"
-        if default_path.exists() or default_path.is_symlink():
-            worlds.append("default (mundo indicado)")
-        for item in sorted(worlds_dir.glob("*.sdf"), key=lambda p: p.name):
-            name = item.stem
-            if name == "default":
-                continue
-            worlds.append(name)
-        if not worlds:
-            raise RuntimeError(f"Nenhum mundo .sdf foi encontrado em: {worlds_dir}")
-        return worlds
-
     # Salva o mundo escolhido e inicia QGC/PX4.
-    def handle_world_choice(self, choice):
-        self.world = choice.split()[0]
-        self.takeoff_sent = False
-        self.destination_sent = False
-        self.active_attack_key = None
-        self.jamming_active = False
-        log(f"PX4 selecionado: modelo={self.model} mundo={self.world}")
-        try:
-            self.ensure_uavjamsim_links(self.model == "gz_x500_uavjamsim")
-        except Exception as e:
-            self.show_error(str(e))
-            return
-        self.open_qgc()
-        self.root.after(1000, self.open_px4_and_wait)
-
     # Abre o QGroundControl sem terminal visivel.
     def open_qgc(self):
         def qgc_already_running():
@@ -1909,71 +1915,6 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         self.show_wait_page()
 
     # Mostra a tela de carregamento da simulacao.
-    def show_wait_page(self):
-        self.page = "wait"
-        self.selected_callback = None
-        self.back_callback = self.show_main_menu
-        self.clear_content()
-        self.set_badge("AGUARDANDO PX4/GAZEBO")
-        self.wait_start = time.monotonic()
-        if not hasattr(self, "wait_log_offset"):
-            try:
-                self.wait_log_offset = LOG.stat().st_size
-            except Exception:
-                self.wait_log_offset = 0
-        self.wait_timeout_reached = False
-        header = tk.Frame(self.content, bg=SURFACE)
-        header.pack(fill="x", padx=self.px(24), pady=(self.px(24), 0))
-        tk.Label(header, text="Aguardando PX4/Gazebo abrir...", bg=SURFACE, fg=TEXT, font=(self.FONT_FAMILY, self.fs(16), "bold")).pack(anchor="w")
-        tk.Label(header, text="Aguarde enquanto o PX4 e o Gazebo iniciam. O menu de ataques abre automaticamente quando a simulacao estiver pronta para decolar.", bg=SURFACE, fg=MUTED, font=(self.FONT_FAMILY, self.FS_SMALL), justify="left", wraplength=max(self.px(540), self.root.winfo_width() - self.px(120))).pack(anchor="w", pady=(self.px(8), 0))
-        panel = tk.Frame(self.content, bg=SURFACE2, highlightbackground=BORDER, highlightthickness=1)
-        panel.pack(fill="both", expand=True, padx=self.px(24), pady=(self.px(22), 0))
-        center = tk.Frame(panel, bg=SURFACE2)
-        center.place(relx=0.5, rely=0.48, anchor="center", relwidth=0.82)
-        tk.Label(center, text="Inicializando simulacao", bg=SURFACE2, fg=TAG_FG, font=(self.FONT_FAMILY, self.FS_SMALL, "bold")).pack(anchor="w")
-        self.progress = ttk.Progressbar(center, mode="indeterminate", style="UAVEDUSIM.Horizontal.TProgressbar")
-        self.progress.pack(fill="x", pady=(self.px(14), self.px(10)))
-        self.progress.start(12)
-        self.status_lbl = tk.Label(
-            center,
-            text="Preparando simulacao...\nPX4: iniciando\nGazebo: abrindo",
-            bg=SURFACE2,
-            fg=WARN,
-            font=(self.FONT_FAMILY, self.fs(10), "bold"),
-            justify="left",
-            anchor="w",
-            wraplength=self.px(680),
-        )
-        self.status_lbl.pack(anchor="w", fill="x")
-        center.bind("<Configure>", self._reflow_wait_status)
-        self.root.after(80, self._reflow_wait_status)
-        tk.Label(center, text=f"Log: {LOG}", bg=SURFACE2, fg=MUTED, font=(self.FONT_FAMILY, self.FS_TINY)).pack(anchor="w", pady=(self.px(6), 0))
-        footer = tk.Frame(self.content, bg=SURFACE)
-        footer.pack(fill="x", padx=self.px(24), pady=(self.px(14), self.px(18)))
-        tk.Label(footer, text="O menu de ataques sera aberto automaticamente quando PX4 e Gazebo estiverem prontos.", bg=SURFACE, fg=BORDER, font=(self.FONT_FAMILY, self.FS_TINY)).pack(side="left")
-        btn_frame = tk.Frame(footer, bg=SURFACE)
-        btn_frame.pack(side="right")
-        ttk.Button(btn_frame, text="Cancelar espera", style="Cancel.TButton", command=self.show_main_menu).pack(side="left", padx=(0, self.px(8)))
-        ttk.Button(btn_frame, text="Abrir menu de ataques agora", style="Primary.TButton", command=self.show_attack_menu).pack(side="left")
-        self.root.after(800, self.check_px4_ready)
-
-    def _reflow_wait_status(self, event=None):
-        if self.page != "wait" or not hasattr(self, "status_lbl"):
-            return
-
-        width = getattr(event, "width", None)
-
-        if not width and hasattr(self.status_lbl, "master"):
-            try:
-                width = self.status_lbl.master.winfo_width()
-            except Exception:
-                width = 0
-
-        if not width or width <= 1:
-            width = max(self.px(360), self.root.winfo_width() - self.px(180))
-
-        self.status_lbl.configure(wraplength=max(self.px(260), width - self.px(12)))
-
     def _wait_status_lines(self, reason):
         raw = str(reason or "")
         parts = [part.strip() for part in raw.replace(";", "|").split("|") if part.strip()]
@@ -2292,7 +2233,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
                 relief="flat",
                 bd=0,
                 justify="center",
-                bg="#060b12",
+                bg="#11111b",
                 fg=TEXT,
                 insertbackground=TEXT,
                 width=width,
@@ -2314,10 +2255,11 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             prereq_buttons,
             text=("Takeoff enviado" if self.takeoff_sent else "Enviar commander takeoff"),
             command=self.send_takeoff_from_ui,
-            bg=("#1e3a2f" if self.takeoff_sent else ACCENT),
-            fg=(SEL_FG if self.takeoff_sent else "#ffffff"),
-            activebackground=("#254a3a" if self.takeoff_sent else ACCENT_DIM),
-            activeforeground="#ffffff",
+            bg=("#35433b" if self.takeoff_sent else ACCENT),
+            fg=(SEL_FG if self.takeoff_sent else "#11111b"),
+            activebackground=("#445849" if self.takeoff_sent else ACCENT_DIM),
+            activeforeground="#11111b",
+            disabledforeground=DISABLED_FG,
             relief="flat",
             bd=0,
             padx=self.px(12),
@@ -2331,10 +2273,11 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             prereq_buttons,
             text=("Reenviar destino" if self.destination_sent else "Enviar destino"),
             command=self.send_destination_from_ui,
-            bg=("#1e3a2f" if self.destination_sent else ACCENT),
-            fg=(SEL_FG if self.destination_sent else "#ffffff"),
-            activebackground=("#254a3a" if self.destination_sent else ACCENT_DIM),
-            activeforeground="#ffffff",
+            bg=("#35433b" if self.destination_sent else DISABLED_BG),
+            fg=(SEL_FG if self.destination_sent else DISABLED_FG),
+            activebackground=("#445849" if self.destination_sent else DISABLED_BG),
+            activeforeground=DISABLED_FG,
+            disabledforeground=DISABLED_FG,
             relief="flat",
             bd=0,
             padx=self.px(12),
@@ -2343,6 +2286,19 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             cursor="hand2",
         )
         self.destination_button.pack(anchor="e", fill="x", pady=(self.px(7), 0))
+
+        self.destination_timer_var = tk.StringVar(value="")
+        self.destination_timer_label = tk.Label(
+            prereq_buttons,
+            textvariable=self.destination_timer_var,
+            bg=SURFACE2,
+            fg=WARN,
+            font=(self.FONT_FAMILY, self.FS_TINY, "bold"),
+            justify="center",
+            anchor="center",
+            wraplength=self.px(220),
+        )
+        self.destination_timer_label.pack(anchor="e", fill="x", pady=(self.px(4), 0))
 
         prereq_panel.bind("<Configure>", self._reflow_prereq_layout)
         takeoff_box.bind("<Configure>", self._reflow_prereq_layout)
@@ -2472,28 +2428,70 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         )
         status_frame.pack(fill="both", expand=True, pady=(self.px(16), 0))
 
+        status_header = tk.Frame(status_frame, bg=BG)
+        status_header.pack(fill="x", padx=self.px(14), pady=(self.px(12), self.px(6)))
+
         tk.Label(
-            status_frame,
+            status_header,
             text="Status",
             bg=BG,
             fg=MUTED,
             font=(self.FONT_FAMILY, self.fs(11), "bold"),
-        ).pack(anchor="w", padx=self.px(14), pady=(self.px(12), self.px(6)))
+        ).pack(side="left")
+
+        clear_lbl = tk.Label(
+            status_header,
+            text="Limpar",
+            bg=BG,
+            fg=BORDER,
+            font=(self.FONT_FAMILY, self.FS_TINY, "underline"),
+            cursor="hand2",
+        )
+        clear_lbl.pack(side="right")
+        clear_lbl.bind("<Button-1>", lambda _e: self.clear_status_log())
+
+        status_text_wrap = tk.Frame(status_frame, bg="#11111b")
+        status_text_wrap.pack(fill="both", expand=True, padx=self.px(14), pady=(0, self.px(12)))
+        status_text_wrap.grid_columnconfigure(0, weight=1)
+        status_text_wrap.grid_rowconfigure(0, weight=1)
 
         self.status_text = tk.Text(
-            status_frame,
-            height=8,
-            bg="#060b12",
-            fg=MUTED,
+            status_text_wrap,
+            height=10,
+            bg="#11111b",
+            fg=TEXT,
             insertbackground=TEXT,
             relief="flat",
             bd=0,
             wrap="word",
             font=(self.FONT_FAMILY, self.FS_SMALL),
         )
-        self.status_text.pack(fill="both", expand=True, padx=self.px(14), pady=(0, self.px(12)))
-        self.status_text.insert("1.0", "")
+        self.status_text.grid(row=0, column=0, sticky="nsew")
+
+        status_scroll = ttk.Scrollbar(
+            status_text_wrap,
+            orient="vertical",
+            style="Dark.Vertical.TScrollbar",
+            command=self.status_text.yview,
+        )
+        status_scroll.grid(row=0, column=1, sticky="ns")
+        self.status_text.configure(yscrollcommand=status_scroll.set)
+
+        # Tags de estilo para diferenciar tipo de evento no log em tempo real.
+        self.status_text.tag_configure("time", foreground=BORDER)
+        self.status_text.tag_configure("title", foreground=TEXT, font=(self.FONT_FAMILY, self.FS_SMALL, "bold"))
+        self.status_text.tag_configure("detail", foreground=MUTED)
+        self.status_text.tag_configure("ok", foreground=OK, font=(self.FONT_FAMILY, self.FS_SMALL, "bold"))
+        self.status_text.tag_configure("warn", foreground=WARN, font=(self.FONT_FAMILY, self.FS_SMALL, "bold"))
+        self.status_text.tag_configure("danger", foreground=DANGER, font=(self.FONT_FAMILY, self.FS_SMALL, "bold"))
+
+        self.status_box_enabled = True
         self.status_text.configure(state="disabled")
+
+        if not hasattr(self, "status_log_entries"):
+            self.status_log_entries = []
+
+        self._render_status_log()
 
         footer = tk.Frame(page, bg=SURFACE)
         footer.pack(fill="x", padx=self.CONTENT_PAD, pady=(self.px(14), self.FOOTER_BOTTOM_PAD))
@@ -2542,10 +2540,10 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             self.attack_btn_frame,
             text="Desligar jamming",
             command=self.stop_jamming_from_ui,
-            bg="#3a1515",
-            fg="#f2b5b5",
-            activebackground="#5a1d1d",
-            activeforeground="#ffffff",
+            bg="#3e2937",
+            fg="#f2cdcd",
+            activebackground="#553645",
+            activeforeground="#11111b",
             relief="flat",
             bd=0,
             padx=self.px(14),
@@ -2572,128 +2570,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         self.root.after(80, self._reflow_attack_layout)
 
     # Reorganiza o painel de decolagem e destino conforme a largura.
-    def _reflow_prereq_layout(self, event=None):
-        if self.page != "attack":
-            return
-
-        pairs = [
-            ("takeoff_box", "takeoff_status_label"),
-            ("destination_box", "destination_status_label"),
-        ]
-
-        for box_attr, label_attr in pairs:
-            if not hasattr(self, box_attr) or not hasattr(self, label_attr):
-                continue
-
-            box = getattr(self, box_attr)
-            label = getattr(self, label_attr)
-            width = box.winfo_width()
-
-            if width <= 1:
-                continue
-
-            wrap = max(self.px(110), width - self.px(12))
-            label.configure(wraplength=wrap)
-
-        if hasattr(self, "attack_scroll_canvas"):
-            self.root.after(
-                40,
-                lambda: self.attack_scroll_canvas.configure(
-                    scrollregion=self.attack_scroll_canvas.bbox("all")
-                ),
-            )
-
     # Reorganiza os paineis de ataque e mitigacao.
-    def _reflow_attack_layout(self, event=None):
-        if self.page != "attack" or not hasattr(self, "attack_body"):
-            return
-
-        width = getattr(event, "width", None) or self.attack_body.winfo_width()
-        if width <= 1:
-            width = max(self.root.winfo_width() - self.CONTENT_PAD * 2, self.px(720))
-
-        gap = self.px(16)
-
-        # Mantem os paineis de ataque e mitigacao lado a lado.
-        # A mitigacao recebe mais espaco sem quebrar para outra linha.
-        min_left = min(self.px(430), max(self.px(260), int(width * 0.56)))
-        min_right = min(self.px(380), max(self.px(250), int(width * 0.34)))
-
-        desired_right = int(width * 0.38)
-        right_w = max(min_right, min(desired_right, self.px(560)))
-        left_w = width - gap - right_w
-
-        if left_w < min_left:
-            left_w = min_left
-            right_w = max(self.px(240), width - gap - left_w)
-
-        if right_w < self.px(240):
-            right_w = self.px(240)
-            left_w = max(self.px(260), width - gap - right_w)
-
-        self.attack_left.grid_forget()
-        self.attack_right.grid_forget()
-
-        self.attack_body.grid_columnconfigure(0, weight=3, minsize=max(1, left_w))
-        self.attack_body.grid_columnconfigure(1, weight=2, minsize=max(1, right_w))
-        self.attack_body.grid_rowconfigure(0, weight=1)
-        self.attack_body.grid_rowconfigure(1, weight=0)
-
-        self.attack_left.grid(row=0, column=0, sticky="nsew", padx=(0, gap))
-        self.attack_right.grid(row=0, column=1, sticky="nsew")
-
-        self.attack_left.configure(width=left_w)
-        self.attack_right.configure(width=right_w)
-        self.attack_right.grid_propagate(False)
-
-        left_wrap = max(self.px(260), left_w - self.px(70))
-        right_wrap = max(self.px(220), right_w - self.px(70))
-
-        if hasattr(self, "attack_desc_label"):
-            self.attack_desc_label.configure(wraplength=left_wrap)
-
-        if hasattr(self, "attack_warning_label"):
-            self.attack_warning_label.configure(wraplength=left_wrap)
-
-        if hasattr(self, "mitigation_desc_label"):
-            self.mitigation_desc_label.configure(wraplength=right_wrap)
-
-        if hasattr(self, "attack_scroll_canvas"):
-            self.root.after(
-                40,
-                lambda: self.attack_scroll_canvas.configure(
-                    scrollregion=self.attack_scroll_canvas.bbox("all")
-                ),
-            )
-
-    def _reflow_attack_footer(self, event=None):
-        if self.page != "attack" or not hasattr(self, "attack_btn_frame"):
-            return
-
-        width = getattr(event, "width", None) or self.content.winfo_width()
-        compact = width < self.px(980)
-
-        if compact:
-            self.attack_hint_label.grid(
-                row=0,
-                column=0,
-                columnspan=2,
-                sticky="ew",
-                padx=0,
-                pady=(0, self.px(10)),
-            )
-            self.attack_btn_frame.grid(row=1, column=0, columnspan=2, sticky="e")
-        else:
-            self.attack_hint_label.grid(
-                row=0,
-                column=0,
-                columnspan=1,
-                sticky="ew",
-                padx=(0, self.px(10)),
-                pady=0,
-            )
-            self.attack_btn_frame.grid(row=0, column=1, columnspan=1, sticky="e")
-
     # Retorna o nome exibido para o tipo de ataque.
     def attack_label(self, attack_key):
         return {
@@ -2701,6 +2578,99 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             "blackout": "Jamming Blackout",
             "pulse": "Jamming Pulse",
         }.get(attack_key, str(attack_key))
+
+    # Explica, em linguagem simples, o que cada tipo de ataque faz ao GPS do drone.
+    def _attack_effect_description(self, attack_key):
+        return {
+            "noise": (
+                "adiciona ruido aleatorio as coordenadas de GPS lidas pelo drone, fazendo a "
+                "posicao estimada 'tremer' e se afastar aos poucos da posicao real."
+            ),
+            "blackout": (
+                "bloqueia completamente o sinal de GPS, deixando o drone sem nenhuma leitura "
+                "de posicao valida."
+            ),
+            "pulse": (
+                "liga e desliga o jamming em pulsos, causando perda intermitente de posicao "
+                "GPS (o drone alterna entre 'ver' e 'nao ver' sua posicao)."
+            ),
+        }.get(attack_key, "interfere no sinal de GPS recebido pelo drone.")
+
+    # Explica o que se espera observar no drone/telemetria enquanto o ataque esta ativo.
+    def _attack_expected_observation(self, attack_key):
+        return {
+            "noise": (
+                "Espere ver a posicao estimada 'tremendo' na telemetria, com pequenos desvios "
+                "da rota planejada, mesmo sem perder o GPS por completo."
+            ),
+            "blackout": (
+                "Espere ver o GPS sem fix (sem posicao valida); o drone pode parar de responder "
+                "corretamente a comandos de posicao enquanto o sinal nao volta."
+            ),
+            "pulse": (
+                "Espere ver o GPS alternando entre 'com posicao' e 'sem posicao' repetidamente, "
+                "com saltos na posicao estimada a cada vez que o sinal retorna. Esses saltos nao "
+                "sao necessariamente pequenos: quanto mais tempo o GPS ficar fora, maior pode ser "
+                "a diferenca entre a posicao estimada e a posicao real quando o sinal volta."
+            ),
+        }.get(attack_key, "Acompanhe a telemetria para ver o efeito do ataque no GPS.")
+
+    # Explica, em linguagem simples, o que a mitigacao faz de forma geral (independente do ataque).
+    def _mitigation_general_description(self):
+        return "protecao ativada contra ataques ao GPS."
+
+    # Explica, de forma didatica, o que a mitigacao faz especificamente contra cada ataque.
+    def _mitigation_defense_description(self, attack_key):
+        return {
+            "noise": (
+                "o GPS ainda envia leituras, so que ruidosas, entao a mitigacao usa um filtro de "
+                "Kalman que combina essas leituras com o barometro (para a altitude) e com o "
+                "movimento esperado do drone, dando menos peso as medicoes que fogem muito do "
+                "previsto. Isso suaviza o 'tremor' e mantem a posicao estimada proxima da real."
+            ),
+            "blackout": (
+                "o GPS parou de enviar leituras validas, entao a mitigacao usa dead reckoning: "
+                "parte da ultima posicao confiavel e projeta a posicao atual com a velocidade e "
+                "direcao do drone, apoiada pelo barometro (altitude) e pela odometria (distancia "
+                "percorrida), ate o sinal de GPS voltar."
+            ),
+            "pulse": (
+                "o sinal de GPS aparece e desaparece, entao a mitigacao alterna entre as duas "
+                "estrategias: usa o filtro de Kalman (com apoio do barometro) enquanto o sinal "
+                "esta presente, mesmo que ruidoso, e passa para dead reckoning com odometria nos "
+                "momentos em que o sinal some, evitando saltos bruscos quando o GPS retorna."
+            ),
+        }.get(attack_key, "a mitigacao esta atuando para reduzir o efeito desse ataque.")
+
+    # Explica o risco especifico de nao ter mitigacao ativa contra cada ataque.
+    def _attack_no_mitigation_description(self, attack_key):
+        return {
+            "noise": (
+                "o GPS ruidoso chega direto ao PX4 sem nenhuma correcao. O drone pode se desviar "
+                "da rota, oscilar de posicao e perder estabilidade ate nao conseguir alcancar o "
+                "destino configurado."
+            ),
+            "blackout": (
+                "sem nenhuma leitura valida de GPS chegando ao PX4, o proprio piloto automatico "
+                "deve acionar failsafe e iniciar um pouso de emergencia (RTL/land) usando apenas a "
+                "posicao estimada disponivel. Como essa posicao pode estar desatualizada ou incorreta, "
+                "o drone corre o risco de pousar em terrenos inadequados, como agua, telhados, "
+                "estradas ou vegetacao densa, em vez de um local seguro."
+            ),
+            "pulse": (
+                "cada vez que o GPS some, o PX4 fica sem leitura valida de posicao; dependendo de "
+                "quanto tempo o sinal ficar fora, o piloto automatico pode acionar failsafe e "
+                "iniciar um pouso de emergencia em terreno inapropriado (agua, telhados, estradas "
+                "ou vegetacao densa), assim como no blackout. Quando o sinal retorna, ainda "
+                "ruidoso, o drone pode sofrer saltos de posicao que nao sao necessariamente "
+                "pequenos. Sem mitigacao, essa alternancia entre 'sem GPS' e 'GPS ruidoso' aumenta "
+                "o risco de desvio de rota e de um pouso de emergencia em local inadequado."
+            ),
+        }.get(
+            attack_key,
+            "o GPS corrompido chega direto ao PX4. O drone pode se desviar da rota, perder "
+            "estabilidade ou nao alcancar o destino configurado.",
+        )
 
     # Monta a mensagem quando outro ataque esta bloqueado.
     def active_attack_locked_message(self, requested_attack=None):
@@ -2763,6 +2733,8 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
     def prereq_status_message(self):
         if not getattr(self, "takeoff_sent", False):
             return "Ataques bloqueados. Envie commander takeoff e depois o destino."
+        if getattr(self, "destination_release_pending", False):
+            return "Ataques bloqueados. Aguardando timer apos o takeoff antes de liberar o destino."
         if not getattr(self, "destination_sent", False):
             return "Ataques bloqueados. Envie o destino padrao: distancia + rotacao."
         return "Takeoff e destino enviados. Ataques liberados."
@@ -2795,7 +2767,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         log(f"Comando enviado ao console PX4: {command}")
         return True, f"Comando enviado: {command}"
 
-    def _set_takeoff_status_ui(self, text, ok=False):
+    def _set_takeoff_status_ui(self, text, ok=False, pending=False):
         if hasattr(self, "takeoff_status_var"):
             self.takeoff_status_var.set(text)
 
@@ -2803,11 +2775,29 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             self.takeoff_status_label.configure(fg=(OK if ok else WARN))
 
         if hasattr(self, "takeoff_button"):
+            if pending:
+                button_text = "Aguardando Takeoff detected"
+                button_bg = SURFACE2
+                button_fg = WARN
+                button_active_bg = BORDER
+                button_state = "disabled"
+                button_cursor = "watch"
+            else:
+                button_text = "Takeoff detectado" if ok else "Enviar commander takeoff"
+                button_bg = "#35433b" if ok else ACCENT
+                button_fg = SEL_FG if ok else "#11111b"
+                button_active_bg = "#445849" if ok else ACCENT_DIM
+                button_state = "normal"
+                button_cursor = "hand2"
+
             self.takeoff_button.configure(
-                text=("Takeoff enviado" if ok else "Enviar commander takeoff"),
-                bg=("#1e3a2f" if ok else ACCENT),
-                fg=(SEL_FG if ok else "#ffffff"),
-                activebackground=("#254a3a" if ok else ACCENT_DIM),
+                text=button_text,
+                bg=button_bg,
+                fg=button_fg,
+                activebackground=button_active_bg,
+                activeforeground="#11111b",
+                state=button_state,
+                cursor=button_cursor,
             )
 
     def _set_destination_status_ui(self, text, ok=False):
@@ -2817,12 +2807,15 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         if hasattr(self, "destination_status_label"):
             self.destination_status_label.configure(fg=(OK if ok else WARN))
 
-        if hasattr(self, "destination_button"):
+        # Durante o timer pos-takeoff, o contador fica em uma mensagem separada
+        # abaixo do botao. Assim o botao nao troca de texto/cor a cada segundo.
+        if hasattr(self, "destination_button") and not getattr(self, "destination_release_pending", False):
             self.destination_button.configure(
                 text=("Reenviar destino" if ok else "Enviar destino"),
-                bg=("#1e3a2f" if ok else ACCENT),
-                fg=(SEL_FG if ok else "#ffffff"),
-                activebackground=("#254a3a" if ok else ACCENT_DIM),
+                bg=("#35433b" if ok else ACCENT),
+                fg=(SEL_FG if ok else "#11111b"),
+                activebackground=("#445849" if ok else ACCENT_DIM),
+                activeforeground="#11111b",
             )
 
     # Atualiza botoes e mensagens de decolagem/destino.
@@ -2830,8 +2823,31 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         if self.page != "attack":
             return
 
+        release_pending = bool(getattr(self, "destination_release_pending", False))
+        remaining_s = 0
+
+        if release_pending:
+            remaining_s = int(
+                max(0.0, getattr(self, "destination_release_until", 0.0) - time.monotonic()) + 0.999
+            )
+
         if getattr(self, "takeoff_sent", False):
-            self._set_takeoff_status_ui("Takeoff enviado.\nEnvie ou confirme o destino.", ok=True)
+            if release_pending:
+                self._set_takeoff_status_ui(
+                    "Takeoff detectado pelo PX4.\nAguardando liberacao do destino.",
+                    ok=True,
+                )
+            else:
+                self._set_takeoff_status_ui(
+                    "Takeoff detectado pelo PX4.\nEnvio de destino liberado.",
+                    ok=True,
+                )
+        elif getattr(self, "takeoff_waiting", False):
+            self._set_takeoff_status_ui(
+                "Aguardando confirmacao do PX4:\nINFO  [commander] Takeoff detected",
+                ok=False,
+                pending=True,
+            )
         else:
             self._set_takeoff_status_ui("Aguardando:\ncommander takeoff", ok=False)
 
@@ -2842,6 +2858,11 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
                 f"alt={self.destination_altitude_value} m."
             )
             self._set_destination_status_ui(msg, ok=True)
+        elif release_pending:
+            self._set_destination_status_ui(
+                "Destino aguardando liberacao apos o takeoff.",
+                ok=False,
+            )
         else:
             msg = (
                 f"Destino pendente:\n"
@@ -2850,33 +2871,252 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             )
             self._set_destination_status_ui(msg, ok=False)
 
-        if hasattr(self, "destination_button"):
-            can_send_destination = bool(getattr(self, "takeoff_sent", False))
-            self.destination_button.configure(
-                state=("normal" if can_send_destination else "disabled"),
-                cursor=("hand2" if can_send_destination else "arrow"),
+        if hasattr(self, "destination_timer_var"):
+            self.destination_timer_var.set(f"Destino liberado em {remaining_s}s" if release_pending else "")
+
+        if hasattr(self, "destination_timer_label"):
+            self.destination_timer_label.configure(
+                fg=(WARN if release_pending else MUTED),
+                wraplength=max(self.px(130), self.px(220)),
             )
+
+        if hasattr(self, "destination_button"):
+            can_send_destination = bool(getattr(self, "takeoff_sent", False)) and not release_pending
+
+            if release_pending:
+                self.destination_button.configure(
+                    text="Enviar destino",
+                    state="disabled",
+                    cursor="watch",
+                    bg=DISABLED_BG,
+                    fg=DISABLED_FG,
+                    activebackground=DISABLED_BG,
+                    activeforeground=DISABLED_FG,
+                    disabledforeground=DISABLED_FG,
+                )
+            elif can_send_destination:
+                self.destination_button.configure(
+                    state="normal",
+                    cursor="hand2",
+                )
+            else:
+                self.destination_button.configure(
+                    state="disabled",
+                    cursor="arrow",
+                    bg=DISABLED_BG,
+                    fg=DISABLED_FG,
+                    activebackground=DISABLED_BG,
+                    activeforeground=DISABLED_FG,
+                    disabledforeground=DISABLED_FG,
+                )
 
         self._reflow_prereq_layout()
 
-    # Envia commander takeoff antes de liberar ataques.
-    def send_takeoff_from_ui(self):
-        ok, msg = self.send_px4_console_command("commander takeoff")
+    def _takeoff_detected_since(self, log_offset):
+        ok, _reason = log_indicates_takeoff_detected(log_offset)
+        return ok
 
-        if ok:
-            self.takeoff_sent = True
-            msg = "Takeoff enviado via commander takeoff. Agora envie o destino padrao."
-            self._set_takeoff_status_ui(msg, ok=True)
-            self._set_attack_status_ui(msg)
-            notify_msg(msg)
+    def _takeoff_ready_hint(self):
+        return (
+            "Verifique tambem no terminal PX4 se apareceu Ready for takeoff! "
+            "antes de enviar novamente. Se ainda nao apareceu, aguarde essa mensagem e tente de novo."
+        )
+
+    def _cancel_destination_release_timer(self):
+        after_id = getattr(self, "destination_release_after_id", None)
+
+        if after_id is not None:
+            try:
+                self.root.after_cancel(after_id)
+            except Exception:
+                pass
+
+        self.destination_release_after_id = None
+
+    def _set_destination_timer_message(self):
+        if not getattr(self, "destination_release_pending", False):
+            remaining_s = 0
+        else:
+            remaining_s = int(
+                max(0.0, getattr(self, "destination_release_until", 0.0) - time.monotonic()) + 0.999
+            )
+
+        if hasattr(self, "destination_timer_var"):
+            self.destination_timer_var.set(f"Destino liberado em {remaining_s}s" if remaining_s > 0 else "")
+
+        return remaining_s
+
+    def _start_destination_release_timer(self):
+        self._cancel_destination_release_timer()
+
+        try:
+            delay_s = int(float(os.environ.get("UAVEDUSIM_DEST_RELEASE_DELAY_S", "12")))
+        except Exception:
+            delay_s = 12
+
+        delay_s = max(0, min(delay_s, 30))
+
+        self.destination_release_pending = delay_s > 0
+        self.destination_release_until = time.monotonic() + float(delay_s)
+
+        if delay_s <= 0:
+            self.destination_release_pending = False
+            self.destination_release_until = 0.0
+            self._set_destination_timer_message()
             self.update_prereq_ui()
             self.update_attack_selection_ui()
-        else:
-            self._set_takeoff_status_ui(msg, ok=False)
-            self._set_attack_status_ui(msg)
-            notify_msg(msg)
-            self.update_prereq_ui()
             self.update_attack_lock_ui()
+            return
+
+        # Atualiza o layout uma vez para exibir a mensagem abaixo do botao.
+        # Depois disso, cada tick altera apenas o texto do contador.
+        self.update_prereq_ui()
+        self.destination_release_after_id = self.root.after(1000, self._tick_destination_release_timer)
+
+    def _tick_destination_release_timer(self):
+        self.destination_release_after_id = None
+
+        if not getattr(self, "destination_release_pending", False):
+            self._set_destination_timer_message()
+            return
+
+        remaining_s = self._set_destination_timer_message()
+
+        if remaining_s <= 0:
+            self.destination_release_pending = False
+            self.destination_release_until = 0.0
+            self._set_destination_timer_message()
+            self._log_status_event("Destino liberado", "Envio de destino disponivel.", level="ok")
+            self.update_prereq_ui()
+            self.update_attack_selection_ui()
+            self.update_attack_lock_ui()
+            return
+
+        self.destination_release_after_id = self.root.after(1000, self._tick_destination_release_timer)
+
+    def _finish_takeoff_wait(self, success, message):
+        self.takeoff_waiting = False
+
+        if success:
+            self.takeoff_sent = True
+            self.destination_sent = False
+            status_msg = "Takeoff detectado pelo PX4."
+            self._log_status_event("Takeoff detectado", "Destino sera liberado apos o timer.", level="ok")
+            notify_msg(status_msg)
+            self._start_destination_release_timer()
+            return
+
+        self.takeoff_sent = False
+        self.destination_release_pending = False
+        self.destination_release_until = 0.0
+        self.update_prereq_ui()
+        self._set_takeoff_status_ui(message, ok=False)
+        self._log_status_event("Takeoff nao enviado", message, level="danger")
+        notify_msg(message)
+        self.update_attack_lock_ui()
+
+    # Envia commander takeoff e so libera destino apos o PX4 confirmar Takeoff detected.
+    def send_takeoff_from_ui(self):
+        if getattr(self, "takeoff_waiting", False):
+            return
+
+        if getattr(self, "takeoff_sent", False):
+            if getattr(self, "destination_release_pending", False):
+                msg = "Takeoff detectado pelo PX4. Aguarde o timer do botao de destino terminar."
+            else:
+                msg = "Takeoff ja foi detectado pelo PX4. O envio de destino esta liberado."
+            self._set_takeoff_status_ui(msg, ok=True)
+            notify_msg(msg)
+            return
+
+        self.takeoff_waiting = True
+        self.takeoff_sent = False
+        self.destination_release_pending = False
+        self.destination_release_until = 0.0
+        self.destination_sent = False
+
+        try:
+            log_offset = LOG.stat().st_size
+        except Exception:
+            log_offset = 0
+
+        max_attempts = max(1, int(float(os.environ.get("UAVEDUSIM_TAKEOFF_MAX_ATTEMPTS", "2"))))
+        retry_interval = max(1.0, float(os.environ.get("UAVEDUSIM_TAKEOFF_RETRY_INTERVAL_S", "3.0")))
+        detect_timeout = max(
+            retry_interval * max_attempts + 3.0,
+            float(os.environ.get("UAVEDUSIM_TAKEOFF_DETECT_TIMEOUT_S", "12.0")),
+        )
+
+        wait_msg = (
+            "Enviando commander takeoff.\n"
+            "Aguardando: INFO  [commander] Takeoff detected"
+        )
+        self._set_takeoff_status_ui(wait_msg, ok=False, pending=True)
+        self._set_destination_status_ui("Destino bloqueado ate o PX4 confirmar Takeoff detected.", ok=False)
+        self.update_prereq_ui()
+        self._set_takeoff_status_ui(wait_msg, ok=False, pending=True)
+        self.update_attack_lock_ui()
+
+        def ui_waiting(text):
+            def apply():
+                if not getattr(self, "takeoff_waiting", False):
+                    return
+                self.update_prereq_ui()
+                self._set_takeoff_status_ui(text, ok=False, pending=True)
+            self.root.after(0, apply)
+
+        def worker():
+            attempts = 0
+            next_send_time = 0.0
+            start_time = time.monotonic()
+            last_error = ""
+
+            while time.monotonic() - start_time < detect_timeout:
+                now = time.monotonic()
+
+                if attempts < max_attempts and now >= next_send_time:
+                    attempts += 1
+                    ok, msg = self.send_px4_console_command("commander takeoff")
+
+                    if not ok:
+                        last_error = msg
+
+                    ui_waiting(
+                        "Aguardando PX4:\n"
+                        "INFO  [commander] Takeoff detected"
+                    )
+
+                    next_send_time = now + retry_interval
+
+                if self._takeoff_detected_since(log_offset):
+                    self.root.after(
+                        0,
+                        lambda: self._finish_takeoff_wait(
+                            True,
+                            "Takeoff detectado pelo PX4. Aguardando timer para liberar destino.",
+                        ),
+                    )
+                    return
+
+                time.sleep(0.4)
+
+            hint = self._takeoff_ready_hint()
+
+            if last_error:
+                message = (
+                    "Nao foi possivel confirmar o takeoff no PX4 apos duas tentativas. "
+                    f"Ultimo erro: {last_error}. {hint}"
+                )
+            else:
+                message = (
+                    "O comando commander takeoff foi enviado, mas o PX4 nao registrou "
+                    "INFO  [commander] Takeoff detected dentro do tempo limite apos duas tentativas. "
+                    f"{hint}"
+                )
+
+            self.root.after(0, lambda: self._finish_takeoff_wait(False, message))
+
+        threading.Thread(target=worker, daemon=True).start()
 
     # Valida distancia, rotacao e altitude do destino.
     def _parse_destination_values(self):
@@ -2904,7 +3144,16 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         if not getattr(self, "takeoff_sent", False):
             msg = "Envie commander takeoff antes do destino."
             self._set_destination_status_ui(msg, ok=False)
-            self._set_attack_status_ui(msg)
+            self._log_status_event("Destino bloqueado", msg, level="warn")
+            notify_msg(msg)
+            self.update_attack_lock_ui()
+            return
+
+        if getattr(self, "destination_release_pending", False):
+            remaining_s = int(max(0.0, getattr(self, "destination_release_until", 0.0) - time.monotonic()) + 0.999)
+            msg = f"Aguarde o timer do botao de destino terminar antes de enviar o destino. Restam {remaining_s}s."
+            self._set_destination_status_ui(msg, ok=False)
+            self._log_status_event("Destino aguardando timer", msg, level="warn")
             notify_msg(msg)
             self.update_attack_lock_ui()
             return
@@ -2914,17 +3163,31 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         except ValueError as e:
             msg = str(e)
             self._set_destination_status_ui(msg, ok=False)
-            self._set_attack_status_ui(msg)
+            self._log_status_event("Destino invalido", msg, level="danger")
             notify_msg(msg)
             return
 
         self.destination_sent = False
         self._set_destination_status_ui("Enviando destino via MAVLink...", ok=False)
-        self._set_attack_status_ui("Enviando destino. Aguarde antes de aplicar ataques.")
+        self._log_status_event(
+            "Enviando destino via MAVLink",
+            f"O drone vai andar {self.destination_forward_value} m a frente, girar "
+            f"{self.destination_right_value} graus e ajustar a altitude para "
+            f"{self.destination_altitude_value} m em relacao ao ponto de decolagem.",
+            level="detail",
+        )
         self.update_attack_lock_ui()
 
         if hasattr(self, "destination_button"):
-            self.destination_button.configure(state="disabled", cursor="watch")
+            self.destination_button.configure(
+                state="disabled",
+                cursor="watch",
+                bg=DISABLED_BG,
+                fg=DISABLED_FG,
+                activebackground=DISABLED_BG,
+                activeforeground=DISABLED_FG,
+                disabledforeground=DISABLED_FG,
+            )
 
         def worker():
             ok, msg = self.send_destination_mavlink(distance, rotation_deg, rel_alt)
@@ -2938,12 +3201,18 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
                         "Ataques liberados."
                     )
                     self._set_destination_status_ui(msg_ok, ok=True)
-                    self._set_attack_status_ui(msg_ok)
+                    self._log_status_event(
+                        "Drone em deslocamento",
+                        f"Indo {self.destination_forward_value} m a frente, girando "
+                        f"{self.destination_right_value} graus e ajustando para "
+                        f"{self.destination_altitude_value} m de altitude. Ataques liberados.",
+                        level="ok",
+                    )
                     notify_msg(msg_ok)
                 else:
                     self.destination_sent = False
                     self._set_destination_status_ui(msg, ok=False)
-                    self._set_attack_status_ui(msg)
+                    self._log_status_event("Falha ao enviar destino", msg, level="danger")
                     notify_msg(msg)
 
                 self.update_prereq_ui()
@@ -2982,6 +3251,31 @@ except Exception as first_error:
 distance_m = float(sys.argv[1])
 rotation_deg = float(sys.argv[2])
 target_rel_alt_m = float(sys.argv[3])
+
+def env_float(name, default):
+    try:
+        return float(os.environ.get(name, str(default)))
+    except Exception:
+        return float(default)
+
+# Velocidades usadas ao enviar o destino.
+# A velocidade vertical evita subida muito lenta quando a altitude alvo
+# e maior que a altitude atual do VANT.
+dest_climb_speed_mps = env_float("UAVEDUSIM_DEST_CLIMB_SPEED_MPS", 1.5)
+dest_climb_speed_mps = max(0.2, min(dest_climb_speed_mps, 5.0))
+
+# Velocidade horizontal usada pelo DO_REPOSITION.
+dest_horizontal_speed_mps = env_float("UAVEDUSIM_DEST_HORIZONTAL_SPEED_MPS", 5.0)
+dest_horizontal_speed_mps = max(0.5, min(dest_horizontal_speed_mps, 20.0))
+
+# Quando o destino esta longe e a altitude alvo e maior, o PX4 tende a
+# subir seguindo uma rampa ate o ponto final. Isso deixa a velocidade
+# vertical muito baixa. Esta opcao faz primeiro uma subida quase vertical
+# no ponto atual e so depois envia o deslocamento horizontal.
+dest_alt_stage_enabled = os.environ.get("UAVEDUSIM_DEST_ALT_STAGE", "1") != "0"
+dest_alt_stage_tolerance_m = env_float("UAVEDUSIM_DEST_ALT_TOL_M", 0.35)
+dest_alt_stage_tolerance_m = max(0.10, min(dest_alt_stage_tolerance_m, 2.0))
+dest_alt_stage_timeout_env = env_float("UAVEDUSIM_DEST_ALT_STAGE_TIMEOUT_S", 0.0)
 
 urls_raw = (
     os.environ.get("UAVEDUSIM_MAVLINK_URLS")
@@ -3023,6 +3317,81 @@ if master is None:
         print("[UAVEDUSIM] Ultimo erro: " + last_error, flush=True)
     print("[UAVEDUSIM] Dica: tente UAVEDUSIM_MAVLINK_URL=udpin:0.0.0.0:14540 ./uavedusim_gui.sh", flush=True)
     sys.exit(3)
+
+def set_param_float(param_name, value):
+    try:
+        param_type = getattr(mavutil.mavlink, "MAV_PARAM_TYPE_REAL32", 9)
+
+        master.mav.param_set_send(
+            master.target_system,
+            master.target_component,
+            param_name.encode("ascii"),
+            float(value),
+            param_type,
+        )
+
+        deadline_param = time.time() + 1.2
+
+        while time.time() < deadline_param:
+            msg = master.recv_match(type="PARAM_VALUE", blocking=True, timeout=0.2)
+
+            if msg is None:
+                continue
+
+            raw_id = getattr(msg, "param_id", "")
+            if isinstance(raw_id, bytes):
+                raw_id = raw_id.decode("ascii", errors="ignore")
+
+            if str(raw_id).strip("\x00") == param_name:
+                print(f"[UAVEDUSIM] Parametro {param_name} ajustado para {float(value):.2f}", flush=True)
+                return True
+
+        print(f"[UAVEDUSIM] Parametro {param_name} enviado sem confirmacao.", flush=True)
+        return True
+
+    except Exception as e:
+        print(f"[UAVEDUSIM] Aviso: nao foi possivel ajustar {param_name}: {e}", flush=True)
+        return False
+
+def send_change_speed(speed_type, speed_mps, label):
+    try:
+        master.mav.command_long_send(
+            master.target_system,
+            master.target_component,
+            mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
+            0,
+            speed_type,
+            float(speed_mps),
+            -1,
+            0,
+            0,
+            0,
+            0,
+        )
+
+        deadline_speed = time.time() + 1.2
+
+        while time.time() < deadline_speed:
+            ack = master.recv_match(type="COMMAND_ACK", blocking=True, timeout=0.3)
+
+            if ack is None:
+                continue
+
+            if getattr(ack, "command", None) != mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED:
+                continue
+
+            print(
+                f"[UAVEDUSIM] COMMAND_ACK DO_CHANGE_SPEED ({label}) result={getattr(ack, 'result', None)}",
+                flush=True,
+            )
+            return True
+
+        print(f"[UAVEDUSIM] DO_CHANGE_SPEED ({label}) enviado sem ACK.", flush=True)
+        return True
+
+    except Exception as e:
+        print(f"[UAVEDUSIM] Aviso: nao foi possivel enviar DO_CHANGE_SPEED ({label}): {e}", flush=True)
+        return False
 
 def request_message_interval(message_id, interval_us):
     try:
@@ -3079,6 +3448,17 @@ lon = position.lon / 1e7
 alt_amsl_m = position.alt / 1000.0
 current_rel_alt_m = position.relative_alt / 1000.0
 
+if target_rel_alt_m > current_rel_alt_m + 0.2:
+    print(
+        "[UAVEDUSIM] Destino acima da altitude atual. "
+        f"Ajustando subida para {dest_climb_speed_mps:.2f} m/s.",
+        flush=True,
+    )
+
+    set_param_float("MPC_Z_V_AUTO_UP", dest_climb_speed_mps)
+    set_param_float("MPC_Z_VEL_MAX_UP", max(dest_climb_speed_mps, 1.0))
+    send_change_speed(2, dest_climb_speed_mps, "subida")
+
 # Usa ATTITUDE.yaw como referencia da frente real do drone.
 # A rotacao relativa afeta apenas a direcao do destino, nao o yaw comandado.
 heading_deg = (math.degrees(float(attitude.yaw)) + 360.0) % 360.0
@@ -3101,60 +3481,172 @@ target_alt_amsl_m = home_amsl_m + target_rel_alt_m
 cmd = mavutil.mavlink.MAV_CMD_DO_REPOSITION
 flags = getattr(mavutil.mavlink, "MAV_DO_REPOSITION_FLAGS_CHANGE_MODE", 1)
 
-master.mav.command_long_send(
-    master.target_system,
-    master.target_component,
-    cmd,
-    0,
-    -1,
-    flags,
-    0,
-    float("nan"),
-    target_lat,
-    target_lon,
-    target_alt_amsl_m,
-)
+def send_reposition_to(lat_cmd, lon_cmd, alt_cmd_amsl, label):
+    print(
+        f"[UAVEDUSIM] Enviando DO_REPOSITION ({label}): "
+        f"lat={lat_cmd:.7f}, lon={lon_cmd:.7f}, alt_amsl={alt_cmd_amsl:.2f}",
+        flush=True,
+    )
+    master.mav.command_long_send(
+        master.target_system,
+        master.target_component,
+        cmd,
+        0,
+        dest_horizontal_speed_mps,
+        flags,
+        0,
+        float("nan"),
+        lat_cmd,
+        lon_cmd,
+        alt_cmd_amsl,
+    )
+
+def send_reposition():
+    send_reposition_to(target_lat, target_lon, target_alt_amsl_m, "destino final")
+
+def wait_reposition_ack(timeout_s):
+    accepted = {
+        getattr(mavutil.mavlink, "MAV_RESULT_ACCEPTED", 0),
+        getattr(mavutil.mavlink, "MAV_RESULT_IN_PROGRESS", 5),
+    }
+
+    deadline_local = time.time() + timeout_s
+
+    while time.time() < deadline_local:
+        ack = master.recv_match(type="COMMAND_ACK", blocking=True, timeout=1)
+        if ack is None:
+            continue
+
+        if getattr(ack, "command", None) != cmd:
+            continue
+
+        result = getattr(ack, "result", None)
+        print(f"[UAVEDUSIM] COMMAND_ACK DO_REPOSITION result={result}", flush=True)
+        return result in accepted
+
+    return None
+
+def wait_until_relative_alt(target_rel_alt, tolerance_m, timeout_s):
+    deadline_local = time.time() + timeout_s
+    last_rel_alt = None
+    next_log = 0.0
+
+    while time.time() < deadline_local:
+        msg = master.recv_match(type="GLOBAL_POSITION_INT", blocking=True, timeout=0.5)
+
+        if msg is None:
+            continue
+
+        if getattr(msg, "lat", 0) == 0 or getattr(msg, "lon", 0) == 0:
+            continue
+
+        rel_alt = getattr(msg, "relative_alt", 0) / 1000.0
+        last_rel_alt = rel_alt
+
+        now = time.time()
+        if now >= next_log:
+            print(
+                f"[UAVEDUSIM] Subida vertical: alt_rel={rel_alt:.2f} m, "
+                f"alvo={target_rel_alt:.2f} m, tolerancia={tolerance_m:.2f} m",
+                flush=True,
+            )
+            next_log = now + 2.0
+
+        if rel_alt >= target_rel_alt - tolerance_m:
+            print(
+                f"[UAVEDUSIM] Altitude alvo atingida: alt_rel={rel_alt:.2f} m.",
+                flush=True,
+            )
+            return True
+
+    if last_rel_alt is None:
+        print("[UAVEDUSIM] Aviso: nao recebi altitude durante a subida vertical.", flush=True)
+    else:
+        print(
+            f"[UAVEDUSIM] Aviso: subida vertical nao atingiu a altitude alvo dentro do tempo. "
+            f"Ultima alt_rel={last_rel_alt:.2f} m, alvo={target_rel_alt:.2f} m.",
+            flush=True,
+        )
+
+    return False
+
+alt_delta_m = target_rel_alt_m - current_rel_alt_m
+need_alt_stage = dest_alt_stage_enabled and alt_delta_m > dest_alt_stage_tolerance_m
+
+if need_alt_stage:
+    if dest_alt_stage_timeout_env > 0:
+        alt_stage_timeout_s = dest_alt_stage_timeout_env
+    else:
+        alt_stage_timeout_s = max(12.0, min(120.0, (alt_delta_m / max(dest_climb_speed_mps, 0.2)) + 12.0))
+
+    print(
+        "[UAVEDUSIM] Destino com subida detectado. "
+        "Executando primeiro uma subida vertical antes do deslocamento horizontal. "
+        f"Delta_alt={alt_delta_m:.2f} m, timeout={alt_stage_timeout_s:.1f}s.",
+        flush=True,
+    )
+
+    send_reposition_to(lat, lon, target_alt_amsl_m, "subida vertical")
+    climb_ack = wait_reposition_ack(8)
+
+    if climb_ack is None:
+        print("[UAVEDUSIM] Aviso: ACK da subida vertical nao foi recebido. Continuando a espera de altitude.", flush=True)
+    elif not climb_ack:
+        print("[UAVEDUSIM] Aviso: PX4 rejeitou a subida vertical separada. O destino final ainda sera enviado.", flush=True)
+
+    wait_until_relative_alt(target_rel_alt_m, dest_alt_stage_tolerance_m, alt_stage_timeout_s)
 
 print(
     "[UAVEDUSIM] Destino calculado: "
     f"lat={target_lat:.7f}, lon={target_lon:.7f}, alt_amsl={target_alt_amsl_m:.2f}, "
     f"yaw_base_attitude={heading_deg:.1f}, rotacao_rel={rotation_deg:.1f}, direcao_destino={target_heading_deg:.1f}, "
-    f"yaw_comando=ignorado, distancia={distance_m:.1f}, north={north_m:.1f}, east={east_m:.1f}",
+    f"yaw_comando=ignorado, distancia={distance_m:.1f}, north={north_m:.1f}, east={east_m:.1f}, "
+    f"alt_relativa_alvo={target_rel_alt_m:.2f}, "
+    f"vel_subida={dest_climb_speed_mps:.2f}, vel_horizontal={dest_horizontal_speed_mps:.2f}",
     flush=True,
 )
 
-accepted = {
-    getattr(mavutil.mavlink, "MAV_RESULT_ACCEPTED", 0),
-    getattr(mavutil.mavlink, "MAV_RESULT_IN_PROGRESS", 5),
-}
+# O PX4 pode confirmar (ACK) o primeiro DO_REPOSITION enquanto ainda esta
+# trocando para o modo Hold/Loiter, e nesse instante de transicao ele pode
+# ignorar a altitude enviada e manter a altitude atual. Por isso, enviamos
+# o comando uma segunda vez pouco depois: nessa segunda chamada o drone ja
+# esta em Hold/Loiter e a nova altitude e aplicada de forma confiavel.
+print("[UAVEDUSIM] Enviando 1a tentativa de DO_REPOSITION...", flush=True)
+send_reposition()
+first_ok = wait_reposition_ack(8)
 
-deadline = time.time() + 10
-while time.time() < deadline:
-    ack = master.recv_match(type="COMMAND_ACK", blocking=True, timeout=1)
-    if ack is None:
-        continue
+if first_ok is None:
+    print("[UAVEDUSIM] ERRO: destino enviado, mas ACK de DO_REPOSITION nao foi recebido (1a tentativa).", flush=True)
+    sys.exit(6)
 
-    if getattr(ack, "command", None) != cmd:
-        continue
-
-    result = getattr(ack, "result", None)
-    print(f"[UAVEDUSIM] COMMAND_ACK DO_REPOSITION result={result}", flush=True)
-
-    if result in accepted:
-        sys.exit(0)
-
+if not first_ok:
+    print("[UAVEDUSIM] ERRO: PX4 rejeitou o primeiro DO_REPOSITION.", flush=True)
     sys.exit(5)
 
-print("[UAVEDUSIM] ERRO: destino enviado, mas ACK de DO_REPOSITION nao foi recebido.", flush=True)
-sys.exit(6)
+time.sleep(1.5)
+
+print("[UAVEDUSIM] Reenviando DO_REPOSITION para garantir a altitude configurada...", flush=True)
+send_reposition()
+second_ok = wait_reposition_ack(8)
+
+if second_ok is None:
+    print("[UAVEDUSIM] ERRO: destino enviado, mas ACK de DO_REPOSITION nao foi recebido (2a tentativa).", flush=True)
+    sys.exit(6)
+
+if not second_ok:
+    print("[UAVEDUSIM] ERRO: PX4 rejeitou o DO_REPOSITION na 2a tentativa (altitude pode nao ter sido aplicada).", flush=True)
+    sys.exit(5)
+
+sys.exit(0)
 """
         try:
+            timeout_s = int(float(os.environ.get("UAVEDUSIM_DEST_SEND_TIMEOUT_S", "180")))
             proc = subprocess.run(
                 [sys.executable, "-c", script, str(distance_m), str(rotation_deg), str(rel_alt_m)],
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                timeout=60,
+                timeout=timeout_s,
             )
         except subprocess.TimeoutExpired:
             return False, "Timeout ao enviar destino via MAVLink."
@@ -3208,9 +3700,9 @@ sys.exit(6)
             if widgets.get("entry") is not None:
                 widgets["entry"].configure(
                     state=("normal" if row_enabled else "disabled"),
-                    bg=("#0c141d" if selected else "#060b12"),
+                    bg=("#181825" if selected else "#11111b"),
                     fg=TEXT,
-                    disabledbackground="#060b12",
+                    disabledbackground="#11111b",
                     disabledforeground=MUTED,
                     insertbackground=TEXT,
                     cursor=("xterm" if row_enabled else "arrow"),
@@ -3233,95 +3725,11 @@ sys.exit(6)
                     self._set_attack_warning_ui("")
 
     # Cria a linha visual de cada ataque.
-    def _make_attack_row(self, parent, attack_key, label, entry_var=None, placeholder=None):
-        outer = tk.Frame(parent, bg=SURFACE2)
-        outer.pack(fill="x", pady=(self.px(12), 0))
-
-        row = tk.Frame(
-            outer,
-            bg=SURFACE2,
-            highlightbackground=TEXT,
-            highlightthickness=1,
-            cursor="hand2",
-        )
-        row.pack(fill="x")
-        row.grid_columnconfigure(0, weight=1)
-        row.grid_columnconfigure(1, weight=0)
-        row.bind("<Button-1>", lambda _e, key=attack_key: self.select_attack_type(key))
-
-        lbl = tk.Label(
-            row,
-            text=label,
-            bg=SURFACE2,
-            fg=TEXT,
-            font=(self.FONT_FAMILY, self.fs(14), "bold"),
-            cursor="hand2",
-            anchor="w",
-            justify="left",
-        )
-        lbl.grid(
-            row=0,
-            column=0,
-            sticky="ew",
-            padx=(self.px(18), self.px(8)),
-            pady=self.px(15),
-        )
-        lbl.bind("<Button-1>", lambda _e, key=attack_key: self.select_attack_type(key))
-
-        entry = None
-        entry_wrap = None
-
-        if entry_var is not None:
-            entry_wrap = tk.Frame(row, bg=SURFACE2)
-            entry_wrap.grid(
-                row=0,
-                column=1,
-                sticky="e",
-                padx=(self.px(8), self.px(14)),
-                pady=self.px(8),
-            )
-
-            tk.Label(
-                entry_wrap,
-                text="Valor",
-                bg=SURFACE2,
-                fg=MUTED,
-                font=(self.FONT_FAMILY, self.FS_TINY),
-            ).pack(anchor="w")
-
-            entry = tk.Entry(
-                entry_wrap,
-                textvariable=entry_var,
-                relief="flat",
-                bd=0,
-                justify="center",
-                bg="#060b12",
-                fg=TEXT,
-                insertbackground=TEXT,
-                width=8,
-                font=(self.FONT_FAMILY, self.fs(12), "bold"),
-            )
-            entry.pack(fill="x", ipady=self.px(3))
-
-            if placeholder and not entry_var.get():
-                entry_var.set(placeholder)
-
-            entry.bind("<FocusIn>", lambda _e, key=attack_key: self.select_attack_type(key))
-            entry.bind("<Button-1>", lambda _e, key=attack_key: self.select_attack_type(key))
-
-        self.attack_rows[attack_key] = {
-            "frame": row,
-            "label": lbl,
-            "entry": entry,
-            "entry_wrap": entry_wrap,
-            "var": entry_var,
-        }
-
     # Seleciona o ataque quando ele ainda nao esta bloqueado.
     def select_attack_type(self, attack_key):
         if not self.attack_unlocked():
             msg = self.prereq_status_message()
-            self._set_attack_status_ui(msg)
+            self._set_attack_status_ui(msg, level="warn")
             notify_msg(msg)
             self.update_attack_lock_ui()
             return
@@ -3356,7 +3764,7 @@ sys.exit(6)
 
             if widgets["entry"] is not None:
                 widgets["entry"].configure(
-                    bg="#0c141d" if selected else "#060b12",
+                    bg="#181825" if selected else "#11111b",
                     fg=TEXT,
                     insertbackground=TEXT,
                 )
@@ -3364,57 +3772,85 @@ sys.exit(6)
         self.attack_desc_var.set(self._attack_description(self.attack_type))
         self.update_attack_lock_ui()
 
-    def _set_attack_status_ui(self, text):
-        self.attack_status = text or ""
+    # Adiciona um evento didatico ao log de status em tempo real (nao apaga o historico).
+    def _log_status_event(self, title, detail="", level="detail"):
+        entry = {
+            "time": time.strftime("%H:%M:%S"),
+            "title": (title or "").strip(),
+            "detail": (detail or "").strip(),
+            "level": level,
+        }
 
+        if not entry["title"]:
+            return
+
+        if not hasattr(self, "status_log_entries"):
+            self.status_log_entries = []
+
+        self.status_log_entries.append(entry)
+        self.status_log_entries = self.status_log_entries[-200:]
+        self.attack_status = f"{entry['title']}. {entry['detail']}".strip()
+
+        self._append_status_entry(entry)
+
+    # Desenha uma unica entrada do log no final da caixa de Status.
+    def _append_status_entry(self, entry):
+        if not hasattr(self, "status_text") or not getattr(self, "status_box_enabled", True):
+            return
+
+        self.status_text.configure(state="normal")
+
+        if self.status_text.index("end-1c") != "1.0":
+            self.status_text.insert("end", "\n")
+
+        self.status_text.insert("end", f"[{entry['time']}] ", "time")
+        self.status_text.insert("end", f"{entry['title']}\n", entry.get("level", "title"))
+
+        if entry.get("detail"):
+            detail_lines = entry["detail"].split("\n")
+            for line in detail_lines:
+                self.status_text.insert("end", f"    {line}\n", "detail")
+
+        self.status_text.configure(state="disabled")
+        self.status_text.see("end")
+
+    # Redesenha o log inteiro (usado ao reabrir a tela de ataques).
+    def _render_status_log(self):
         if not hasattr(self, "status_text"):
             return
 
         self.status_text.configure(state="normal")
         self.status_text.delete("1.0", "end")
-
-        if getattr(self, "status_box_enabled", False):
-            self.status_text.insert("1.0", self.attack_status)
-
         self.status_text.configure(state="disabled")
 
-    # Desenha o slider ON/OFF da mitigacao.
-    def _draw_mitigation_slider(self):
-        if not hasattr(self, "mitigation_slider"):
+        for entry in getattr(self, "status_log_entries", []):
+            self._append_status_entry(entry)
+
+    # Limpa o historico do log de status.
+    def clear_status_log(self):
+        self.status_log_entries = []
+
+        if hasattr(self, "status_text"):
+            self.status_text.configure(state="normal")
+            self.status_text.delete("1.0", "end")
+            self.status_text.configure(state="disabled")
+
+        self._log_status_event("Log limpo", "O historico de eventos foi apagado.", level="detail")
+
+    # Compatibilidade: mensagens antigas de status agora viram uma entrada do log em tempo real.
+    def _set_attack_status_ui(self, text, level="detail"):
+        text = text or ""
+        self.attack_status = text
+
+        if not text:
             return
 
-        on = self.mitigation_state == "on"
-        c = self.mitigation_slider
+        parts = text.split("\n", 1)
+        title = parts[0].strip()
+        detail = parts[1].strip() if len(parts) > 1 else ""
+        self._log_status_event(title or text, detail, level=level)
 
-        w = self.px(86)
-        h = self.px(34)
-        pad = self.px(3)
-        radius = h // 2
-
-        c.configure(width=w, height=h, bg=SURFACE2)
-        c.delete("all")
-
-        track = "#1e3a2f" if on else "#30363d"
-        knob = "#e6edf3"
-        outline = "#52606d"
-
-        c.create_rectangle(radius, pad, w - radius, h - pad, fill=track, outline=track)
-        c.create_oval(pad, pad, pad + 2 * radius - pad, h - pad, fill=track, outline=track)
-        c.create_oval(w - 2 * radius + pad, pad, w - pad, h - pad, fill=track, outline=track)
-
-        knob_size = h - self.px(8)
-        knob_y0 = (h - knob_size) // 2
-        knob_y1 = knob_y0 + knob_size
-
-        if on:
-            knob_x1 = w - self.px(5)
-            knob_x0 = knob_x1 - knob_size
-        else:
-            knob_x0 = self.px(5)
-            knob_x1 = knob_x0 + knob_size
-
-        c.create_oval(knob_x0, knob_y0, knob_x1, knob_y1, fill=knob, outline=outline)
-
+    # Desenha o slider ON/OFF da mitigacao.
     def update_mitigation_ui(self):
         if not hasattr(self, "mitigation_slider"):
             return
@@ -3433,13 +3869,42 @@ sys.exit(6)
         ok = self.send_mitigation_state() == 0
 
         if ok:
+            if self.mitigation_state == "on":
+                self._log_status_event(
+                    "Mitigacao ATIVADA", self._mitigation_general_description(), level="ok"
+                )
+            else:
+                self._log_status_event(
+                    "Mitigacao DESATIVADA",
+                    "protecao contra ataques ao GPS desativada.",
+                    level="warn",
+                )
+
+            active_key = getattr(self, "active_attack_key", None)
+            if active_key and getattr(self, "jamming_active", False):
+                label = self.attack_label(active_key)
+
+                if self.mitigation_state == "on":
+                    defense = self._mitigation_defense_description(active_key)
+                    self._log_status_event(
+                        f"Mitigacao em andamento: {label}",
+                        f"Para este ataque, {defense}",
+                        level="warn",
+                    )
+                else:
+                    self._log_status_event(
+                        f"Sem mitigacao: {label}",
+                        self._attack_no_mitigation_description(active_key),
+                        level="danger",
+                    )
+
             msg = f"Mitigacao {self.mitigation_state.upper()}."
         else:
             self.mitigation_state = "off" if self.mitigation_state == "on" else "on"
             msg = "Falha ao alterar mitigacao. Veja o log."
+            self._log_status_event("Falha ao alterar mitigacao", msg, level="danger")
 
         self.update_mitigation_ui()
-        self._set_attack_status_ui(msg)
         notify_msg(msg)
 
     # Valida a intensidade informada para o ataque.
@@ -3466,7 +3931,7 @@ sys.exit(6)
     def apply_selected_attack_from_ui(self):
         if not self.attack_unlocked():
             msg = self.prereq_status_message()
-            self._set_attack_status_ui(msg)
+            self._set_attack_status_ui(msg, level="warn")
             notify_msg(msg)
             self.update_attack_lock_ui()
             return
@@ -3475,7 +3940,7 @@ sys.exit(6)
 
         if active_key and self.attack_type != active_key:
             msg = self.active_attack_locked_message(self.attack_type)
-            self._set_attack_status_ui(msg)
+            self._set_attack_status_ui(msg, level="warn")
             notify_msg("Novo ataque bloqueado. Reinicie a simulacao para trocar o tipo de jamming.")
             self.update_attack_lock_ui()
             return
@@ -3483,7 +3948,7 @@ sys.exit(6)
         try:
             intensity = self._parse_intensity_value(self.attack_type)
         except ValueError as e:
-            self._set_attack_status_ui(str(e))
+            self._set_attack_status_ui(str(e), level="danger")
             notify_msg(str(e))
             return
 
@@ -3496,18 +3961,27 @@ sys.exit(6)
             active_key = getattr(self, "active_attack_key", None)
 
             if active_key:
-                msg = (
-                    f"Jamming desligado | ataque da simulacao={self.attack_label(active_key)} | "
-                    f"mitigacao={self.mitigation_state.upper()}\n"
-                    "Para trocar o tipo de jamming, reinicie a simulacao."
+                self._log_status_event(
+                    "Jamming desligado",
+                    f"O ataque {self.attack_label(active_key)} parou de interferir no GPS. O sinal "
+                    f"volta ao normal e o drone deve retomar a navegacao normal em direcao ao destino "
+                    f"(mitigacao={self.mitigation_state.upper()}). Para trocar o tipo de jamming, "
+                    "reinicie a simulacao.",
+                    level="ok",
                 )
+                msg = f"Jamming desligado | ataque da simulacao={self.attack_label(active_key)} | mitigacao={self.mitigation_state.upper()}"
             else:
+                self._log_status_event(
+                    "Jamming desligado",
+                    f"Nenhum ataque estava ativo. Mitigacao atual={self.mitigation_state.upper()}.",
+                    level="ok",
+                )
                 msg = f"Jamming desligado | mitigacao={self.mitigation_state.upper()}"
         else:
             msg = "Falha ao desligar jamming. Veja o log."
+            self._log_status_event("Falha ao desligar jamming", msg, level="danger")
 
-        self._set_attack_status_ui(msg)
-        notify_msg(msg.split("\n", 1)[0])
+        notify_msg(msg)
         self.update_attack_lock_ui()
 
     # Executa comandos do spoofer/mitigator no ambiente Gazebo.
@@ -3551,7 +4025,7 @@ sys.exit(6)
     def execute_attack(self, attack_key, intensity):
         if not self.attack_unlocked():
             msg = self.prereq_status_message()
-            self._set_attack_status_ui(msg)
+            self._set_attack_status_ui(msg, level="warn")
             notify_msg(msg)
             self.update_attack_lock_ui()
             return
@@ -3575,28 +4049,44 @@ sys.exit(6)
             self.jamming_active = True
             self.attack_type = attack_key
 
-            if intensity is not None:
-                if was_new_attack:
-                    msg = (
-                        f"Aplicado: {label} | intensidade={intensity} | mitigacao={self.mitigation_state.upper()}\\n"
-                        "Para uma melhor simulacao, reinicie a simulacao antes de lancar outro tipo de jamming. "
-                        "A intensidade deste ataque pode ser alterada durante a execucao."
-                    )
-                else:
-                    msg = f"Atualizado: {label} | intensidade={intensity} | mitigacao={self.mitigation_state.upper()}"
+            effect = self._attack_effect_description(attack_key)
+            expected = self._attack_expected_observation(attack_key)
+            intensity_txt = f" (intensidade={intensity})" if intensity is not None else ""
+            action_word = "Aplicado" if was_new_attack else ("Atualizado" if intensity is not None else "Reativado")
+
+            title = f"{action_word}: {label}{intensity_txt}"
+            attack_detail = f"O ataque {label} {effect} {expected}"
+            self._log_status_event(title, attack_detail, level="warn")
+
+            if self.mitigation_state == "on":
+                defense = self._mitigation_defense_description(attack_key)
+                self._log_status_event(
+                    f"Mitigacao em andamento: {label}",
+                    f"Para este ataque, {defense}",
+                    level="ok",
+                )
             else:
-                if was_new_attack:
-                    msg = (
-                        f"Aplicado: {label} | mitigacao={self.mitigation_state.upper()}\\n"
-                        "Para uma melhor simulacao, reinicie a simulacao antes de lancar outro tipo de jamming."
-                    )
-                else:
-                    msg = f"Reativado: {label} | mitigacao={self.mitigation_state.upper()}"
+                self._log_status_event(
+                    f"Sem mitigacao: {label}",
+                    self._attack_no_mitigation_description(attack_key),
+                    level="danger",
+                )
+
+            if was_new_attack:
+                self._log_status_event(
+                    "Aviso",
+                    "Para lancar outro tipo de jamming nesta simulacao, reinicie a simulacao. "
+                    "A intensidade deste ataque ainda pode ser alterada, e a mitigacao pode ser "
+                    "ligada/desligada a qualquer momento durante a execucao.",
+                    level="detail",
+                )
+
+            msg = title
         else:
             msg = f"Falha ao aplicar {label}. Veja o log."
+            self._log_status_event("Falha ao aplicar ataque", msg, level="danger")
 
-        self._set_attack_status_ui(msg)
-        notify_msg(msg.split("\\n", 1)[0])
+        notify_msg(msg)
         self.update_attack_selection_ui()
 
     def run(self):
@@ -3693,7 +4183,11 @@ def _uavedusim_responsive_setup_styles(self):
         relief="flat",
         borderwidth=0,
     )
-    self.style.map("WinBtn.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
+    self.style.map(
+        "WinBtn.TButton",
+        background=[("disabled", DISABLED_BG), ("active", BORDER)],
+        foreground=[("disabled", DISABLED_FG), ("active", TEXT)],
+    )
 
     self.style.configure(
         "CloseBtn.TButton",
@@ -3704,7 +4198,11 @@ def _uavedusim_responsive_setup_styles(self):
         relief="flat",
         borderwidth=0,
     )
-    self.style.map("CloseBtn.TButton", background=[("active", "#8b1a1a")], foreground=[("active", "#ff6b6b")])
+    self.style.map(
+        "CloseBtn.TButton",
+        background=[("disabled", DISABLED_BG), ("active", "#4e3241")],
+        foreground=[("disabled", DISABLED_FG), ("active", "#f38ba8")],
+    )
 
     self.style.configure(
         "Back.TButton",
@@ -3715,7 +4213,11 @@ def _uavedusim_responsive_setup_styles(self):
         relief="flat",
         borderwidth=0,
     )
-    self.style.map("Back.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
+    self.style.map(
+        "Back.TButton",
+        background=[("disabled", DISABLED_BG), ("active", BORDER)],
+        foreground=[("disabled", DISABLED_FG), ("active", TEXT)],
+    )
 
     self.style.configure(
         "Cancel.TButton",
@@ -3726,18 +4228,26 @@ def _uavedusim_responsive_setup_styles(self):
         relief="flat",
         borderwidth=0,
     )
-    self.style.map("Cancel.TButton", background=[("active", BORDER)], foreground=[("active", TEXT)])
+    self.style.map(
+        "Cancel.TButton",
+        background=[("disabled", DISABLED_BG), ("active", BORDER)],
+        foreground=[("disabled", DISABLED_FG), ("active", TEXT)],
+    )
 
     self.style.configure(
         "Primary.TButton",
         font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
         padding=(self.px(14), self.px(7)),
         background=ACCENT,
-        foreground="#ffffff",
+        foreground="#11111b",
         relief="flat",
         borderwidth=0,
     )
-    self.style.map("Primary.TButton", background=[("active", ACCENT_DIM)])
+    self.style.map(
+        "Primary.TButton",
+        background=[("disabled", DISABLED_BG), ("active", ACCENT_DIM)],
+        foreground=[("disabled", DISABLED_FG)],
+    )
 
     try:
         self.style.layout(
@@ -4161,75 +4671,6 @@ def _uavedusim_reflow_wait_footer(self, event=None):
         self.wait_btn_frame.grid(row=0, column=1, columnspan=1, sticky="e")
 
 
-def _uavedusim_reflow_prereq_layout(self, event=None):
-    if self.page != "attack" or not hasattr(self, "prereq_panel"):
-        return
-
-    width = self.prereq_panel.winfo_width() or self.content.winfo_width()
-    compact = width < self.px(820)
-    very_compact = width < self.px(560)
-
-    for widget in (getattr(self, "takeoff_box", None), getattr(self, "destination_box", None), getattr(self, "prereq_buttons", None)):
-        if widget is not None:
-            try:
-                widget.grid_forget()
-            except Exception:
-                pass
-
-    for col in range(3):
-        self.prereq_panel.grid_columnconfigure(col, weight=0, minsize=0)
-
-    if compact:
-        self.prereq_panel.grid_columnconfigure(0, weight=1)
-        self.takeoff_box.grid(row=0, column=0, sticky="ew", padx=self.px(12), pady=(self.px(8), self.px(4)))
-        self.destination_box.grid(row=1, column=0, sticky="ew", padx=self.px(12), pady=(self.px(4), self.px(4)))
-        self.prereq_buttons.grid(row=2, column=0, sticky="ew", padx=self.px(12), pady=(self.px(4), self.px(8)))
-        self._repack_children(self.prereq_buttons, vertical=very_compact, fill_x=True)
-    else:
-        self.prereq_panel.grid_columnconfigure(0, weight=1)
-        self.prereq_panel.grid_columnconfigure(1, weight=1)
-        self.prereq_panel.grid_columnconfigure(2, weight=0)
-        self.takeoff_box.grid(row=0, column=0, sticky="nsew", padx=(self.px(12), self.px(6)), pady=self.px(8))
-        self.destination_box.grid(row=0, column=1, sticky="nsew", padx=(self.px(6), self.px(6)), pady=self.px(8))
-        self.prereq_buttons.grid(row=0, column=2, sticky="e", padx=(self.px(6), self.px(12)), pady=self.px(8))
-        self._repack_children(self.prereq_buttons, vertical=True, fill_x=True)
-
-    for box_attr, label_attr in [("takeoff_box", "takeoff_status_label"), ("destination_box", "destination_status_label")]:
-        if not hasattr(self, box_attr) or not hasattr(self, label_attr):
-            continue
-
-        box = getattr(self, box_attr)
-        label = getattr(self, label_attr)
-        box_width = box.winfo_width() or max(self.px(180), width // (1 if compact else 3))
-        label.configure(wraplength=max(self.px(120), box_width - self.px(14)))
-
-    destination_grids = [
-        child for child in getattr(self, "destination_box", self.prereq_panel).winfo_children()
-        if isinstance(child, tk.Frame)
-    ]
-
-    if destination_grids:
-        destination_grid = destination_grids[-1]
-        fields = list(destination_grid.winfo_children())
-        dest_width = self.destination_box.winfo_width() or width
-        stack_fields = very_compact or dest_width < self.px(430)
-
-        for idx, field in enumerate(fields):
-            try:
-                field.grid_forget()
-            except Exception:
-                pass
-
-            if stack_fields:
-                field.grid(row=idx, column=0, sticky="ew", padx=0, pady=(0, self.px(6)))
-            else:
-                field.grid(row=0, column=idx, sticky="w", padx=(0, self.px(8)), pady=0)
-
-        destination_grid.grid_columnconfigure(0, weight=(1 if stack_fields else 0))
-
-    if hasattr(self, "attack_scroll_canvas"):
-        self.root.after(40, lambda: self.attack_scroll_canvas.configure(scrollregion=self.attack_scroll_canvas.bbox("all")))
-
 
 def _uavedusim_reflow_attack_layout(self, event=None):
     if self.page != "attack" or not hasattr(self, "attack_body"):
@@ -4289,32 +4730,6 @@ def _uavedusim_reflow_attack_layout(self, event=None):
         self.root.after(40, lambda: self.attack_scroll_canvas.configure(scrollregion=self.attack_scroll_canvas.bbox("all")))
 
 
-def _uavedusim_reflow_attack_footer(self, event=None):
-    if self.page != "attack" or not hasattr(self, "attack_btn_frame"):
-        return
-
-    width = getattr(event, "width", None) or self.content.winfo_width()
-    compact = width < self.px(980)
-    vertical_buttons = width < self.px(560)
-
-    if hasattr(self, "restart_button"):
-        self.restart_button.configure(text=("Reiniciar" if width < self.px(720) else "Reiniciar sim."))
-
-    if hasattr(self, "stop_button"):
-        self.stop_button.configure(text=("Desligar" if width < self.px(720) else "Desligar jamming"))
-
-    if compact:
-        self.attack_hint_label.grid(row=0, column=0, columnspan=2, sticky="ew", padx=0, pady=(0, self.px(8)))
-        self.attack_btn_frame.grid(row=1, column=0, columnspan=2, sticky=("ew" if vertical_buttons else "e"))
-    else:
-        self.attack_hint_label.grid(row=0, column=0, columnspan=1, sticky="ew", padx=(0, self.px(10)), pady=0)
-        self.attack_btn_frame.grid(row=0, column=1, columnspan=1, sticky="e")
-
-    self._repack_children(self.attack_btn_frame, vertical=vertical_buttons, fill_x=True)
-
-    if hasattr(self, "attack_scroll_canvas"):
-        self.root.after(40, lambda: self.attack_scroll_canvas.configure(scrollregion=self.attack_scroll_canvas.bbox("all")))
-
 
 # Versao responsiva das linhas de ataque.
 def _uavedusim_make_attack_row(self, parent, attack_key, label, entry_var=None, placeholder=None):
@@ -4331,6 +4746,7 @@ def _uavedusim_make_attack_row(self, parent, attack_key, label, entry_var=None, 
     row.pack(fill="x")
     row.grid_columnconfigure(0, weight=1)
     row.grid_columnconfigure(1, weight=0)
+    row.grid_columnconfigure(2, weight=0)
     row.bind("<Button-1>", lambda _e, key=attack_key: self.select_attack_type(key))
 
     lbl = tk.Label(
@@ -4345,6 +4761,16 @@ def _uavedusim_make_attack_row(self, parent, attack_key, label, entry_var=None, 
     )
     lbl.grid(row=0, column=0, sticky="ew", padx=(self.px(14), self.px(6)), pady=self.px(12))
     lbl.bind("<Button-1>", lambda _e, key=attack_key: self.select_attack_type(key))
+
+    # Icone de informacao (canto superior direito do card do ataque).
+    info_icon = _uavedusim_make_info_icon(self, row, attack_key)
+    info_icon.grid(
+        row=0,
+        column=(2 if entry_var is not None else 1),
+        sticky="ne",
+        padx=(self.px(4), self.px(10)),
+        pady=self.px(8),
+    )
 
     entry = None
     entry_wrap = None
@@ -4367,7 +4793,7 @@ def _uavedusim_make_attack_row(self, parent, attack_key, label, entry_var=None, 
             relief="flat",
             bd=0,
             justify="center",
-            bg="#060b12",
+            bg="#11111b",
             fg=TEXT,
             insertbackground=TEXT,
             width=7,
@@ -4387,6 +4813,7 @@ def _uavedusim_make_attack_row(self, parent, attack_key, label, entry_var=None, 
         "entry": entry,
         "entry_wrap": entry_wrap,
         "var": entry_var,
+        "info_icon": info_icon,
     }
 
 
@@ -4405,9 +4832,9 @@ def _uavedusim_draw_mitigation_slider(self):
     c.configure(width=w, height=h, bg=SURFACE2)
     c.delete("all")
 
-    track = "#1e3a2f" if on else "#30363d"
-    knob = "#e6edf3"
-    outline = "#52606d"
+    track = "#35433b" if on else "#585b70"
+    knob = "#cdd6f4"
+    outline = "#6c7086"
 
     c.create_rectangle(radius, pad, w - radius, h - pad, fill=track, outline=track)
     c.create_oval(pad, pad, pad + 2 * radius - pad, h - pad, fill=track, outline=track)
@@ -4471,9 +4898,7 @@ UAVEDUSIMApp._reflow_menu_footer = _uavedusim_reflow_menu_footer
 UAVEDUSIMApp.show_wait_page = _uavedusim_show_wait_page
 UAVEDUSIMApp._reflow_wait_status = _uavedusim_reflow_wait_status
 UAVEDUSIMApp._reflow_wait_footer = _uavedusim_reflow_wait_footer
-UAVEDUSIMApp._reflow_prereq_layout = _uavedusim_reflow_prereq_layout
 UAVEDUSIMApp._reflow_attack_layout = _uavedusim_reflow_attack_layout
-UAVEDUSIMApp._reflow_attack_footer = _uavedusim_reflow_attack_footer
 UAVEDUSIMApp._make_attack_row = _uavedusim_make_attack_row
 UAVEDUSIMApp._draw_mitigation_slider = _uavedusim_draw_mitigation_slider
 UAVEDUSIMApp.__init__ = _uavedusim_app_init
@@ -4493,8 +4918,22 @@ def _uavedusim_pack_button_column_v2(self, frame, *, vertical=True, fill_x=True)
         except Exception:
             pass
 
-    for idx, child in enumerate(children):
-        last = idx == len(children) - 1
+    visible_children = []
+
+    for child in children:
+        if child is getattr(self, "destination_timer_label", None):
+            try:
+                timer_text = str(getattr(self, "destination_timer_var").get()).strip()
+            except Exception:
+                timer_text = ""
+
+            if not timer_text:
+                continue
+
+        visible_children.append(child)
+
+    for idx, child in enumerate(visible_children):
+        last = idx == len(visible_children) - 1
 
         if vertical:
             child.pack(
@@ -4660,7 +5099,8 @@ def _uavedusim_reflow_prereq_layout_v2(self, event=None):
             pady=(self.px(4), self.px(8)),
         )
 
-        self._pack_button_column_v2(self.prereq_buttons, vertical=very_compact, fill_x=True)
+        timer_visible = bool(getattr(self, "destination_release_pending", False))
+        self._pack_button_column_v2(self.prereq_buttons, vertical=(very_compact or timer_visible), fill_x=True)
 
     else:
         self.prereq_panel.grid_columnconfigure(0, weight=1, minsize=self.px(210))
@@ -5569,15 +6009,15 @@ def _uavedusim_home_show_main_menu(self):
             "HomeAction.TButton",
             font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
             padding=(self.px(18), self.px(9)),
-            background="#2d5a6e",
-            foreground="#ffffff",
+            background="#74c7ec",
+            foreground="#11111b",
             relief="flat",
             borderwidth=0,
         )
         self.style.map(
             "HomeAction.TButton",
-            background=[("active", "#3d7388"), ("pressed", "#234654")],
-            foreground=[("active", "#ffffff"), ("pressed", "#ffffff")],
+            background=[("disabled", DISABLED_BG), ("active", "#89dceb"), ("pressed", "#89b4fa")],
+            foreground=[("disabled", DISABLED_FG), ("active", "#11111b"), ("pressed", "#11111b")],
         )
 
         self.style.configure(
@@ -5585,14 +6025,14 @@ def _uavedusim_home_show_main_menu(self):
             font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
             padding=(self.px(18), self.px(11)),
             background=ACCENT,
-            foreground="#ffffff",
+            foreground="#11111b",
             relief="flat",
             borderwidth=0,
         )
         self.style.map(
             "HomeAbout.TButton",
-            background=[("active", ACCENT_DIM), ("pressed", ACCENT_DIM)],
-            foreground=[("active", "#ffffff"), ("pressed", "#ffffff")],
+            background=[("disabled", DISABLED_BG), ("active", ACCENT_DIM), ("pressed", ACCENT_DIM)],
+            foreground=[("disabled", DISABLED_FG), ("active", "#11111b"), ("pressed", "#11111b")],
         )
     except Exception:
         pass
@@ -5846,7 +6286,16 @@ def _uavedusim_home_show_main_menu(self):
     ).pack(side="left", padx=(0, self.px(8)))
 
 
-_UAVEDUSIM_HOME_OLD_CHOOSE_CURRENT = UAVEDUSIMApp.choose_current
+_UAVEDUSIM_HOME_OLD_CHOOSE_CURRENT = getattr(UAVEDUSIMApp, "choose_current", None)
+
+if _UAVEDUSIM_HOME_OLD_CHOOSE_CURRENT is None:
+    def _uavedusim_base_choose_current(self):
+        if hasattr(self, "item_canvas") and self.selected_callback:
+            idx = self.item_canvas.selected_idx
+            if 0 <= idx < len(self.item_canvas.opts):
+                self.selected_callback(self.item_canvas.opts[idx])
+
+    _UAVEDUSIM_HOME_OLD_CHOOSE_CURRENT = _uavedusim_base_choose_current
 
 
 def _uavedusim_home_choose_current(self):
@@ -6017,14 +6466,14 @@ def _uavedusim_show_jamming_info_screen(self):
             font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
             padding=(self.px(18), self.px(11)),
             background=ACCENT,
-            foreground="#ffffff",
+            foreground="#11111b",
             relief="flat",
             borderwidth=0,
         )
         self.style.map(
             "JammingMitig.TButton",
-            background=[("active", ACCENT_DIM), ("pressed", ACCENT_DIM)],
-            foreground=[("active", "#ffffff"), ("pressed", "#ffffff")],
+            background=[("disabled", DISABLED_BG), ("active", ACCENT_DIM), ("pressed", ACCENT_DIM)],
+            foreground=[("disabled", DISABLED_FG), ("active", "#11111b"), ("pressed", "#11111b")],
         )
     except Exception:
         pass
@@ -6086,8 +6535,8 @@ def _uavedusim_show_mitigation_screen(self):
     self.set_badge("MITIGAÇÕES DO SIMULADOR")
 
     # Cor secundaria para o botao de iniciar simulacao.
-    MITIG_COLOR     = "#1f7a5c"
-    MITIG_COLOR_DIM = "#155c44"
+    MITIG_COLOR     = "#94e2d5"
+    MITIG_COLOR_DIM = "#32454a"
 
     # Cabecalho com botao de voltar.
     header = tk.Frame(self.content, bg=SURFACE)
@@ -6241,14 +6690,14 @@ def _uavedusim_show_mitigation_screen(self):
             font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
             padding=(self.px(18), self.px(11)),
             background=MITIG_COLOR,
-            foreground="#ffffff",
+            foreground="#11111b",
             relief="flat",
             borderwidth=0,
         )
         self.style.map(
             "MitigStart.TButton",
-            background=[("active", MITIG_COLOR_DIM), ("pressed", MITIG_COLOR_DIM)],
-            foreground=[("active", "#ffffff"), ("pressed", "#ffffff")],
+            background=[("disabled", DISABLED_BG), ("active", MITIG_COLOR_DIM), ("pressed", MITIG_COLOR_DIM)],
+            foreground=[("disabled", DISABLED_FG), ("active", "#11111b"), ("pressed", "#11111b")],
         )
     except Exception:
         pass

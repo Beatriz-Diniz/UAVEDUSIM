@@ -1,16 +1,525 @@
-[2026-06-29 21:20:20] Iniciando UAVEDUSIM GUI
-[2026-06-29 21:20:20] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
-[2026-06-29 21:20:20] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
-[2026-06-29 21:20:21] Iniciando UAVEDUSIM GUI persistente
-[2026-06-29 21:20:21] Iniciando UAVEDUSIM GUI persistente
-[2026-06-29 21:20:21] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
-[2026-06-29 21:20:21] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
-[2026-06-29 21:20:21] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
-[2026-06-29 21:20:21] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
-[2026-06-29 21:20:34] Fechando interface UAVEDUSIM.
-[2026-06-29 21:20:34] Fechando interface UAVEDUSIM.
-[2026-06-29 21:20:34] Encerrando UAVEDUSIM GUI. Codigo=0
-[2026-06-29 21:20:34] Encerrando terminais abertos pela sessao 1307639
-[2026-06-29 21:20:35] Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM
+[2026-07-01 20:59:06] Iniciando UAVEDUSIM GUI
+[2026-07-01 20:59:06] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-01 20:59:06] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-01 20:59:06] Dependencias minimas da interface verificadas.
+[2026-07-01 20:59:07] Iniciando UAVEDUSIM GUI persistente
+[2026-07-01 20:59:07] Iniciando UAVEDUSIM GUI persistente
+[2026-07-01 20:59:07] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-01 20:59:07] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-01 20:59:07] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-01 20:59:07] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-01 20:59:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 20:59:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 20:59:17] true
+[2026-07-01 20:59:17] true
+[2026-07-01 20:59:17] Codigo de retorno: 0
+[2026-07-01 20:59:17] Codigo de retorno: 0
+[2026-07-01 20:59:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 20:59:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 20:59:17] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:17] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:17] Codigo de retorno: 0
+[2026-07-01 20:59:17] Codigo de retorno: 0
+[2026-07-01 20:59:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 20:59:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 20:59:17] v1.17.0
+[2026-07-01 20:59:17] v1.17.0
+[2026-07-01 20:59:17] Codigo de retorno: 0
+[2026-07-01 20:59:17] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:17] Codigo de retorno: 0
+[2026-07-01 20:59:17] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:17] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 20:59:17] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 20:59:17] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 20:59:17] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 20:59:17] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 20:59:17] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 20:59:17] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 20:59:17] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 20:59:17] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 20:59:17] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: r1_rover
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: r1_rover
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: rover_ackermann
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: rover_ackermann
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: rover_differential
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: rover_differential
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: rover_mecanum
+[2026-07-01 20:59:17] Ignorando modelo rover na lista de veiculos: rover_mecanum
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-01 20:59:17] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-01 20:59:18] Ignorando mundo rover na lista de mundos: rover
+[2026-07-01 20:59:18] Ignorando mundo rover na lista de mundos: rover
+[2026-07-01 20:59:19] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-01 20:59:19] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-01 20:59:19] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 20:59:19] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 20:59:19] true
+[2026-07-01 20:59:19] true
+[2026-07-01 20:59:19] Codigo de retorno: 0
+[2026-07-01 20:59:19] Codigo de retorno: 0
+[2026-07-01 20:59:19] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 20:59:19] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 20:59:19] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:19] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:19] Codigo de retorno: 0
+[2026-07-01 20:59:19] Codigo de retorno: 0
+[2026-07-01 20:59:19] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 20:59:19] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 20:59:19] v1.17.0
+[2026-07-01 20:59:19] v1.17.0
+[2026-07-01 20:59:19] Codigo de retorno: 0
+[2026-07-01 20:59:19] Codigo de retorno: 0
+[2026-07-01 20:59:19] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:19] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 20:59:19] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 20:59:19] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 20:59:19] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 20:59:19] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 20:59:19] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 20:59:19] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 20:59:19] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 20:59:19] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 20:59:19] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 20:59:19] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 20:59:19] Terminal registrado: pid=2174873 title=QGroundControl
+[2026-07-01 20:59:19] QGroundControl aberto sem terminal. pid=2174873
+[2026-07-01 20:59:19] Terminal registrado: pid=2174873 title=QGroundControl
+[2026-07-01 20:59:19] QGroundControl aberto sem terminal. pid=2174873
+     0.071 - warning: QApplication: invalid style override 'kvantum' passed, ignoring it.
+	Available styles: Windows, Fusion (default:unknown:0)
+     0.083 - debug: Settings location "/home/beatrizdiniz/.config/QGroundControl/QGroundControl.ini" Is writable?: true (qgc.qgcapplication:unknown:0)
+     0.089 - debug: Filter rules "*Log.debug=false\nqgc.*.debug=false\nqgc.videomanager.videoreceiver.gstreamer.api.debug=true\nqt.qml.connections=false" (qgc.utilities.qgcloggingcategory:unknown:0)
+[2026-07-01 20:59:20] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 20:59:20] Script temporario: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_2174180/uavedusim_cmd_1782950360645_2174200.sh
+[2026-07-01 20:59:20] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 20:59:20] Script temporario: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_2174180/uavedusim_cmd_1782950360645_2174200.sh
+[2026-07-01 20:59:20] Terminal registrado: pid=2174992 title=PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 20:59:20] Terminal registrado: pid=2174992 title=PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 2174180
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbolicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  1 20:59 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  1 20:59 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  1 20:59 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_2174180.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+[1/4] Generating ../romfs_files.tar
+[2/4] ROMFS: copying, generating airframes
+[3/4] ROMFS: copying extras
+[3/4] cd /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge && /usr/bin/cmake -E env PX4_SIM_MODEL=gz_x500_uavjamsim GZ_IP=127.0.0.1 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/bin/px4
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 0
+INFO  [init] found model autostart file as SYS_AUTOSTART=4020
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 335 bytes, decoded 335 bytes (INT32:13, FLOAT:4)
+INFO  [param] selected parameter backup file parameters_backup.bson
+libva info: VA-API version 1.14.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: va_openDriver() returns -1
+INFO  [dataman] data manager file './dataman' size is 1208528 bytes
+INFO  [init] Gazebo simulator 8.11.0
+     4.979 - critical: Error loading text-to-speech plug-in "speechd" (default:unknown:0)
+INFO  [init] Starting gazebo with world: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+INFO  [init] Starting gz gui
+
+(gst-plugin-scanner:2175867): GLib-GObject-CRITICAL **: 20:59:26.834: g_param_spec_enum: assertion 'g_enum_get_value (enum_class, default_value) != NULL' failed
+
+(gst-plugin-scanner:2175867): GLib-GObject-CRITICAL **: 20:59:26.834: validate_pspec_to_install: assertion 'G_IS_PARAM_SPEC (pspec)' failed
+
+(gst-plugin-scanner:2175867): GLib-GObject-CRITICAL **: 20:59:26.834: g_param_spec_ref_sink: assertion 'G_IS_PARAM_SPEC (pspec)' failed
+
+(gst-plugin-scanner:2175867): GLib-GObject-CRITICAL **: 20:59:26.834: g_param_spec_unref: assertion 'G_IS_PARAM_SPEC (pspec)' failed
+INFO  [init] Waiting for Gazebo world...
+libva info: VA-API version 1.23.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib64/dri-nonfree/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_23
+libva info: va_openDriver() returns 0
+libva info: VA-API version 1.23.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib64/dri-nonfree/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_23
+libva info: va_openDriver() returns 0
+libva info: VA-API version 1.23.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib64/dri-nonfree/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_23
+libva info: va_openDriver() returns 0
+[07-01 20:59:26.834] CamHAL[ERR] load_camera_hal_library, failed to open PCI device. error: (null)
+[07-01 20:59:26.834] CamHAL[ERR] get_number_of_cameras, function call is nullptr
+[07-01 20:59:26.834] CamHAL[ERR] get_number_of_cameras, function call is nullptr
+INFO  [init] Gazebo world is ready
+INFO  [init] Spawning Gazebo model
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="air_pressure_sensor"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L219]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="magnetometer_sensor"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L233]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="imu_sensor"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L259]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="navsat_sensor"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L311]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_uavjamsim"]/link[@name="airspeed_link"]/sensor[@name="air_speed"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim/model.sdf:L88]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="lidar_2d_v2"]/link[@name="link"]/sensor[@name="lidar_2d_v2"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/lidar_2d_v2/model.sdf:L51]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_uavjamsim"]/link[@name="oakd_lite_camera_link"]/sensor[@name="IMX214"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim/model.sdf:L208]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_uavjamsim"]/link[@name="oakd_lite_camera_link"]/sensor[@name="StereoOV7251"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim/model.sdf:L221]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_uavjamsim"]/link[@name="lidar_sensor_link"]/sensor[@name="lidar"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim/model.sdf:L287]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_uavjamsim"]/link[@name="lidar_front_sensor_link"]/sensor[@name="lidar_front"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim/model.sdf:L356]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="gimbal"]/link[@name="camera_link"]/sensor[@name="camera_imu"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/gimbal/model.sdf:L203]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="gimbal"]/link[@name="camera_link"]/sensor[@name="camera"]/gz_frame_id:/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/gimbal/model.sdf:L264]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+INFO  [lockstep_scheduler] setting initial absolute time to 2432000 us
+INFO  [gz_bridge] world: default, model: x500_uavjamsim_0
+INFO  [init] Setting camera to follow x500_uavjamsim_0
+INFO  [init] Camera follow offset set to -0.8, -0.8, 0.6
+INFO  [commander] LED: open /dev/led0 failed (22)
+WARN  [health_and_arming_checks] Preflight Fail: ekf2 missing data
+WARN  [health_and_arming_checks] Preflight Fail: No connection to the GCS
+INFO  [tone_alarm] home set
+INFO  [uxrce_dds_client] init UDP agent IP:127.0.0.1, port:8888
+INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 18570 remote port 14550
+INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540
+INFO  [mavlink] mode: Onboard, data rate: 4000 B/s on udp port 14280 remote port 14030
+INFO  [mavlink] mode: Gimbal, data rate: 400000 B/s on udp port 13030 remote port 13280
+INFO  [logger] logger started (mode=all)
+INFO  [logger] Start file log (type: full)
+INFO  [logger] [logger] ./log/2026-07-01/23_59_34.ulg	
+INFO  [logger] Opened full log file: ./log/2026-07-01/23_59_34.ulg
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [px4] Startup script returned successfully
+pxh> INFO  [mavlink] partner IP: 127.0.0.1
+ERROR [mavlink] vehicle_command_ack lost, generation 9 -> 27
+ERROR [mavlink] vehicle_command_ack lost, generation 9 -> 27
+ERROR [mavlink] vehicle_command_ack lost, generation 9 -> 27
+ERROR [mavlink] vehicle_command_ack lost, generation 9 -> 27
+INFO  [commander] [32mReady for takeoff![0m
+[2026-07-01 20:59:38] Simulacao pronta para ataques: Gazebo aberto; PX4 Ready for takeoff. Abrindo menu de ataques.
+[2026-07-01 20:59:38] Simulacao pronta para ataques: Gazebo aberto; PX4 Ready for takeoff. Abrindo menu de ataques.
+[2026-07-01 20:59:41] Comando enviado ao console PX4: commander takeoff
+[2Kpxh> c[2Kpxh> co[2Kpxh> com[2Kpxh> comm[2Kpxh> comma[2Kpxh> comman[2Kpxh> command[2Kpxh> commande[2Kpxh> commander[2Kpxh> commander [2Kpxh> commander t[2Kpxh> commander ta[2Kpxh> commander tak[2Kpxh> commander take[2Kpxh> commander takeo[2Kpxh> commander takeof[2Kpxh> [2026-07-01 20:59:41] Comando enviado ao console PX4: commander takeoff
+commander takeoff
+pxh> INFO  [commander] Armed by internal command	
+INFO  [tone_alarm] arming warning
+INFO  [navigator] Using default takeoff altitude: 2.5 m	
+INFO  [commander] Takeoff detected	
+INFO  [mavlink] partner IP: 127.0.0.1
+[2026-07-01 21:00:04] [UAVEDUSIM] Tentando conexao MAVLink: udpin:0.0.0.0:14540
+[2026-07-01 21:00:04] [UAVEDUSIM] Tentando conexao MAVLink: udpin:0.0.0.0:14540
+[2026-07-01 21:00:04] [UAVEDUSIM] Heartbeat recebido: system=1 component=0
+[2026-07-01 21:00:04] [UAVEDUSIM] Heartbeat recebido: system=1 component=0
+[2026-07-01 21:00:04] [UAVEDUSIM] Destino calculado: lat=47.3975910, lon=8.5507740, alt_amsl=2.80, yaw_base_attitude=96.9, rotacao_rel=0.0, direcao_destino=96.9, yaw_comando=ignorado, distancia=350.0, north=-42.3, east=347.4, alt_relativa_alvo=2.50, vel_subida=1.50, vel_horizontal=5.00
+[2026-07-01 21:00:04] [UAVEDUSIM] Destino calculado: lat=47.3975910, lon=8.5507740, alt_amsl=2.80, yaw_base_attitude=96.9, rotacao_rel=0.0, direcao_destino=96.9, yaw_comando=ignorado, distancia=350.0, north=-42.3, east=347.4, alt_relativa_alvo=2.50, vel_subida=1.50, vel_horizontal=5.00
+[2026-07-01 21:00:04] [UAVEDUSIM] Enviando 1a tentativa de DO_REPOSITION...
+[2026-07-01 21:00:04] [UAVEDUSIM] Enviando 1a tentativa de DO_REPOSITION...
+[2026-07-01 21:00:04] [UAVEDUSIM] Enviando DO_REPOSITION (destino final): lat=47.3975910, lon=8.5507740, alt_amsl=2.80
+[2026-07-01 21:00:04] [UAVEDUSIM] Enviando DO_REPOSITION (destino final): lat=47.3975910, lon=8.5507740, alt_amsl=2.80
+[2026-07-01 21:00:04] [UAVEDUSIM] COMMAND_ACK DO_REPOSITION result=0
+[2026-07-01 21:00:04] [UAVEDUSIM] COMMAND_ACK DO_REPOSITION result=0
+[2026-07-01 21:00:04] [UAVEDUSIM] Reenviando DO_REPOSITION para garantir a altitude configurada...
+[2026-07-01 21:00:04] [UAVEDUSIM] Reenviando DO_REPOSITION para garantir a altitude configurada...
+[2026-07-01 21:00:04] [UAVEDUSIM] Enviando DO_REPOSITION (destino final): lat=47.3975910, lon=8.5507740, alt_amsl=2.80
+[2026-07-01 21:00:04] [UAVEDUSIM] Enviando DO_REPOSITION (destino final): lat=47.3975910, lon=8.5507740, alt_amsl=2.80
+[2026-07-01 21:00:04] [UAVEDUSIM] COMMAND_ACK DO_REPOSITION result=0
+[2026-07-01 21:00:04] [UAVEDUSIM] COMMAND_ACK DO_REPOSITION result=0
+[2026-07-01 21:00:55] Saindo da tela de ataques. Encerrando terminais e processos da simulacao.
+[2026-07-01 21:00:55] Saindo da tela de ataques. Encerrando terminais e processos da simulacao.
+[2026-07-01 21:00:55] Encerrando terminais abertos pelo UAVEDUSIM.
+[2026-07-01 21:00:55] Encerrando terminais abertos pelo UAVEDUSIM.
+[2026-07-01 21:00:55] Enviando TERM para terminal: pid=2174873 title=QGroundControl
+[2026-07-01 21:00:55] Enviando TERM para terminal: pid=2174873 title=QGroundControl
+[2026-07-01 21:00:55] Enviando TERM para terminal: pid=2174992 title=PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 21:00:55] Enviando TERM para terminal: pid=2174992 title=PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 21:00:56] Forcando KILL para terminal restante: pid=2174873 title=QGroundControl
+[2026-07-01 21:00:56] Forcando KILL para terminal restante: pid=2174873 title=QGroundControl
+[2026-07-01 21:00:56] Forcando KILL para terminal restante: pid=2174992 title=PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 21:00:56] Forcando KILL para terminal restante: pid=2174992 title=PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 21:00:56] Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM.
+[2026-07-01 21:00:56] Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM.
+[2026-07-01 21:00:59] 
+[2026-07-01 21:00:59] 
+[2026-07-01 21:00:59] [cleanup] Stopping PX4/Gazebo processes...
+[2026-07-01 21:00:59] [cleanup] Stopping PX4/Gazebo processes...
+[2026-07-01 21:00:59] [cleanup] Done.
+[2026-07-01 21:00:59] [cleanup] Done.
+[2026-07-01 21:00:59] Cleanup retornou codigo: 0
+[2026-07-01 21:00:59] Cleanup retornou codigo: 0
+[2026-07-01 21:01:21] Fechando interface UAVEDUSIM.
+[2026-07-01 21:01:21] Fechando interface UAVEDUSIM.
+[2026-07-01 21:01:21] Encerrando UAVEDUSIM GUI. Codigo=0
+[2026-07-01 21:01:21] Encerrando terminais abertos pela sessao 2174180
+[2026-07-01 21:01:22] Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM
 
 [cleanup] Stopping PX4/Gazebo processes...
+[cleanup] Done.
+[2026-07-01 21:05:15] Iniciando UAVEDUSIM GUI persistente
+[2026-07-01 21:05:15] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-01 21:05:15] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-01 21:05:26] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 21:05:26] true
+[2026-07-01 21:05:26] Codigo de retorno: 0
+[2026-07-01 21:05:26] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 21:05:26] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:05:26] Codigo de retorno: 0
+[2026-07-01 21:05:26] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 21:05:26] v1.17.0
+[2026-07-01 21:05:26] Codigo de retorno: 0
+[2026-07-01 21:05:26] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:05:26] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 21:05:26] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 21:05:26] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 21:05:26] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 21:05:26] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-01 21:05:26] Ignorando modelo rover na lista de veiculos: r1_rover
+[2026-07-01 21:05:26] Ignorando modelo rover na lista de veiculos: rover_ackermann
+[2026-07-01 21:05:26] Ignorando modelo rover na lista de veiculos: rover_differential
+[2026-07-01 21:05:26] Ignorando modelo rover na lista de veiculos: rover_mecanum
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-01 21:05:26] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-01 21:05:29] Ignorando mundo rover na lista de mundos: rover
+[2026-07-01 21:05:31] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-01 21:05:31] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 21:05:31] true
+[2026-07-01 21:05:31] Codigo de retorno: 0
+[2026-07-01 21:05:31] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 21:05:31] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:05:31] Codigo de retorno: 0
+[2026-07-01 21:05:31] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 21:05:31] v1.17.0
+[2026-07-01 21:05:31] Codigo de retorno: 0
+[2026-07-01 21:05:31] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:05:31] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 21:05:31] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 21:05:31] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 21:05:31] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 21:05:31] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 21:05:31] Terminal registrado: pid=2196436 title=QGroundControl
+[2026-07-01 21:05:31] QGroundControl aberto sem terminal. pid=2196436
+     0.022 - warning: QApplication: invalid style override 'kvantum' passed, ignoring it.
+	Available styles: Windows, Fusion (default:unknown:0)
+     0.028 - debug: Settings location "/home/beatrizdiniz/.config/QGroundControl/QGroundControl.ini" Is writable?: true (qgc.qgcapplication:unknown:0)
+     0.032 - debug: Filter rules "*Log.debug=false\nqgc.*.debug=false\nqgc.videomanager.videoreceiver.gstreamer.api.debug=true\nqt.qml.connections=false" (qgc.utilities.qgcloggingcategory:unknown:0)
+[2026-07-01 21:05:32] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 21:05:32] Script temporario: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_2195602/uavedusim_cmd_1782950732936_2195602.sh
+[2026-07-01 21:05:32] Terminal registrado: pid=2196503 title=PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 2195602
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbolicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  1 21:05 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  1 21:05 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  1 21:05 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_2195602.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+[1/4] Generating ../romfs_files.tar
+[2/4] ROMFS: copying, generating airframes
+[3/4] ROMFS: copying extras
+[3/4] cd /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge && /usr/bin/cmake -E env PX4_SIM_MODEL=gz_x500_uavjamsim GZ_IP=127.0.0.1 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/bin/px4
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 0
+INFO  [init] found model autostart file as SYS_AUTOSTART=4020
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 335 bytes, decoded 335 bytes (INT32:13, FLOAT:4)
+INFO  [param] selected parameter backup file parameters_backup.bson
+libva info: VA-API version 1.14.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: va_openDriver() returns -1
+INFO  [dataman] data manager file './dataman' size is 1208528 bytes
+INFO  [init] Gazebo simulator 8.11.0
+     4.461 - critical: Error loading text-to-speech plug-in "speechd" (default:unknown:0)
+INFO  [init] Starting gazebo with world: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+INFO  [init] Starting gz gui
+Library error for [/home/beatrizdiniz/gazebo_workspace/install/lib64/libgz-sim8-gz.so.8.11.0]: liburdfdom_sensor.so.6: cannot open shared object file: No such file or directory
+make: *** [Makefile:227: px4_sitl] Interrupt
+ninja: build stopped: interrupted by user.
+
+[UAVEDUSIM] Comando finalizado com codigo: 130
+ERROR [px4] Startup script returned with return value: 2
+[UAVEDUSIM] Pressione ENTER para fechar este terminal.
+[2026-07-01 21:05:43] Saindo da tela de ataques. Encerrando terminais e processos da simulacao.
+[2026-07-01 21:05:43] Encerrando terminais abertos pelo UAVEDUSIM.
+[2026-07-01 21:05:43] Enviando TERM para terminal: pid=2196436 title=QGroundControl
+[2026-07-01 21:05:43] Enviando TERM para terminal: pid=2196503 title=PX4 SITL - gz_x500_uavjamsim - default
+    11.518 - debug: Exiting main (default:unknown:0)
+Invalid value (0) for DRI_PRIME. Should be > 0
+[2026-07-01 21:05:44] Forcando KILL para terminal restante: pid=2196436 title=QGroundControl
+[2026-07-01 21:05:44] Forcando KILL para terminal restante: pid=2196503 title=PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 21:05:44] Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM.
+[2026-07-01 21:05:47] 
+[2026-07-01 21:05:47] [cleanup] Stopping PX4/Gazebo processes...
+[2026-07-01 21:05:47] [cleanup] Done.
+[2026-07-01 21:05:47] Cleanup retornou codigo: 0
+[2026-07-01 21:08:17] Fechando interface UAVEDUSIM.
+[2026-07-01 21:08:21] Iniciando UAVEDUSIM GUI persistente
+[2026-07-01 21:08:21] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-01 21:08:21] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-01 21:08:43] Fechando interface UAVEDUSIM.
+[2026-07-01 21:11:38] Iniciando UAVEDUSIM GUI persistente
+[2026-07-01 21:11:38] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-01 21:11:38] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-01 21:12:02] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 21:12:02] true
+[2026-07-01 21:12:02] Codigo de retorno: 0
+[2026-07-01 21:12:02] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 21:12:02] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:12:02] Codigo de retorno: 0
+[2026-07-01 21:12:02] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 21:12:02] v1.17.0
+[2026-07-01 21:12:02] Codigo de retorno: 0
+[2026-07-01 21:12:02] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:12:02] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 21:12:02] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 21:12:02] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 21:12:02] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 21:12:02] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-01 21:12:02] Ignorando modelo rover na lista de veiculos: r1_rover
+[2026-07-01 21:12:02] Ignorando modelo rover na lista de veiculos: rover_ackermann
+[2026-07-01 21:12:02] Ignorando modelo rover na lista de veiculos: rover_differential
+[2026-07-01 21:12:02] Ignorando modelo rover na lista de veiculos: rover_mecanum
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-01 21:12:02] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-01 21:12:03] Ignorando mundo rover na lista de mundos: rover
+[2026-07-01 21:12:04] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-01 21:12:04] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-01 21:12:04] true
+[2026-07-01 21:12:04] Codigo de retorno: 0
+[2026-07-01 21:12:04] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-01 21:12:04] v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:12:04] Codigo de retorno: 0
+[2026-07-01 21:12:04] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-01 21:12:04] v1.17.0
+[2026-07-01 21:12:04] Codigo de retorno: 0
+[2026-07-01 21:12:04] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-01 21:12:04] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-01 21:12:04] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-01 21:12:04] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-01 21:12:04] CMakeLists ja contem 4020_gz_x500_uavjamsim.
+[2026-07-01 21:12:04] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 ja existe e nao e link. Mantendo como esta.
+[2026-07-01 21:12:04] Terminal registrado: pid=2216453 title=QGroundControl
+[2026-07-01 21:12:04] QGroundControl aberto sem terminal. pid=2216453
+     0.061 - warning: QApplication: invalid style override 'kvantum' passed, ignoring it.
+	Available styles: Windows, Fusion (default:unknown:0)
+     0.081 - debug: Settings location "/home/beatrizdiniz/.config/QGroundControl/QGroundControl.ini" Is writable?: true (qgc.qgcapplication:unknown:0)
+     0.089 - debug: Filter rules "*Log.debug=false\nqgc.*.debug=false\nqgc.videomanager.videoreceiver.gstreamer.api.debug=true\nqt.qml.connections=false" (qgc.utilities.qgcloggingcategory:unknown:0)
+[2026-07-01 21:12:05] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-01 21:12:05] Script temporario: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_2214031/uavedusim_cmd_1782951125563_2214031.sh
+[2026-07-01 21:12:05] Terminal registrado: pid=2216524 title=PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 2214031
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbolicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  1 21:12 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  1 21:12 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  1 21:12 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_2214031.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+[1/4] Generating ../romfs_files.tar
+[2/4] ROMFS: copying, generating airframes
+[3/4] ROMFS: copying extras
+[3/4] cd /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge && /usr/bin/cmake -E env PX4_SIM_MODEL=gz_x500_uavjamsim GZ_IP=127.0.0.1 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/bin/px4
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 0
+INFO  [init] found model autostart file as SYS_AUTOSTART=4020
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 335 bytes, decoded 335 bytes (INT32:13, FLOAT:4)
+INFO  [param] selected parameter backup file parameters_backup.bson
+libva info: VA-API version 1.14.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: va_openDriver() returns -1
+INFO  [dataman] data manager file './dataman' size is 1208528 bytes
+INFO  [init] Gazebo simulator 8.11.0
+[2026-07-01 21:12:08] Fechando interface UAVEDUSIM.
+     4.489 - critical: Error loading text-to-speech plug-in "speechd" (default:unknown:0)
+INFO  [init] Starting gazebo with world: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+INFO  [init] Starting gz gui
+Library error for [/home/beatrizdiniz/gazebo_workspace/install/lib64/libgz-sim8-gz.so.8.11.0]: liburdfdom_sensor.so.6: cannot open shared object file: No such file or directory
+INFO  [init] Waiting for Gazebo world...
+ninja: build stopped: interrupted by user.
+make: *** [Makefile:227: px4_sitl] Interrupt
+
+[UAVEDUSIM] Comando finalizado com codigo: 130
+ERROR [px4] Startup script returned with return value: 2
+[UAVEDUSIM] Pressione ENTER para fechar este terminal.
+    11.783 - debug: Exiting main (default:unknown:0)
+Invalid value (0) for DRI_PRIME. Should be > 0
+[2026-07-01 21:12:35] Iniciando UAVEDUSIM GUI persistente
+[2026-07-01 21:12:35] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-01 21:12:35] Sessao: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-01 21:12:38] Fechando interface UAVEDUSIM.
