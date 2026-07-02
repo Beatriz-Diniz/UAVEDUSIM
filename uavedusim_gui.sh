@@ -36,13 +36,13 @@ log() {
     printf '[%s] %s\n' "$(date '+%F %T')" "$*"
 }
 
-# # Envia notificação de desktop via notify-send (silencioso se não disponível)
-# notify_msg() {
-#     local msg="$1"
-#     if command -v notify-send >/dev/null 2>&1; then
-#         notify-send "UAVEDUSIM" "$msg" >/dev/null 2>&1 || true
-#     fi
-# }
+# Envia notificação de desktop via notify-send quando disponível.
+notify_msg() {
+    local msg="$1"
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send "UAVEDUSIM" "$msg" >/dev/null 2>&1 || true
+    fi
+}
 
 # Registra erro no log, notifica e exibe diálogo zenity se disponível
 show_error() {
@@ -55,7 +55,7 @@ show_error() {
 }
 
 
-# Detecta gerenciador de pacotes e instala dependencias minimas da interface.
+# Detecta gerenciador de pacotes e instala dependencias mínimas da interface.
 detect_package_manager() {
     if command -v dnf >/dev/null 2>&1; then
         printf '%s\n' "dnf"
@@ -74,7 +74,7 @@ detect_package_manager() {
     fi
 }
 
-# Executa instalacao usando sudo/doas quando necessario.
+# Executa instalação usando sudo/doas quando necessário.
 install_system_packages() {
     local manager="$1"
     shift
@@ -92,7 +92,7 @@ install_system_packages() {
         elif command -v doas >/dev/null 2>&1; then
             sudo_cmd=(doas)
         else
-            show_error "Dependencias ausentes: ${packages[*]}. Instale manualmente ou instale sudo/doas para permitir instalacao automatica."
+            show_error "Dependencias ausentes: ${packages[*]}. Instale manualmente ou instale sudo/doas para permitir instalação automática."
             return 1
         fi
     fi
@@ -100,7 +100,7 @@ install_system_packages() {
     log "Dependencias ausentes detectadas: ${packages[*]}"
 
     if [ "${UAVEDUSIM_AUTO_INSTALL_DEPS:-1}" != "1" ]; then
-        show_error "Dependencias ausentes: ${packages[*]}. Instalacao automatica desativada por UAVEDUSIM_AUTO_INSTALL_DEPS=0."
+        show_error "Dependencias ausentes: ${packages[*]}. Instalação automática desativada por UAVEDUSIM_AUTO_INSTALL_DEPS=0."
         return 1
     fi
 
@@ -127,7 +127,7 @@ install_system_packages() {
             "${sudo_cmd[@]}" xbps-install -Sy "${packages[@]}"
             ;;
         *)
-            show_error "Nao reconheci o gerenciador de pacotes. Instale manualmente: python3, tkinter, git, cmake, make, gcc/g++, ninja, zsh e um terminal grafico."
+            show_error "Não reconheci o gerenciador de pacotes. Instale manualmente: python3, tkinter, git, cmake, make, gcc/g++, ninja, zsh e um terminal grafico."
             return 1
             ;;
     esac
@@ -256,16 +256,16 @@ ensure_system_dependencies() {
     install_system_packages "$manager" "${packages[@]}"
 
     if ! command -v python3 >/dev/null 2>&1; then
-        show_error "python3 continua ausente apos a instalacao das dependencias."
+        show_error "python3 continua ausente após a instalação das dependencias."
         return 1
     fi
 
     if ! python3 -c 'import tkinter' >/dev/null 2>&1; then
-        show_error "Tkinter continua ausente apos a instalacao. Instale o pacote Tkinter correspondente a sua distribuicao."
+        show_error "Tkinter continua ausente após a instalação. Instale o pacote Tkinter correspondente a sua distribuicao."
         return 1
     fi
 
-    log "Dependencias minimas da interface verificadas."
+    log "Dependencias mínimas da interface verificadas."
 }
 
 
@@ -277,7 +277,7 @@ kill_tracked_terminals() {
 
     [ -f "$UAVEDUSIM_PID_FILE" ] || return 0
 
-    log "Encerrando terminais abertos pela sessao $UAVEDUSIM_SESSION_ID"
+    log "Encerrando terminais abertos pela sessão $UAVEDUSIM_SESSION_ID"
 
     while IFS="$(printf '\t')" read -r pid title; do
         [ -n "$pid" ] || continue
@@ -348,7 +348,7 @@ uavedusim_on_exit() {
 
     UAVEDUSIM_EXIT_CLEANUP_RAN=1
 
-    log "Encerrando UAVEDUSIM GUI. Codigo=$code"
+    log "Encerrando UAVEDUSIM GUI. Código=$code"
 
     kill_tracked_terminals
     cleanup_uavedusim_processes_on_exit
@@ -367,7 +367,7 @@ uavedusim_on_signal() {
 }
 
 # Registra handlers: ERR mostra linha com falha; EXIT/INT/TERM/HUP fazem cleanup
-trap 'code=$?; show_error "Falha na linha $LINENO. Comando: $BASH_COMMAND. Codigo: $code"; exit $code' ERR
+trap 'code=$?; show_error "Falha na linha $LINENO. Comando: $BASH_COMMAND. Código: $code"; exit $code' ERR
 trap 'uavedusim_on_exit' EXIT
 trap 'uavedusim_on_signal INT' INT
 trap 'uavedusim_on_signal TERM' TERM
@@ -376,13 +376,13 @@ trap 'uavedusim_on_signal HUP' HUP
 
 log "Iniciando UAVEDUSIM GUI"
 log "APP_DIR=$APP_DIR"
-log "Sessao: XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-vazio}, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-vazio}, DISPLAY=${DISPLAY:-vazio}"
+log "Sessão: XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-vazio}, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-vazio}, DISPLAY=${DISPLAY:-vazio}"
 
-# Verifica e instala dependencias minimas em distros suportadas.
+# Verifica e instala dependencias mínimas em distros suportadas.
 ensure_system_dependencies
 
 if [ ! -f "$APP_DIR/uavedusim_gui_app.py" ]; then
-    show_error "Nao encontrei $APP_DIR/uavedusim_gui_app.py. Copie o arquivo da interface persistente para a pasta UAVEDUSIM."
+    show_error "Não encontrei $APP_DIR/uavedusim_gui_app.py. Copie o arquivo da interface persistente para a pasta UAVEDUSIM."
     exit 1
 fi
 
