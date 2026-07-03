@@ -17,3 +17,1682 @@
 
 [cleanup] Stopping PX4/Gazebo processes...
 [cleanup] Done.
+[2026-07-02 21:59:40] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 21:59:40] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 21:59:40] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:00:07] Fechando interface UAVEDUSIM.
+[2026-07-02 22:00:11] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:00:11] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:00:11] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:00:14] Fechando interface UAVEDUSIM.
+[2026-07-02 22:05:41] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:05:41] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:05:41] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:07:31] Fechando interface UAVEDUSIM.
+[2026-07-02 22:09:14] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:09:14] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:09:14] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:10:17] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:10:17] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:10:17] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:10:41] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:10:41] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:10:41] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:10:55] Fechando interface UAVEDUSIM.
+[2026-07-02 22:11:08] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:11:08] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:11:08] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:11:53] Fechando interface UAVEDUSIM.
+[2026-07-02 22:12:20] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:12:20] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:12:20] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:12:37] Fechando interface UAVEDUSIM.
+[2026-07-02 22:18:39] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:18:39] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:18:39] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:22:01] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:22:01] true
+[2026-07-02 22:22:01] Código de retorno: 0
+[2026-07-02 22:22:01] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:22:01] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:22:01] Código de retorno: 0
+[2026-07-02 22:22:01] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:22:01] v1.17.0
+[2026-07-02 22:22:01] Código de retorno: 0
+[2026-07-02 22:22:01] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:22:01] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:22:01] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:22:01] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:22:01] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:22:01] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-02 22:22:01] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-02 22:22:01] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-02 22:22:01] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-02 22:22:01] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-02 22:22:01] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-02 22:22:32] Fechando interface UAVEDUSIM.
+[2026-07-02 22:23:20] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:23:20] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:23:20] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:28:23] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:28:23] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:28:23] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:31:37] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:31:37] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:31:37] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:31:58] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:31:58] true
+[2026-07-02 22:31:58] Código de retorno: 0
+[2026-07-02 22:31:58] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:31:58] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:31:58] Código de retorno: 0
+[2026-07-02 22:31:58] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:31:58] v1.17.0
+[2026-07-02 22:31:58] Código de retorno: 0
+[2026-07-02 22:31:58] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:31:58] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:31:58] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:31:58] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:31:58] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:31:58] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-02 22:31:58] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-02 22:31:58] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-02 22:31:58] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-02 22:31:58] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-02 22:31:58] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-02 22:32:01] Ignorando mundo rover na lista de mundos: rover
+[2026-07-02 22:32:29] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-02 22:32:29] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:32:29] true
+[2026-07-02 22:32:29] Código de retorno: 0
+[2026-07-02 22:32:29] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:32:29] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:29] Código de retorno: 0
+[2026-07-02 22:32:29] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:32:29] v1.17.0
+[2026-07-02 22:32:29] Código de retorno: 0
+[2026-07-02 22:32:29] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:29] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:32:29] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:32:29] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:32:29] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:32:29] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:32:29] Terminal registrado: pid=642382 title=QGroundControl
+[2026-07-02 22:32:29] QGroundControl aberto sem terminal. pid=642382
+     0.036 - warning: QApplication: invalid style override 'kvantum' passed, ignoring it.
+	Available styles: Windows, Fusion (default:unknown:0)
+     0.046 - debug: Settings location "/home/beatrizdiniz/.config/QGroundControl/QGroundControl.ini" Is writable?: true (qgc.qgcapplication:unknown:0)
+     0.052 - debug: Filter rules "*Log.debug=false\nqgc.*.debug=false\nqgc.videomanager.videoreceiver.gstreamer.api.debug=true\nqt.qml.connections=false" (qgc.utilities.qgcloggingcategory:unknown:0)
+[2026-07-02 22:32:30] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-02 22:32:30] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:32:30] true
+[2026-07-02 22:32:30] Código de retorno: 0
+[2026-07-02 22:32:30] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:32:30] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:30] Código de retorno: 0
+[2026-07-02 22:32:30] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:32:30] v1.17.0
+[2026-07-02 22:32:30] Código de retorno: 0
+[2026-07-02 22:32:30] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:30] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:32:30] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:32:30] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:32:30] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:32:30] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:32:30] QGroundControl já está aberto. Não vou abrir outra instância.
+[2026-07-02 22:32:30] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-02 22:32:30] Script temporário: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_639899/uavedusim_cmd_1783042350706_639899.sh
+[2026-07-02 22:32:30] Terminal registrado: pid=642556 title=PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 639899
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbólicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_639899.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+[0/1] Re-running CMake...
+-- PX4_GIT_TAG: v1.17.0-1-g88421121d7
+CMake Warning (dev) at CMakeLists.txt:176 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+[2026-07-02 22:32:31] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-02 22:32:31] Script temporário: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_639899/uavedusim_cmd_1783042351674_639899.sh
+[2026-07-02 22:32:31] Terminal registrado: pid=642739 title=PX4 SITL - gz_x500_uavjamsim - default
+-- PX4 config file: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/boards/px4/sitl/default.px4board
+-- PLATFORM posix
+-- ROMFSROOT px4fmu_common
+-- TESTING y
+-- ETHERNET y
+-- ROOT_PATH .
+-- PARAM_FILE /fs/mtd_params
+-- PX4 config: px4_sitl_default
+-- PX4 platform: posix
+-- PX4 lockstep: enabled
+-- cmake build type: RelWithDebInfo
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 639899
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbólicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_639899.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+CMake Deprecation Warning at platforms/posix/src/px4/common/lockstep_scheduler/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+[0/1] Re-running CMake...
+-- PX4_GIT_TAG: v1.17.0-1-g88421121d7
+CMake Warning (dev) at CMakeLists.txt:176 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- PX4 config file: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/boards/px4/sitl/default.px4board
+libva info: VA-API version 1.14.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: va_openDriver() returns -1
+-- PLATFORM posix
+-- ROMFSROOT px4fmu_common
+-- TESTING y
+-- ETHERNET y
+-- ROOT_PATH .
+-- PARAM_FILE /fs/mtd_params
+-- PX4 config: px4_sitl_default
+-- PX4 platform: posix
+-- PX4 lockstep: enabled
+-- cmake build type: RelWithDebInfo
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+CMake Deprecation Warning at platforms/posix/src/px4/common/lockstep_scheduler/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+--   Found libzmq, version 4.3.5
+-- Checking for module 'uuid'
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+--   Found uuid, version 2.41.5
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+-- Checking for module 'uuid'
+--   Found tinyxml2, version 11.0.0
+--   Found uuid, version 2.41.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+--   Found tinyxml2, version 11.0.0
+[2026-07-02 22:32:36] Cancelamento solicitado na tela de carregamento. Encerrando terminais e processos abertos.
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+[2026-07-02 22:32:37] Encerrando terminais abertos pelo UAVEDUSIM.
+[2026-07-02 22:32:37] Enviando TERM para terminal: pid=642382 title=QGroundControl
+[2026-07-02 22:32:37] Enviando TERM para terminal: pid=642556 title=PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-02 22:32:37] Enviando TERM para terminal: pid=642739 title=PX4 SITL - gz_x500_uavjamsim - default
+     7.569 - critical: Error loading text-to-speech plug-in "speechd" (default:unknown:0)
+[2026-07-02 22:32:38] Forcando KILL para terminal restante: pid=642382 title=QGroundControl
+[2026-07-02 22:32:38] Encerrando processos PX4/Gazebo/QGroundControl do UAVEDUSIM.
+[2026-07-02 22:32:41] 
+[2026-07-02 22:32:41] [cleanup] Stopping PX4/Gazebo processes...
+[2026-07-02 22:32:41] [cleanup] Done.
+[2026-07-02 22:32:41] Cleanup retornou código: 0
+[2026-07-02 22:32:43] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:32:43] true
+[2026-07-02 22:32:43] Código de retorno: 0
+[2026-07-02 22:32:43] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:32:43] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:43] Código de retorno: 0
+[2026-07-02 22:32:43] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:32:43] v1.17.0
+[2026-07-02 22:32:43] Código de retorno: 0
+[2026-07-02 22:32:43] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:43] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:32:43] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:32:43] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:32:43] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:32:43] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-02 22:32:43] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-02 22:32:43] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-02 22:32:43] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-02 22:32:43] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-02 22:32:43] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-02 22:32:45] Ignorando mundo rover na lista de mundos: rover
+[2026-07-02 22:32:46] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-02 22:32:46] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:32:46] true
+[2026-07-02 22:32:46] Código de retorno: 0
+[2026-07-02 22:32:46] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:32:46] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:46] Código de retorno: 0
+[2026-07-02 22:32:46] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:32:46] v1.17.0
+[2026-07-02 22:32:46] Código de retorno: 0
+[2026-07-02 22:32:46] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:32:46] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:32:46] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:32:46] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:32:46] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:32:46] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:32:46] Terminal registrado: pid=645048 title=QGroundControl
+[2026-07-02 22:32:46] QGroundControl aberto sem terminal. pid=645048
+     0.026 - warning: QApplication: invalid style override 'kvantum' passed, ignoring it.
+	Available styles: Windows, Fusion (default:unknown:0)
+     0.036 - debug: Settings location "/home/beatrizdiniz/.config/QGroundControl/QGroundControl.ini" Is writable?: true (qgc.qgcapplication:unknown:0)
+     0.042 - debug: Filter rules "*Log.debug=false\nqgc.*.debug=false\nqgc.videomanager.videoreceiver.gstreamer.api.debug=true\nqt.qml.connections=false" (qgc.utilities.qgcloggingcategory:unknown:0)
+[2026-07-02 22:32:47] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-02 22:32:47] Script temporário: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_639899/uavedusim_cmd_1783042367417_639899.sh
+[2026-07-02 22:32:47] Terminal registrado: pid=645135 title=PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 639899
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbólicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  2 22:32 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_639899.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+[0/1] Re-running CMake...
+-- PX4_GIT_TAG: v1.17.0-1-g88421121d7
+CMake Warning (dev) at CMakeLists.txt:176 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- PX4 config file: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/boards/px4/sitl/default.px4board
+-- PLATFORM posix
+-- ROMFSROOT px4fmu_common
+-- TESTING y
+-- ETHERNET y
+-- ROOT_PATH .
+-- PARAM_FILE /fs/mtd_params
+-- PX4 config: px4_sitl_default
+-- PX4 platform: posix
+-- PX4 lockstep: enabled
+-- cmake build type: RelWithDebInfo
+CMake Deprecation Warning at platforms/posix/src/px4/common/lockstep_scheduler/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+libva info: VA-API version 1.14.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: va_openDriver() returns -1
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+-- Checking for module 'uuid'
+--   Found uuid, version 2.41.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+--   Found tinyxml2, version 11.0.0
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+     5.175 - critical: Error loading text-to-speech plug-in "speechd" (default:unknown:0)
+     5.511 - warning: The cached device pixel ratio value was stale on window update.  Please file a QTBUG which explains how to reproduce. (default:unknown:0)
+-- Checking for module 'uuid'
+--   Found uuid, version 2.41.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+--   Found tinyxml2, version 11.0.0
+-- Looking for gz-sim8 -- found version 8.11.0
+-- Searching for dependencies of gz-sim8
+-- Looking for sdformat14 -- found version 14.9.0
+-- Searching for dependencies of sdformat14
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-plugin2> component [loader]
+-- Looking for gz-plugin2-loader -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2-loader
+-- Searching for <gz-plugin2> component [register]
+-- Looking for gz-plugin2-register -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2-register
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for <gz-transport13> component [log]
+-- Looking for gz-transport13-log -- found version 13.5.0
+-- Searching for dependencies of gz-transport13-log
+-- Searching for <gz-transport13> component [parameters]
+-- Looking for gz-transport13-parameters -- found version 13.5.0
+-- Searching for dependencies of gz-transport13-parameters
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for dependencies of gz-common5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for dlfcn.h - found
+-- Looking for libdl - found
+-- Searching for <gz-common5> component [av]
+-- Looking for gz-common5-av -- found version 5.8.0
+-- Searching for dependencies of gz-common5-av
+-- Checking for module 'libswscale'
+--   Found libswscale, version 9.5.102
+-- Checking for module 'libavdevice >= 56.4.100'
+--   Found libavdevice, version 62.3.102
+-- Checking for module 'libavformat'
+--   Found libavformat, version 62.12.102
+-- Checking for module 'libavcodec'
+--   Found libavcodec, version 62.28.102
+-- Checking for module 'libavutil'
+--   Found libavutil, version 60.26.102
+-- Searching for <gz-common5> component [events]
+-- Looking for gz-common5-events -- found version 5.8.0
+-- Searching for dependencies of gz-common5-events
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for <gz-common5> component [graphics]
+-- Looking for gz-common5-graphics -- found version 5.8.0
+-- Searching for dependencies of gz-common5-graphics
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for <gz-common5> component [io]
+-- Looking for gz-common5-io -- found version 5.8.0
+-- Searching for dependencies of gz-common5-io
+-- Searching for <gz-common5> component [profiler]
+-- Looking for gz-common5-profiler -- found version 5.8.0
+-- Searching for dependencies of gz-common5-profiler
+-- Looking for gz-fuel_tools9 -- found version 9.1.1
+-- Searching for dependencies of gz-fuel_tools9
+-- Checking for module 'jsoncpp'
+--   Found jsoncpp, version 1.9.6
+-- Checking for module 'yaml-0.1'
+--   Found yaml-0.1, version 0.2.5
+-- Checking for module 'libzip'
+--   Found libzip, version 1.11.4
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for dependencies of gz-common5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for dlfcn.h - found
+-- Looking for libdl - found
+-- Searching for <gz-common5> component [testing]
+-- Looking for gz-common5-testing -- found version 5.8.0
+-- Searching for dependencies of gz-common5-testing
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for gz-gui8 -- found version 8.4.0
+-- Searching for dependencies of gz-gui8
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Searching for dependencies of gz-rendering8
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-math7> component [eigen3]
+-- Looking for gz-math7-eigen3 -- found version 7.6.0
+-- Searching for dependencies of gz-math7-eigen3
+-- Checking for module 'eigen3'
+--   Found eigen3, version 5.0.1
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for dependencies of gz-common5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for dlfcn.h - found
+-- Looking for libdl - found
+-- Searching for <gz-common5> component [graphics]
+-- Searching for <gz-common5> component [events]
+-- Searching for <gz-common5> component [geospatial]
+-- Looking for gz-common5-geospatial -- found version 5.8.0
+-- Searching for dependencies of gz-common5-geospatial
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-plugin2> component [all]
+-- Looking for all libraries of gz-plugin2 -- found version 2.0.4
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for gz-physics7 -- found version 7.6.0
+-- Searching for dependencies of gz-physics7
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-physics7> component [heightmap]
+-- Looking for gz-physics7-heightmap -- found version 7.6.0
+-- Searching for dependencies of gz-physics7-heightmap
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for <gz-physics7> component [mesh]
+-- Looking for gz-physics7-mesh -- found version 7.6.0
+-- Searching for dependencies of gz-physics7-mesh
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for <gz-physics7> component [sdf]
+-- Looking for gz-physics7-sdf -- found version 7.6.0
+-- Searching for dependencies of gz-physics7-sdf
+-- Looking for sdformat14 -- found version 14.9.0
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for sdformat14 -- found version 14.9.0
+-- Searching for <gz-sensors8> component [air_pressure]
+-- Looking for gz-sensors8-air_pressure -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-air_pressure
+-- Searching for <gz-sensors8> component [air_speed]
+-- Looking for gz-sensors8-air_speed -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-air_speed
+-- Searching for <gz-sensors8> component [altimeter]
+-- Looking for gz-sensors8-altimeter -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-altimeter
+-- Searching for <gz-sensors8> component [imu]
+-- Looking for gz-sensors8-imu -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-imu
+-- Searching for <gz-sensors8> component [force_torque]
+-- Looking for gz-sensors8-force_torque -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-force_torque
+-- Searching for <gz-sensors8> component [logical_camera]
+-- Looking for gz-sensors8-logical_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-logical_camera
+-- Searching for <gz-sensors8> component [magnetometer]
+-- Looking for gz-sensors8-magnetometer -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-magnetometer
+-- Searching for <gz-sensors8> component [navsat]
+-- Looking for gz-sensors8-navsat -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-navsat
+-- Searching for <gz-sensors8> component [dvl]
+-- Looking for gz-sensors8-dvl -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-dvl
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for sdformat14 -- found version 14.9.0
+-- Searching for <gz-sensors8> component [rendering]
+-- Looking for gz-sensors8-rendering -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-rendering
+-- Searching for <gz-sensors8> component [rendering]
+-- Searching for <gz-sensors8> component [lidar]
+-- Looking for gz-sensors8-lidar -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-lidar
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [gpu_lidar]
+-- Looking for gz-sensors8-gpu_lidar -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-gpu_lidar
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [camera]
+-- Looking for gz-sensors8-camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [boundingbox_camera]
+-- Looking for gz-sensors8-boundingbox_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-boundingbox_camera
+-- Searching for <gz-sensors8> component [segmentation_camera]
+-- Looking for gz-sensors8-segmentation_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-segmentation_camera
+-- Searching for <gz-sensors8> component [depth_camera]
+-- Looking for gz-sensors8-depth_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-depth_camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [rgbd_camera]
+-- Looking for gz-sensors8-rgbd_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-rgbd_camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [thermal_camera]
+-- Looking for gz-sensors8-thermal_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-thermal_camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [wide_angle_camera]
+-- Looking for gz-sensors8-wide_angle_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-wide_angle_camera
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Looking for gz-plugin2 -- found version 2.0.4
+CMake Error at src/modules/simulation/gz_plugins/optical_flow/optical_flow.cmake:35 (find_package):
+  By not providing "FindOpenCV.cmake" in CMAKE_MODULE_PATH this project has
+  asked CMake to find a package configuration file provided by "OpenCV", but
+  CMake did not find one.
+
+  Could not find a package configuration file provided by "OpenCV" with any
+  of the following names:
+
+    OpenCV.cps
+    opencv.cps
+    OpenCVConfig.cmake
+    opencv-config.cmake
+
+  Add the installation prefix of "OpenCV" to CMAKE_PREFIX_PATH or set
+  "OpenCV_DIR" to a directory containing one of the above files.  If "OpenCV"
+  provides a separate development package or SDK, be sure it has been
+  installed.
+Call Stack (most recent call first):
+  src/modules/simulation/gz_plugins/optical_flow/CMakeLists.txt:37 (include)
+
+
+-- Configuring incomplete, errors occurred!
+FAILED: [code=1] build.ninja /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/msg/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/adsb/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/airspeed/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/atmosphere/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/battery/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/button/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cdev/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cdev/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cdrstream/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/circuit_breaker/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/collision_prevention/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/component_information/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/control_allocation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/control_allocation/control_allocation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/control_allocation/actuator_effectiveness/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/controllib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/controllib/controllib_test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/conversion/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/crc/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/crypto/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/dataman_client/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/accelerometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/device/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/gyroscope/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/led/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/magnetometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/rangefinder/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/smbus/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/smbus_sbs/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/field_sensor_bias_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/geo/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/heatshrink/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/hysteresis/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/lat_lon_alt/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/led/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/matrix/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/mathlib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/mixer_module/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/motion_planning/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/npfg/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/perf/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/fw_performance_model/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/pid/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/pid_design/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/pure_pursuit/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rate_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rc/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rc/rc_tests/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/ringbuffer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rover_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rtl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/sensor_calibration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/slew_rate/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/sticks/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/stick_yaw/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/systemlib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/system_identification/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tecs/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tensorflow_lite_micro/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/terrain_estimation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/timesync/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tinybson/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tunes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/variable_length_ringbuffer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/version/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/weather_vane/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/wind_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/wind_estimator/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/world_magnetic_model/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/common/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/common/px4_daemon/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/common/lockstep_scheduler/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/generic/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/generic/generic/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/generic/generic/tone_alarm/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/uORB/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/uORB/uORB_tests/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/uORB/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/px4_work_queue/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/px4_work_queue/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/work_queue/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/camera_trigger/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/gnss/septentrio/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/gps/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/osd/msp_osd/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/osd/msp_osd/MessageDisplay/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/tone_alarm/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/airship_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/airspeed_selector/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/attitude_estimator_q/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/camera_feedback/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/Arming/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/Arming/ArmAuthorization/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/failsafe/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/failure_detector/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/HealthAndArmingChecks/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/ModeUtil/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/MulticopterThrowLaunch/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/control_allocator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/control_allocator/VehicleActuatorEffectiveness/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/dataman/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/bias_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/output_predictor/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/yaw_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/events/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/FlightTask/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Utility/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Auto/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Descend/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Failsafe/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAcceleration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAccelerationSlow/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAltitude/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAltitudeSmoothVel/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualPosition/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Transition/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/AltitudeCruise/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/AutoFollowTarget/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/AutoFollowTarget/follow_target_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Orbit/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_autotune_attitude_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_lateral_longitudinal_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/launchdetection/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/runway_takeoff/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/figure_eight/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_rate_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/gimbal/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/gyro_calibration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/gyro_fft/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/land_detector/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/landing_target_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/load_mon/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/local_position_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/logger/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mag_bias_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/manual_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mavlink/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_att_control/AttitudeControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_autotune_attitude_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_hover_thrust_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/GotoControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/PositionControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/Takeoff/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_rate_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/navigator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/navigator/GeofenceBreachAvoidance/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/navigator/MissionFeasibility/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/payload_deliverer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rc_update/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/replay/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannActControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannRateControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannAttControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannSpeedControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannPosControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/AckermannAutoMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/AckermannManualMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/AckermannOffboardMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialActControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialRateControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialAttControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialSpeedControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialPosControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/DifferentialAutoMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/DifferentialManualMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/DifferentialOffboardMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumActControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumRateControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumAttControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumSpeedControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumPosControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/MecanumAutoMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/MecanumManualMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/MecanumOffboardMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/data_validator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_acceleration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_imu/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_air_data/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_angular_velocity/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_gps_position/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_magnetometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_optical_flow/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/battery_simulator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_msgs/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/optical_flow/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/template_plugin/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/gstreamer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/moving_platform_controller/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/generic_motor/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/buoyancy/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/spacecraft_thruster/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/pwm_out_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_agp_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_airspeed_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_baro_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_gps_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_mag_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/simulator_mavlink/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/simulator_sih/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/system_power_simulator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/temperature_compensation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/uuv_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/uuv_pos_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/uxrce_dds_client/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/vtol_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/actuator_test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/bsondump/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/dyn/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/failure/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/led_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/param/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/perf/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/sd_bench/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/shutdown/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/system_time/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/tests/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/tests/hrt_test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/topic_listener/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/tune_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/uorb/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/ver/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/work_queue/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/dyn_hello/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/fake_gps/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/fake_imu/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/fake_magnetometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/hello/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/px4_mavlink_debug/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/px4_simple_app/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/work_item/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/boards/px4/sitl/src/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/events/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/metadata/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/parameters/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d/airframes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d-posix/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d-posix/airframes/cmake_install.cmake 
+/usr/bin/cmake --regenerate-during-build -S/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot -B/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default
+ninja: error: rebuilding 'build.ninja': subcommand failed
+make: *** [Makefile:227: px4_sitl] Error 1
+    70.609 - debug: Exiting main (default:unknown:0)
+Invalid value (0) for DRI_PRIME. Should be > 0
+[2026-07-02 22:37:08] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:37:08] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:37:08] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:37:20] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:37:20] true
+[2026-07-02 22:37:20] Código de retorno: 0
+[2026-07-02 22:37:20] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:37:20] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:37:20] Código de retorno: 0
+[2026-07-02 22:37:20] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:37:20] v1.17.0
+[2026-07-02 22:37:20] Código de retorno: 0
+[2026-07-02 22:37:20] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:37:20] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:37:20] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:37:20] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:37:20] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:37:20] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-02 22:37:20] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-02 22:37:20] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-02 22:37:20] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-02 22:37:20] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-02 22:37:20] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-02 22:37:21] Ignorando mundo rover na lista de mundos: rover
+[2026-07-02 22:37:22] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-02 22:37:22] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:37:22] true
+[2026-07-02 22:37:22] Código de retorno: 0
+[2026-07-02 22:37:22] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:37:22] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:37:22] Código de retorno: 0
+[2026-07-02 22:37:22] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:37:22] v1.17.0
+[2026-07-02 22:37:22] Código de retorno: 0
+[2026-07-02 22:37:22] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:37:22] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:37:22] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:37:22] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:37:22] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:37:22] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:37:22] Terminal registrado: pid=660448 title=QGroundControl
+[2026-07-02 22:37:22] QGroundControl aberto sem terminal. pid=660448
+     0.037 - warning: QApplication: invalid style override 'kvantum' passed, ignoring it.
+	Available styles: Windows, Fusion (default:unknown:0)
+     0.048 - debug: Settings location "/home/beatrizdiniz/.config/QGroundControl/QGroundControl.ini" Is writable?: true (qgc.qgcapplication:unknown:0)
+     0.057 - debug: Filter rules "*Log.debug=false\nqgc.*.debug=false\nqgc.videomanager.videoreceiver.gstreamer.api.debug=true\nqt.qml.connections=false" (qgc.utilities.qgcloggingcategory:unknown:0)
+[2026-07-02 22:37:23] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-02 22:37:23] Script temporário: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_659699/uavedusim_cmd_1783042643177_659699.sh
+[2026-07-02 22:37:23] Terminal registrado: pid=660516 title=PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 659699
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbólicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  2 22:37 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  2 22:37 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  2 22:37 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_659699.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+[0/1] Re-running CMake...
+-- PX4_GIT_TAG: v1.17.0-1-g88421121d7
+CMake Warning (dev) at CMakeLists.txt:176 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- PX4 config file: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/boards/px4/sitl/default.px4board
+-- PLATFORM posix
+-- ROMFSROOT px4fmu_common
+-- TESTING y
+-- ETHERNET y
+-- ROOT_PATH .
+-- PARAM_FILE /fs/mtd_params
+-- PX4 config: px4_sitl_default
+-- PX4 platform: posix
+-- PX4 lockstep: enabled
+-- cmake build type: RelWithDebInfo
+CMake Deprecation Warning at platforms/posix/src/px4/common/lockstep_scheduler/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+libva info: VA-API version 1.14.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: va_openDriver() returns -1
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+-- Checking for module 'uuid'
+--   Found uuid, version 2.41.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+--   Found tinyxml2, version 11.0.0
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+     7.175 - critical: Error loading text-to-speech plug-in "speechd" (default:unknown:0)
+-- Checking for module 'uuid'
+--   Found uuid, version 2.41.5
+     7.693 - warning: The cached device pixel ratio value was stale on window update.  Please file a QTBUG which explains how to reproduce. (default:unknown:0)
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+--   Found tinyxml2, version 11.0.0
+-- Looking for gz-sim8 -- found version 8.11.0
+-- Searching for dependencies of gz-sim8
+-- Looking for sdformat14 -- found version 14.9.0
+-- Searching for dependencies of sdformat14
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-plugin2> component [loader]
+-- Looking for gz-plugin2-loader -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2-loader
+-- Searching for <gz-plugin2> component [register]
+-- Looking for gz-plugin2-register -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2-register
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for <gz-transport13> component [log]
+-- Looking for gz-transport13-log -- found version 13.5.0
+-- Searching for dependencies of gz-transport13-log
+-- Searching for <gz-transport13> component [parameters]
+-- Looking for gz-transport13-parameters -- found version 13.5.0
+-- Searching for dependencies of gz-transport13-parameters
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for dependencies of gz-common5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for dlfcn.h - found
+-- Looking for libdl - found
+-- Searching for <gz-common5> component [av]
+-- Looking for gz-common5-av -- found version 5.8.0
+-- Searching for dependencies of gz-common5-av
+-- Checking for module 'libswscale'
+--   Found libswscale, version 9.5.102
+-- Checking for module 'libavdevice >= 56.4.100'
+--   Found libavdevice, version 62.3.102
+-- Checking for module 'libavformat'
+--   Found libavformat, version 62.12.102
+-- Checking for module 'libavcodec'
+--   Found libavcodec, version 62.28.102
+-- Checking for module 'libavutil'
+--   Found libavutil, version 60.26.102
+-- Searching for <gz-common5> component [events]
+-- Looking for gz-common5-events -- found version 5.8.0
+-- Searching for dependencies of gz-common5-events
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for <gz-common5> component [graphics]
+-- Looking for gz-common5-graphics -- found version 5.8.0
+-- Searching for dependencies of gz-common5-graphics
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for <gz-common5> component [io]
+-- Looking for gz-common5-io -- found version 5.8.0
+-- Searching for dependencies of gz-common5-io
+-- Searching for <gz-common5> component [profiler]
+-- Looking for gz-common5-profiler -- found version 5.8.0
+-- Searching for dependencies of gz-common5-profiler
+-- Looking for gz-fuel_tools9 -- found version 9.1.1
+-- Searching for dependencies of gz-fuel_tools9
+-- Checking for module 'jsoncpp'
+--   Found jsoncpp, version 1.9.6
+-- Checking for module 'yaml-0.1'
+--   Found yaml-0.1, version 0.2.5
+-- Checking for module 'libzip'
+--   Found libzip, version 1.11.4
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for dependencies of gz-common5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for dlfcn.h - found
+-- Looking for libdl - found
+-- Searching for <gz-common5> component [testing]
+-- Looking for gz-common5-testing -- found version 5.8.0
+-- Searching for dependencies of gz-common5-testing
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for gz-gui8 -- found version 8.4.0
+-- Searching for dependencies of gz-gui8
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Searching for dependencies of gz-rendering8
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-math7> component [eigen3]
+-- Looking for gz-math7-eigen3 -- found version 7.6.0
+-- Searching for dependencies of gz-math7-eigen3
+-- Checking for module 'eigen3'
+--   Found eigen3, version 5.0.1
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for dependencies of gz-common5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for dlfcn.h - found
+-- Looking for libdl - found
+-- Searching for <gz-common5> component [graphics]
+-- Searching for <gz-common5> component [events]
+-- Searching for <gz-common5> component [geospatial]
+-- Looking for gz-common5-geospatial -- found version 5.8.0
+-- Searching for dependencies of gz-common5-geospatial
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-plugin2> component [all]
+-- Looking for all libraries of gz-plugin2 -- found version 2.0.4
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for gz-physics7 -- found version 7.6.0
+-- Searching for dependencies of gz-physics7
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-physics7> component [heightmap]
+-- Looking for gz-physics7-heightmap -- found version 7.6.0
+-- Searching for dependencies of gz-physics7-heightmap
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for <gz-physics7> component [mesh]
+-- Looking for gz-physics7-mesh -- found version 7.6.0
+-- Searching for dependencies of gz-physics7-mesh
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for <gz-physics7> component [sdf]
+-- Looking for gz-physics7-sdf -- found version 7.6.0
+-- Searching for dependencies of gz-physics7-sdf
+-- Looking for sdformat14 -- found version 14.9.0
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for sdformat14 -- found version 14.9.0
+-- Searching for <gz-sensors8> component [air_pressure]
+-- Looking for gz-sensors8-air_pressure -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-air_pressure
+-- Searching for <gz-sensors8> component [air_speed]
+-- Looking for gz-sensors8-air_speed -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-air_speed
+-- Searching for <gz-sensors8> component [altimeter]
+-- Looking for gz-sensors8-altimeter -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-altimeter
+-- Searching for <gz-sensors8> component [imu]
+-- Looking for gz-sensors8-imu -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-imu
+-- Searching for <gz-sensors8> component [force_torque]
+-- Looking for gz-sensors8-force_torque -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-force_torque
+-- Searching for <gz-sensors8> component [logical_camera]
+-- Looking for gz-sensors8-logical_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-logical_camera
+-- Searching for <gz-sensors8> component [magnetometer]
+-- Looking for gz-sensors8-magnetometer -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-magnetometer
+-- Searching for <gz-sensors8> component [navsat]
+-- Looking for gz-sensors8-navsat -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-navsat
+-- Searching for <gz-sensors8> component [dvl]
+-- Looking for gz-sensors8-dvl -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-dvl
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-common5 -- found version 5.8.0
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for sdformat14 -- found version 14.9.0
+-- Searching for <gz-sensors8> component [rendering]
+-- Looking for gz-sensors8-rendering -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-rendering
+-- Searching for <gz-sensors8> component [rendering]
+-- Searching for <gz-sensors8> component [lidar]
+-- Looking for gz-sensors8-lidar -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-lidar
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [gpu_lidar]
+-- Looking for gz-sensors8-gpu_lidar -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-gpu_lidar
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [camera]
+-- Looking for gz-sensors8-camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [boundingbox_camera]
+-- Looking for gz-sensors8-boundingbox_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-boundingbox_camera
+-- Searching for <gz-sensors8> component [segmentation_camera]
+-- Looking for gz-sensors8-segmentation_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-segmentation_camera
+-- Searching for <gz-sensors8> component [depth_camera]
+-- Looking for gz-sensors8-depth_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-depth_camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [rgbd_camera]
+-- Looking for gz-sensors8-rgbd_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-rgbd_camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [thermal_camera]
+-- Looking for gz-sensors8-thermal_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-thermal_camera
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Searching for <gz-sensors8> component [wide_angle_camera]
+-- Looking for gz-sensors8-wide_angle_camera -- found version 8.2.2
+-- Searching for dependencies of gz-sensors8-wide_angle_camera
+-- Looking for gz-rendering8 -- found version 8.2.3
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-sensors8 -- found version 8.2.2
+-- Looking for gz-plugin2 -- found version 2.0.4
+CMake Error at src/modules/simulation/gz_plugins/optical_flow/optical_flow.cmake:35 (find_package):
+  By not providing "FindOpenCV.cmake" in CMAKE_MODULE_PATH this project has
+  asked CMake to find a package configuration file provided by "OpenCV", but
+  CMake did not find one.
+
+  Could not find a package configuration file provided by "OpenCV" with any
+  of the following names:
+
+    OpenCV.cps
+    opencv.cps
+    OpenCVConfig.cmake
+    opencv-config.cmake
+
+  Add the installation prefix of "OpenCV" to CMAKE_PREFIX_PATH or set
+  "OpenCV_DIR" to a directory containing one of the above files.  If "OpenCV"
+  provides a separate development package or SDK, be sure it has been
+  installed.
+Call Stack (most recent call first):
+  src/modules/simulation/gz_plugins/optical_flow/CMakeLists.txt:37 (include)
+
+
+-- Configuring incomplete, errors occurred!
+FAILED: [code=1] build.ninja /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/msg/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/adsb/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/airspeed/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/atmosphere/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/battery/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/button/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cdev/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cdev/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/cdrstream/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/circuit_breaker/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/collision_prevention/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/component_information/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/control_allocation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/control_allocation/control_allocation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/control_allocation/actuator_effectiveness/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/controllib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/controllib/controllib_test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/conversion/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/crc/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/crypto/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/dataman_client/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/accelerometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/device/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/gyroscope/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/led/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/magnetometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/rangefinder/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/smbus/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/drivers/smbus_sbs/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/field_sensor_bias_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/geo/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/heatshrink/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/hysteresis/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/lat_lon_alt/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/led/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/matrix/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/mathlib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/mixer_module/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/motion_planning/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/npfg/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/perf/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/fw_performance_model/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/pid/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/pid_design/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/pure_pursuit/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rate_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rc/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rc/rc_tests/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/ringbuffer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rover_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/rtl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/sensor_calibration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/slew_rate/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/sticks/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/stick_yaw/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/systemlib/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/system_identification/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tecs/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tensorflow_lite_micro/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/terrain_estimation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/timesync/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tinybson/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/tunes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/variable_length_ringbuffer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/version/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/weather_vane/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/wind_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/wind_estimator/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/world_magnetic_model/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/common/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/common/px4_daemon/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/common/lockstep_scheduler/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/generic/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/generic/generic/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/src/px4/generic/generic/tone_alarm/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/uORB/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/uORB/uORB_tests/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/uORB/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/px4_work_queue/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/px4_work_queue/test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/common/work_queue/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/camera_trigger/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/gnss/septentrio/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/gps/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/osd/msp_osd/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/osd/msp_osd/MessageDisplay/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/drivers/tone_alarm/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/airship_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/airspeed_selector/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/attitude_estimator_q/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/camera_feedback/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/Arming/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/Arming/ArmAuthorization/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/failsafe/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/failure_detector/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/HealthAndArmingChecks/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/ModeUtil/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/commander/MulticopterThrowLaunch/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/control_allocator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/control_allocator/VehicleActuatorEffectiveness/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/dataman/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/bias_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/output_predictor/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/ekf2/EKF/yaw_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/events/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/FlightTask/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Utility/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Auto/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Descend/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Failsafe/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAcceleration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAccelerationSlow/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAltitude/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualAltitudeSmoothVel/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/ManualPosition/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Transition/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/AltitudeCruise/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/AutoFollowTarget/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/AutoFollowTarget/follow_target_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/flight_mode_manager/tasks/Orbit/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_autotune_attitude_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_lateral_longitudinal_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/launchdetection/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/runway_takeoff/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_mode_manager/figure_eight/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/fw_rate_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/gimbal/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/gyro_calibration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/gyro_fft/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/land_detector/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/landing_target_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/load_mon/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/local_position_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/logger/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mag_bias_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/manual_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mavlink/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_att_control/AttitudeControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_autotune_attitude_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_hover_thrust_estimator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/GotoControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/PositionControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_pos_control/Takeoff/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/mc_rate_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/navigator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/navigator/GeofenceBreachAvoidance/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/navigator/MissionFeasibility/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/payload_deliverer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rc_update/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/replay/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannActControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannRateControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannAttControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannSpeedControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannPosControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/AckermannAutoMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/AckermannManualMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_ackermann/AckermannDriveModes/AckermannOffboardMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialActControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialRateControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialAttControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialSpeedControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialPosControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/DifferentialAutoMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/DifferentialManualMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_differential/DifferentialDriveModes/DifferentialOffboardMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumActControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumRateControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumAttControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumSpeedControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumPosControl/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/MecanumAutoMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/MecanumManualMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/rover_mecanum/MecanumDriveModes/MecanumOffboardMode/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/data_validator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_acceleration/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_imu/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_air_data/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_angular_velocity/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_gps_position/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_magnetometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/sensors/vehicle_optical_flow/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/battery_simulator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_msgs/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/optical_flow/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/template_plugin/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/gstreamer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/moving_platform_controller/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/generic_motor/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/buoyancy/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins/spacecraft_thruster/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/pwm_out_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_agp_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_airspeed_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_baro_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_gps_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/sensor_mag_sim/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/simulator_mavlink/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/simulator_sih/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/system_power_simulator/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/temperature_compensation/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/uuv_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/uuv_pos_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/uxrce_dds_client/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/modules/vtol_att_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/actuator_test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/bsondump/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/dyn/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/failure/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/led_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/param/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/perf/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/sd_bench/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/shutdown/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/system_time/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/tests/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/tests/hrt_test/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/topic_listener/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/tune_control/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/uorb/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/ver/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/systemcmds/work_queue/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/dyn_hello/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/fake_gps/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/fake_imu/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/fake_magnetometer/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/hello/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/px4_mavlink_debug/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/px4_simple_app/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/examples/work_item/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/boards/px4/sitl/src/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/events/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/metadata/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/src/lib/parameters/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/platforms/posix/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d/airframes/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d-posix/cmake_install.cmake /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default/ROMFS/px4fmu_common/init.d-posix/airframes/cmake_install.cmake 
+/usr/bin/cmake --regenerate-during-build -S/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot -B/home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/build/px4_sitl_default
+ninja: error: rebuilding 'build.ninja': subcommand failed
+make: *** [Makefile:227: px4_sitl] Error 1
+   303.769 - debug: Exiting main (default:unknown:0)
+Invalid value (0) for DRI_PRIME. Should be > 0
+[2026-07-02 22:42:30] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:42:30] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:42:30] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:42:33] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:42:33] true
+[2026-07-02 22:42:33] Código de retorno: 0
+[2026-07-02 22:42:33] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:42:33] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:42:33] Código de retorno: 0
+[2026-07-02 22:42:33] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:42:33] v1.17.0
+[2026-07-02 22:42:33] Código de retorno: 0
+[2026-07-02 22:42:33] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:42:33] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:42:33] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:42:33] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:42:33] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:42:33] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-02 22:42:33] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-02 22:42:33] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-02 22:42:33] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-02 22:42:33] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-02 22:42:33] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-02 22:42:35] Ignorando mundo rover na lista de mundos: rover
+[2026-07-02 22:42:37] PX4 selecionado: modelo=gz_x500_uavjamsim mundo=default
+[2026-07-02 22:42:37] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:42:37] true
+[2026-07-02 22:42:37] Código de retorno: 0
+[2026-07-02 22:42:37] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:42:37] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:42:37] Código de retorno: 0
+[2026-07-02 22:42:37] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:42:37] v1.17.0
+[2026-07-02 22:42:37] Código de retorno: 0
+[2026-07-02 22:42:37] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:42:37] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:42:37] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:42:37] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:42:37] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:42:37] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:42:37] Terminal registrado: pid=677649 title=QGroundControl
+[2026-07-02 22:42:37] QGroundControl aberto sem terminal. pid=677649
+     0.038 - warning: QApplication: invalid style override 'kvantum' passed, ignoring it.
+	Available styles: Windows, Fusion (default:unknown:0)
+     0.054 - debug: Settings location "/home/beatrizdiniz/.config/QGroundControl/QGroundControl.ini" Is writable?: true (qgc.qgcapplication:unknown:0)
+     0.061 - debug: Filter rules "*Log.debug=false\nqgc.*.debug=false\nqgc.videomanager.videoreceiver.gstreamer.api.debug=true\nqt.qml.connections=false" (qgc.utilities.qgcloggingcategory:unknown:0)
+[2026-07-02 22:42:38] Abrindo terminal: PX4 SITL - gz_x500_uavjamsim - default
+[2026-07-02 22:42:38] Script temporário: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/scripts_677110/uavedusim_cmd_1783042958831_677110.sh
+[2026-07-02 22:42:38] Terminal registrado: pid=677703 title=PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] PX4 SITL - gz_x500_uavjamsim - default
+[UAVEDUSIM] Log: /home/beatrizdiniz/UAVEDUSIM/uavedusim_gui.log
+[UAVEDUSIM] Session: 677110
+
+[UAVEDUSIM] Carregando Gazebo: /home/beatrizdiniz/gazebo_workspace/install/setup.bash
+[UAVEDUSIM] Garantindo links simbólicos e airframe do UAVJamSim...
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 39 Jul  2 22:42 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+lrwxrwxrwx. 1 beatrizdiniz beatrizdiniz 43 Jul  2 22:42 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+-rw-r--r--. 1 beatrizdiniz beatrizdiniz 159 Jul  2 22:42 /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[UAVEDUSIM] Console PX4 por FIFO: /home/beatrizdiniz/UAVEDUSIM/.uavedusim_runtime/px4_console_677110.fifo
+[UAVEDUSIM] Executando sem limpar build: make px4_sitl gz_x500_uavjamsim PX4_GZ_WORLD=default
+[0/1] Re-running CMake...
+-- PX4_GIT_TAG: v1.17.0-1-g88421121d7
+CMake Warning (dev) at CMakeLists.txt:176 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- PX4 config file: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/boards/px4/sitl/default.px4board
+-- PLATFORM posix
+-- ROMFSROOT px4fmu_common
+-- TESTING y
+-- ETHERNET y
+-- ROOT_PATH .
+-- PARAM_FILE /fs/mtd_params
+-- PX4 config: px4_sitl_default
+-- PX4 platform: posix
+-- PX4 lockstep: enabled
+-- cmake build type: RelWithDebInfo
+CMake Deprecation Warning at platforms/posix/src/px4/common/lockstep_scheduler/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+libva info: VA-API version 1.14.0
+libva info: User environment variable requested driver 'iHD'
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: va_openDriver() returns -1
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+-- Checking for module 'uuid'
+--   Found uuid, version 2.41.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+--   Found tinyxml2, version 11.0.0
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+     6.253 - critical: Error loading text-to-speech plug-in "speechd" (default:unknown:0)
+-- Checking for module 'uuid'
+     6.763 - warning: The cached device pixel ratio value was stale on window update.  Please file a QTBUG which explains how to reproduce. (default:unknown:0)
+--   Found uuid, version 2.41.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for dependencies of gz-utils2
+-- Searching for <gz-utils2> component [cli]
+-- Looking for gz-utils2-cli -- found version 2.2.1
+-- Searching for dependencies of gz-utils2-cli
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for dependencies of gz-msgs10
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-math7 -- found version 7.6.0
+-- Searching for dependencies of gz-math7
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Checking for module 'tinyxml2'
+--   Found tinyxml2, version 11.0.0
+-- Looking for gz-sim8 -- found version 8.11.0
+-- Searching for dependencies of gz-sim8
+-- Looking for sdformat14 -- found version 14.9.0
+-- Searching for dependencies of sdformat14
+-- Looking for gz-math7 -- found version 7.6.0
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-plugin2 -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Searching for <gz-plugin2> component [loader]
+-- Looking for gz-plugin2-loader -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2-loader
+-- Searching for <gz-plugin2> component [register]
+-- Looking for gz-plugin2-register -- found version 2.0.4
+-- Searching for dependencies of gz-plugin2-register
+-- Looking for gz-transport13 -- found version 13.5.0
+-- Searching for dependencies of gz-transport13
+-- Config-file not installed for ZeroMQ -- checking for pkg-config
+-- Checking for module 'libzmq >= 4'
+--   Found libzmq, version 4.3.5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Searching for <gz-transport13> component [log]
+-- Looking for gz-transport13-log -- found version 13.5.0
+-- Searching for dependencies of gz-transport13-log
+-- Searching for <gz-transport13> component [parameters]
+-- Looking for gz-transport13-parameters -- found version 13.5.0
+-- Searching for dependencies of gz-transport13-parameters
+-- Looking for gz-msgs10 -- found version 10.3.2
+-- Looking for gz-common5 -- found version 5.8.0
+-- Searching for dependencies of gz-common5
+-- Looking for gz-utils2 -- found version 2.2.1
+-- Looking for dlfcn.h - found
+-- Looking for libdl - found
+-- Searching for <gz-common5> component [av]
+-- Looking for gz-common5-av -- found version 5.8.0
+-- Searching for dependencies of gz-common5-av
+-- Checking for module 'libswscale'
+--   Found libswscale, version 9.5.102
+-- Checking for module 'libavdevice >= 56.4.100'
+--   Found libavdevice, version 62.3.102
+[2026-07-02 22:42:48] Fechando interface UAVEDUSIM.
+-- Checking for module 'libavformat'
+--   Found libavformat, version 62.12.102
+-- Checking for module 'libavcodec'
+--   Found libavcodec, version 62.28.102
+-- Checking for module 'libavutil'
+--   Found libavutil, version 60.26.102
+make: *** [Makefile:227: px4_sitl] Interrupt
+
+[UAVEDUSIM] Comando finalizado com código: 130
+[UAVEDUSIM] Pressione ENTER para fechar este terminal.
+ninja: error: rebuilding 'build.ninja': interrupted by user
+    16.552 - debug: Exiting main (default:unknown:0)
+Invalid value (0) for DRI_PRIME. Should be > 0
+[2026-07-02 22:43:25] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:43:25] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:43:25] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:43:34] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:43:34] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:43:34] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:43:46] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:43:46] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:43:46] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:44:06] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:44:06] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:44:06] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:44:08] Fechando interface UAVEDUSIM.
+[2026-07-02 22:44:35] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:44:35] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:44:35] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:44:37] Fechando interface UAVEDUSIM.
+[2026-07-02 22:45:26] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:45:26] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:45:26] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:45:29] Fechando interface UAVEDUSIM.
+[2026-07-02 22:45:43] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:45:43] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:45:43] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:45:48] Fechando interface UAVEDUSIM.
+[2026-07-02 22:46:43] Iniciando UAVEDUSIM GUI persistente
+[2026-07-02 22:46:43] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-02 22:46:43] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-02 22:46:46] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-02 22:46:46] true
+[2026-07-02 22:46:46] Código de retorno: 0
+[2026-07-02 22:46:46] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-02 22:46:46] v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:46:46] Código de retorno: 0
+[2026-07-02 22:46:46] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-02 22:46:46] v1.17.0
+[2026-07-02 22:46:46] Código de retorno: 0
+[2026-07-02 22:46:46] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-02 22:46:46] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-02 22:46:46] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-02 22:46:46] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-02 22:46:46] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-02 22:46:46] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-02 22:46:46] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-02 22:46:46] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-02 22:46:46] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-02 22:46:46] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-02 22:46:46] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-02 22:46:54] Fechando interface UAVEDUSIM.
+[2026-07-03 10:43:30] Iniciando UAVEDUSIM GUI persistente
+[2026-07-03 10:43:30] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-03 10:43:30] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-03 10:43:35] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 10:43:35] true
+[2026-07-03 10:43:35] Código de retorno: 0
+[2026-07-03 10:43:35] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 10:43:35] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 10:43:35] Código de retorno: 0
+[2026-07-03 10:43:35] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 10:43:35] v1.17.0
+[2026-07-03 10:43:35] Código de retorno: 0
+[2026-07-03 10:43:35] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 10:43:35] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 10:43:35] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 10:43:35] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 10:43:35] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 10:43:35] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 10:43:35] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 10:43:35] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 10:43:35] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 10:43:35] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 10:43:35] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 10:43:58] Fechando interface UAVEDUSIM.
+[2026-07-03 11:11:24] Iniciando UAVEDUSIM GUI persistente
+[2026-07-03 11:11:24] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-03 11:11:24] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-03 11:11:26] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:11:26] true
+[2026-07-03 11:11:26] Código de retorno: 0
+[2026-07-03 11:11:26] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:11:26] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:11:26] Código de retorno: 0
+[2026-07-03 11:11:26] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:11:26] v1.17.0
+[2026-07-03 11:11:26] Código de retorno: 0
+[2026-07-03 11:11:26] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:11:26] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:11:26] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:11:26] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:11:26] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:11:26] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:11:26] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:11:26] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:11:26] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:11:26] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:11:26] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 11:11:45] Ignorando mundo rover na lista de mundos: rover
+[2026-07-03 11:11:55] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:11:55] true
+[2026-07-03 11:11:55] Código de retorno: 0
+[2026-07-03 11:11:55] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:11:55] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:11:55] Código de retorno: 0
+[2026-07-03 11:11:55] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:11:55] v1.17.0
+[2026-07-03 11:11:55] Código de retorno: 0
+[2026-07-03 11:11:55] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:11:55] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:11:55] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:11:55] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:11:55] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:11:55] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:11:55] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:11:56] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:11:56] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:11:56] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:11:56] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:11:56] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:11:56] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:11:56] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 11:53:52] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:53:52] true
+[2026-07-03 11:53:52] Código de retorno: 0
+[2026-07-03 11:53:52] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:53:52] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:53:52] Código de retorno: 0
+[2026-07-03 11:53:52] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:53:52] v1.17.0
+[2026-07-03 11:53:52] Código de retorno: 0
+[2026-07-03 11:53:52] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:53:52] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:53:52] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:53:52] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:53:52] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:53:52] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:53:52] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:53:52] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:53:52] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:53:52] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:53:52] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 11:54:08] Ignorando mundo rover na lista de mundos: rover
+[2026-07-03 11:54:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:54:17] true
+[2026-07-03 11:54:17] Código de retorno: 0
+[2026-07-03 11:54:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:54:17] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:54:17] Código de retorno: 0
+[2026-07-03 11:54:17] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:54:17] v1.17.0
+[2026-07-03 11:54:17] Código de retorno: 0
+[2026-07-03 11:54:17] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:54:17] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:54:17] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:54:17] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:54:17] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:54:17] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:54:17] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:54:17] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:54:17] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:54:17] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:54:17] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 11:54:19] Fechando interface UAVEDUSIM.
+[2026-07-03 11:55:19] Iniciando UAVEDUSIM GUI persistente
+[2026-07-03 11:55:19] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-03 11:55:19] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-03 11:55:22] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:55:22] true
+[2026-07-03 11:55:22] Código de retorno: 0
+[2026-07-03 11:55:22] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:55:22] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:55:22] Código de retorno: 0
+[2026-07-03 11:55:22] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:55:22] v1.17.0
+[2026-07-03 11:55:22] Código de retorno: 0
+[2026-07-03 11:55:22] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:55:22] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:55:22] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:55:22] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:55:22] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:55:22] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:55:22] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:55:22] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:55:22] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:55:22] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:55:22] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 11:55:28] Ignorando mundo rover na lista de mundos: rover
+[2026-07-03 11:55:42] Fechando interface UAVEDUSIM.
+[2026-07-03 11:57:17] Iniciando UAVEDUSIM GUI persistente
+[2026-07-03 11:57:17] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-03 11:57:17] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-03 11:57:20] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:57:20] true
+[2026-07-03 11:57:20] Código de retorno: 0
+[2026-07-03 11:57:20] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:57:20] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:57:20] Código de retorno: 0
+[2026-07-03 11:57:20] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:57:20] v1.17.0
+[2026-07-03 11:57:20] Código de retorno: 0
+[2026-07-03 11:57:20] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:57:20] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:57:20] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:57:20] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:57:20] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:57:20] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:57:20] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:57:20] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:57:20] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:57:20] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:57:20] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 11:57:23] Ignorando mundo rover na lista de mundos: rover
+[2026-07-03 11:58:07] Iniciando UAVEDUSIM GUI persistente
+[2026-07-03 11:58:07] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-03 11:58:07] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-03 11:58:09] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:58:09] true
+[2026-07-03 11:58:09] Código de retorno: 0
+[2026-07-03 11:58:09] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:58:09] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:58:09] Código de retorno: 0
+[2026-07-03 11:58:09] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:58:09] v1.17.0
+[2026-07-03 11:58:09] Código de retorno: 0
+[2026-07-03 11:58:09] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:58:09] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:58:09] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:58:09] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:58:09] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:58:09] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:58:09] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:58:09] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:58:09] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:58:09] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:58:09] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 11:58:14] Ignorando mundo rover na lista de mundos: rover
+[2026-07-03 11:58:18] Fechando interface UAVEDUSIM.
+[2026-07-03 11:59:55] Iniciando UAVEDUSIM GUI persistente
+[2026-07-03 11:59:55] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-03 11:59:55] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-03 11:59:56] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 11:59:56] true
+[2026-07-03 11:59:56] Código de retorno: 0
+[2026-07-03 11:59:56] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 11:59:56] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:59:56] Código de retorno: 0
+[2026-07-03 11:59:56] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 11:59:56] v1.17.0
+[2026-07-03 11:59:56] Código de retorno: 0
+[2026-07-03 11:59:56] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 11:59:56] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 11:59:56] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 11:59:56] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 11:59:56] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 11:59:56] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 11:59:56] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 11:59:56] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 11:59:56] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 11:59:56] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 11:59:56] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 12:00:00] Ignorando mundo rover na lista de mundos: rover
+[2026-07-03 12:02:22] Iniciando UAVEDUSIM GUI persistente
+[2026-07-03 12:02:22] APP_DIR=/home/beatrizdiniz/UAVEDUSIM
+[2026-07-03 12:02:22] Sessão: XDG_SESSION_TYPE=wayland, WAYLAND_DISPLAY=wayland-1, DISPLAY=:0
+[2026-07-03 12:02:30] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot rev-parse --is-inside-work-tree
+[2026-07-03 12:02:30] true
+[2026-07-03 12:02:30] Código de retorno: 0
+[2026-07-03 12:02:30] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --dirty --always
+[2026-07-03 12:02:30] v1.17.0-1-g88421121d7-dirty
+[2026-07-03 12:02:30] Código de retorno: 0
+[2026-07-03 12:02:30] Executando: git -C /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot describe --tags --match v[0-9]* --abbrev=0
+[2026-07-03 12:02:30] v1.17.0
+[2026-07-03 12:02:30] Código de retorno: 0
+[2026-07-03 12:02:30] PX4 Git version detectada: v1.17.0-1-g88421121d7-dirty
+[2026-07-03 12:02:30] Link modelo: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/models/x500_uavjamsim -> ../../../../../UAVJamSim/x500_uavjamsim
+[2026-07-03 12:02:30] Link mundo default: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf -> ../../../../../UAVJamSim/worlds/default.sdf
+[2026-07-03 12:02:30] Airframe instalado: /home/beatrizdiniz/UAVEDUSIM/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4020_gz_x500_uavjamsim
+[2026-07-03 12:02:30] CMakeLists já contem 4020_gz_x500_uavjamsim.
+[2026-07-03 12:02:30] Aviso: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/px4 já existe e não é link. Mantendo como esta.
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: LW20
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: OakD-Lite
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: airspeed
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: arucotag
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: gimbal
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: helipad
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: lidar_2d_v2
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: mono_cam
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: moving_platform
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: optical_flow
+[2026-07-03 12:02:30] Ignorando modelo rover na lista de veículos: r1_rover
+[2026-07-03 12:02:30] Ignorando modelo rover na lista de veículos: rover_ackermann
+[2026-07-03 12:02:30] Ignorando modelo rover na lista de veículos: rover_differential
+[2026-07-03 12:02:30] Ignorando modelo rover na lista de veículos: rover_mecanum
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: spacecraft_2d
+[2026-07-03 12:02:30] Ignorando modelo sem airframe/target PX4: x500_base
+[2026-07-03 12:02:35] Ignorando mundo rover na lista de mundos: rover
