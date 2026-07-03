@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import time
+import math
 import shutil
 import signal
 import subprocess
@@ -57,7 +58,7 @@ ICONS = {
     # Ícones das ações principais do menu.
     "executar": "▶",
     "limpar": "↺",
-    "voltar": "←",
+    "voltar": "󰁎",
     "fechar": "×",
     "sair": "⏻",
 
@@ -859,6 +860,25 @@ def notify_msg(msg: str) -> None:
         subprocess.Popen(["notify-send", "UAVEDUSIM", msg], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 # Escapa strings usadas em comandos shell.
+
+def _uavedusim_safe_yview_scroll(widget, number, what):
+    """Executa yview_scroll sem quebrar se o Canvas já tiver sido destruído."""
+    try:
+        if widget is None:
+            return "break"
+
+        if not widget.winfo_exists():
+            return "break"
+
+        widget.yview_scroll(number, what)
+    except tk.TclError:
+        return "break"
+    except Exception:
+        return "break"
+
+    return "break"
+
+
 def shell_quote(value: str) -> str:
     return "'" + value.replace("'", "'\\''") + "'"
 
@@ -1291,9 +1311,32 @@ class UAVEDUSIMApp:
         self.drag_area.bind("<B1-Motion>", self.do_drag)
         win_btns = tk.Frame(self.titlebar, bg=BG)
         win_btns.pack(side="right", padx=(0, self.px(8)))
-        ttk.Button(win_btns, text="−", width=3, style="WinBtn.TButton", command=self.minimize).pack(side="left", padx=1)
-        ttk.Button(win_btns, text="□", width=3, style="WinBtn.TButton", command=self.toggle_fullscreen).pack(side="left", padx=1)
-        ttk.Button(win_btns, text="×", width=3, style="CloseBtn.TButton", command=self.close_app).pack(side="left", padx=(1, 0))
+        self.win_min_btn = ttk.Button(
+            win_btns,
+            text=UAVEDUSIM_WIN_ICON_MINIMIZE,
+            width=3,
+            style="WinBtn.TButton",
+            command=self.minimize,
+        )
+        self.win_min_btn.pack(side="left", padx=1)
+
+        self.win_full_btn = ttk.Button(
+            win_btns,
+            text=UAVEDUSIM_WIN_ICON_RESTORE if self.fullscreen else UAVEDUSIM_WIN_ICON_MAXIMIZE,
+            width=3,
+            style="WinBtn.TButton",
+            command=self.toggle_fullscreen,
+        )
+        self.win_full_btn.pack(side="left", padx=1)
+
+        self.win_close_btn = ttk.Button(
+            win_btns,
+            text=UAVEDUSIM_WIN_ICON_CLOSE,
+            width=3,
+            style="CloseBtn.TButton",
+            command=self.close_app,
+        )
+        self.win_close_btn.pack(side="left", padx=(1, 0))
         tk.Frame(self.outer, bg=ACCENT, height=self.px(2)).pack(fill="x")
         self.body_frame = tk.Frame(self.outer, bg=SURFACE)
         self.body_frame.pack(fill="both", expand=True)
@@ -2529,11 +2572,11 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
 
         def _wheel(event):
             if getattr(event, "num", None) == 4:
-                canvas.yview_scroll(-3, "units")
+                _uavedusim_safe_yview_scroll(canvas, -3, "units")
             elif getattr(event, "num", None) == 5:
-                canvas.yview_scroll(3, "units")
+                _uavedusim_safe_yview_scroll(canvas, 3, "units")
             elif getattr(event, "delta", 0):
-                canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+                _uavedusim_safe_yview_scroll(canvas, int(-1 * (event.delta / 120)), "units")
 
         page.bind("<Configure>", _sync_scrollregion)
         canvas.bind("<Configure>", _sync_width)
@@ -2926,7 +2969,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
 
         self.attack_hint_label = tk.Label(
             footer,
-            text="Noise/Pulse: digite a intensidade. Blackout não usa intensidade.",
+            text="",
             bg=SURFACE,
             fg=BORDER,
             font=(self.FONT_FAMILY, self.FS_TINY),
@@ -3002,7 +3045,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         return {
             "noise": "Jamming Noise",
             "blackout": "Jamming Blackout",
-            "pulse": "Jamming Pulse",
+            "pulse": "\uf83e",
         }.get(attack_key, str(attack_key))
 
     # Explica, em linguagem simples, o que cada tipo de ataque faz ao GPS do drone.
@@ -4836,7 +4879,7 @@ def _uavedusim_render_menu(self, prompt, options, on_select, *, badge=None, on_b
     is_didactic_menu = prompt in didactic_subtitles
 
     if not is_main and on_back is not None:
-        ttk.Button(header, text="← voltar", style="Back.TButton", command=on_back).pack(
+        ttk.Button(header, text="󰁎", style="Back.TButton", command=on_back).pack(
             side="left",
             pady=(0, self.px(8)),
         )
@@ -4928,7 +4971,7 @@ def _uavedusim_render_menu(self, prompt, options, on_select, *, badge=None, on_b
 
     ttk.Button(
         self.menu_btn_frame,
-        text="Selecionar →",
+        text="Selecionar ➔",
         style="Primary.TButton",
         command=self.choose_current,
     ).pack(side="left")
@@ -5292,12 +5335,12 @@ def _uavedusim_draw_mitigation_slider(self):
 
 def _uavedusim_item_on_wheel(self, event):
     if getattr(event, "num", None) == 4:
-        self.yview_scroll(-3, "units")
+        _uavedusim_safe_yview_scroll(self, -3, "units")
     elif getattr(event, "num", None) == 5:
-        self.yview_scroll(3, "units")
+        _uavedusim_safe_yview_scroll(self, 3, "units")
     elif getattr(event, "delta", 0):
         step = -1 if event.delta > 0 else 1
-        self.yview_scroll(step * 3, "units")
+        _uavedusim_safe_yview_scroll(self, step * 3, "units")
 
     return "break"
 
@@ -5719,21 +5762,21 @@ PX4_MODEL_DOC_ORDER = [
 ]
 
 PX4_MODEL_DESCRIPTIONS = {
-    "gz_x500_uavjamsim": "Versão do X500 com varios sensores ativos ao mesmo tempo para experimentos do UAVEDUSIM.",
-    "gz_x500": "X500 Quadrotor.",
-    "gz_x500_vision": "X500 Quadrotor with Visual Odometry.",
-    "gz_x500_depth": "X500 Quadrotor with Depth Camera (Front-facing). Camera de profundidade frontal baseada na OAK-D.",
-    "gz_x500_mono_cam": "X500 Quadrotor with Monocular Camera. Sensor monocular simples acoplado ao modelo.",
-    "gz_x500_mono_cam_down": "X500 Quadrotor with Monocular Camera (Down-facing). Util para testes de pouso preciso no mundo Aruco.",
-    "gz_x500_lidar_down": "X500 Quadrotor with 1D LIDAR (Down-facing). LIDAR inferior Lightware LW20/C, alcance de 0.1 a 100 m.",
-    "gz_x500_lidar_front": "X500 Quadrotor with 1D LIDAR (Front-facing). LIDAR frontal Lightware LW20/C, alcance de 0.2 a 100 m.",
-    "gz_x500_lidar_2d": "X500 Quadrotor with 2D LIDAR. Sensor Hokuyo UTM-30LX, alcance de 0.1 a 30 m e varredura de 270 graus.",
-    "gz_x500_gimbal": "X500 Quadrotor with Gimbal (Front-facing). Gimbal frontal com controle de posição e cadeia cinematica ZXY.",
-    "gz_rc_cessna": "Standard Plane. Plane in Gazebo.",
-    "gz_advanced_plane": "Advanced Plane. Modelo de asa fixa com Advanced Lift Drag plugin.",
-    "gz_standard_vtol": "Standard VTOL.",
-    "gz_quadtailsitter": "Quad Tailsitter VTOL. Tailsitter com empuxo diferencial para pitch, roll e yaw.",
-    "gz_tiltrotor": "Tiltrotor VTOL. VTOL Plane com motores frontais inclinaveis para transição e voo avancado.",
+    "gz_x500_uavjamsim": "Versão do X500 com vários sensores ativos ao mesmo tempo para experimentos do UAVEDUSIM.",
+    "gz_x500": "Quadricóptero X500 básico.",
+    "gz_x500_vision": "Quadricóptero X500 com odometria visual.",
+    "gz_x500_depth": "Quadricóptero X500 com câmera de profundidade frontal baseada na OAK-D.",
+    "gz_x500_mono_cam": "Quadricóptero X500 com câmera monocular simples.",
+    "gz_x500_mono_cam_down": "Quadricóptero X500 com câmera monocular voltada para baixo; útil para testes de pouso preciso no mundo Aruco.",
+    "gz_x500_lidar_down": "Quadricóptero X500 com LiDAR 1D inferior Lightware LW20/C, alcance de 0,1 a 100 m.",
+    "gz_x500_lidar_front": "Quadricóptero X500 com LiDAR 1D frontal Lightware LW20/C, alcance de 0,2 a 100 m.",
+    "gz_x500_lidar_2d": "Quadricóptero X500 com LiDAR 2D Hokuyo UTM-30LX, alcance de 0,1 a 30 m e varredura de 270 graus.",
+    "gz_x500_gimbal": "Quadricóptero X500 com gimbal frontal e controle de posição.",
+    "gz_rc_cessna": "Avião Cessna RC padrão no Gazebo.",
+    "gz_advanced_plane": "Avião de asa fixa avançado com plugin Advanced Lift Drag.",
+    "gz_standard_vtol": "VTOL padrão com decolagem vertical e voo de asa fixa.",
+    "gz_quadtailsitter": "VTOL quad tailsitter com empuxo diferencial para arfagem, rolagem e guinada.",
+    "gz_tiltrotor": "VTOL tiltrotor com motores frontais inclináveis para transição e voo avançado.",
 }
 
 PX4_ROVER_MODEL_PREFIXES = (
@@ -5763,13 +5806,20 @@ def _uavedusim_model_description(model_id):
 
     raw = model_id[3:] if model_id.startswith("gz_") else model_id
     pretty = raw.replace("_", " ")
-    return f"{pretty} in Gazebo."
+    return f"Modelo {pretty} no Gazebo."
+
+
+PX4_MODEL_RECOMMENDATION_LABELS = {
+    "gz_x500_uavjamsim": "modelo indicado",
+    "gz_x500_vision": "segundo modelo mais indicado",
+}
 
 
 def _uavedusim_model_display_label(model_id):
     description = _uavedusim_model_description(model_id)
-    return f"{model_id}\n{description}"
-
+    recommendation = PX4_MODEL_RECOMMENDATION_LABELS.get(model_id, "")
+    suffix = f" ({recommendation})" if recommendation else ""
+    return f"{model_id}{suffix}\n{description}"
 
 def _uavedusim_model_exists_and_is_executable(model_id):
     if not model_id.startswith("gz_"):
@@ -6560,11 +6610,11 @@ def _uavedusim_home_show_main_menu(self):
             return
 
         if getattr(event, "num", None) == 4:
-            text_canvas.yview_scroll(-3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, -3, "units")
         elif getattr(event, "num", None) == 5:
-            text_canvas.yview_scroll(3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, 3, "units")
         elif getattr(event, "delta", 0):
-            text_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+            _uavedusim_safe_yview_scroll(text_canvas, int(-1 * (event.delta / 120)), "units")
 
     text_area.bind("<Configure>", _sync_text_scrollregion)
     text_canvas.bind(
@@ -6888,10 +6938,11 @@ def _uavedusim_show_jamming_info_screen(self):
 
     ttk.Button(
         header,
-        text="← voltar",
+        text="󰁎",
         style="Back.TButton",
+        width=1,
         command=self.show_main_menu,
-    ).pack(side="left", pady=(0, self.px(10)))
+    ).pack(side="left", pady=(0, self.px(15)))
 
     tk.Frame(header, bg=SURFACE).pack(side="left", fill="x", expand=True)
 
@@ -6956,11 +7007,11 @@ def _uavedusim_show_jamming_info_screen(self):
         if not self._ji_scroll_enabled:
             return
         if getattr(event, "num", None) == 4:
-            text_canvas.yview_scroll(-3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, -3, "units")
         elif getattr(event, "num", None) == 5:
-            text_canvas.yview_scroll(3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, 3, "units")
         elif getattr(event, "delta", 0):
-            text_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+            _uavedusim_safe_yview_scroll(text_canvas, int(-1 * (event.delta / 120)), "units")
 
     text_area.bind("<Configure>", _ji_sync_scrollregion)
     text_canvas.bind("<Enter>", lambda _e: (
@@ -7041,11 +7092,19 @@ def _uavedusim_show_jamming_info_screen(self):
     except Exception:
         pass
 
-    ttk.Button(
+    RoundedButton(
         text_area_padded,
         text="Entenda as mitigações do simulador",
-        style="JammingMitig.TButton",
         command=lambda: _uavedusim_show_mitigation_screen(self),
+        outer_bg=SURFACE2,
+        fill=ACCENT,
+        fill_hover="#ddc5fb",
+        fill_press=ACCENT_DIM,
+        gradient=(ACCENT, LAVENDER),
+        text_color="#11111b",
+        radius=self.px(26),
+        height=self.px(56),
+        font=(self.FONT_FAMILY, self.fs(13), "bold"),
     ).pack(fill="x", pady=(0, self.px(14)))
 
     def _ji_reflow(_event=None):
@@ -7070,13 +7129,13 @@ def _uavedusim_show_jamming_info_screen(self):
         pady=(self.FOOTER_TOP_PAD, self.FOOTER_BOTTOM_PAD),
     )
 
-    tk.Label(
-        footer,
-        text="Esc voltar",
-        bg=SURFACE,
-        fg=BORDER,
-        font=(self.FONT_FAMILY, self.FS_TINY),
-    ).pack(side="left", padx=(self.px(12), 0))
+    # tk.Label(
+    #     footer,
+    #     text="Esc voltar",
+    #     bg=SURFACE,
+    #     fg=BORDER,
+    #     font=(self.FONT_FAMILY, self.FS_TINY),
+    # ).pack(side="left", padx=(self.px(12), 0))
 
     btn_frame = tk.Frame(footer, bg=SURFACE)
     btn_frame.pack(side="right")
@@ -7107,8 +7166,9 @@ def _uavedusim_show_mitigation_screen(self):
 
     ttk.Button(
         header,
-        text="← voltar",
+        text="󰁎",
         style="Back.TButton",
+        width=1,
         command=lambda: _uavedusim_show_jamming_info_screen(self),
     ).pack(side="left", pady=(0, self.px(10)))
 
@@ -7175,11 +7235,11 @@ def _uavedusim_show_mitigation_screen(self):
         if not self._mi_scroll_enabled:
             return
         if getattr(event, "num", None) == 4:
-            text_canvas.yview_scroll(-3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, -3, "units")
         elif getattr(event, "num", None) == 5:
-            text_canvas.yview_scroll(3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, 3, "units")
         elif getattr(event, "delta", 0):
-            text_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+            _uavedusim_safe_yview_scroll(text_canvas, int(-1 * (event.delta / 120)), "units")
 
     text_area.bind("<Configure>", _mi_sync_scrollregion)
     text_canvas.bind("<Enter>", lambda _e: (
@@ -7260,11 +7320,22 @@ def _uavedusim_show_mitigation_screen(self):
     except Exception:
         pass
 
-    ttk.Button(
+    RoundedButton(
         text_area_padded,
         text="Iniciar simulação do UAVEDUSIM",
-        style="MitigStart.TButton",
         command=lambda: _uavedusim_home_run_choice(self, "Executar UAVEDUSIM"),
+        outer_bg=SURFACE2,
+        fill=_uavedusim_blend(MITIG_COLOR, "#000000", 0.08),
+        fill_hover=_uavedusim_blend(MITIG_COLOR, "#ffffff", 0.22),
+        fill_press=MITIG_COLOR_DIM,
+        gradient=(
+            _uavedusim_blend(MITIG_COLOR, "#000000", 0.10),
+            _uavedusim_blend(MITIG_COLOR, "#ffffff", 0.42),
+        ),
+        text_color="#11111b",
+        radius=self.px(26),
+        height=self.px(56),
+        font=(self.FONT_FAMILY, self.fs(13), "bold"),
     ).pack(fill="x", pady=(0, self.px(14)))
 
     def _mi_reflow(_event=None):
@@ -7289,13 +7360,13 @@ def _uavedusim_show_mitigation_screen(self):
         pady=(self.FOOTER_TOP_PAD, self.FOOTER_BOTTOM_PAD),
     )
 
-    tk.Label(
-        footer,
-        text="Esc voltar",
-        bg=SURFACE,
-        fg=BORDER,
-        font=(self.FONT_FAMILY, self.FS_TINY),
-    ).pack(side="left", padx=(self.px(12), 0))
+    # tk.Label(
+    #     footer,
+    #     text="Esc voltar",
+    #     bg=SURFACE,
+    #     fg=BORDER,
+    #     font=(self.FONT_FAMILY, self.FS_TINY),
+    # ).pack(side="left", padx=(self.px(12), 0))
 
     btn_frame = tk.Frame(footer, bg=SURFACE)
     btn_frame.pack(side="right")
@@ -7420,8 +7491,9 @@ def _uavedusim_show_jamming_info_screen(self):
 
     ttk.Button(
         header,
-        text="← voltar",
+        text="󰁎",
         style="Back.TButton",
+        width=1,
         command=self.show_main_menu,
     ).pack(side="left", pady=(0, self.px(10)))
 
@@ -7490,12 +7562,12 @@ def _uavedusim_show_jamming_info_screen(self):
             return "break"
 
         if getattr(event, "num", None) == 4:
-            text_canvas.yview_scroll(-3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, -3, "units")
         elif getattr(event, "num", None) == 5:
-            text_canvas.yview_scroll(3, "units")
+            _uavedusim_safe_yview_scroll(text_canvas, 3, "units")
         else:
             delta = getattr(event, "delta", 0)
-            text_canvas.yview_scroll(int(-1 * (delta / 120)), "units")
+            _uavedusim_safe_yview_scroll(text_canvas, int(-1 * (delta / 120)), "units")
 
         return "break"
 
@@ -7568,11 +7640,19 @@ def _uavedusim_show_jamming_info_screen(self):
     except Exception:
         pass
 
-    ttk.Button(
+    RoundedButton(
         text_area_padded,
-        text="Entenda os Ataques de Jamming Simulados",
-        style="JammingNext.TButton",
+        text="Entenda os Ataques de Jamming Simulados   ",
         command=lambda: _uavedusim_show_jamming_attacks_screen(self),
+        outer_bg=SURFACE2,
+        fill=ACCENT,
+        fill_hover="#ddc5fb",
+        fill_press=ACCENT_DIM,
+        gradient=(ACCENT, LAVENDER),
+        text_color="#11111b",
+        radius=self.px(26),
+        height=self.px(56),
+        font=(self.FONT_FAMILY, self.fs(13), "bold"),
     ).pack(fill="x", pady=(self.px(8), self.px(14)))
 
     def _reflow(_event=None):
@@ -7597,13 +7677,13 @@ def _uavedusim_show_jamming_info_screen(self):
         pady=(self.FOOTER_TOP_PAD, self.FOOTER_BOTTOM_PAD),
     )
 
-    tk.Label(
-        footer,
-        text="Esc voltar",
-        bg=SURFACE,
-        fg=BORDER,
-        font=(self.FONT_FAMILY, self.FS_TINY),
-    ).pack(side="left", padx=(self.px(12), 0))
+    # tk.Label(
+    #     footer,
+    #     text="Esc voltar",
+    #     bg=SURFACE,
+    #     fg=BORDER,
+    #     font=(self.FONT_FAMILY, self.FS_TINY),
+    # ).pack(side="left", padx=(self.px(12), 0))
 
     btn_frame = tk.Frame(footer, bg=SURFACE)
     btn_frame.pack(side="right")
@@ -7617,13 +7697,3503 @@ def _uavedusim_show_jamming_info_screen(self):
 # END UAVEDUSIM_JAMMING_TWO_STEPS_PATCH
 
 
-if __name__ == "__main__":
-    if not HAS_PIL:
-        print(
-            "[uavedusim] Aviso: Pillow não encontrado — os cantos arredondados da "
-            "tela inicial usarão um contorno mais simples (menos suave). Para o "
-            "visual com antialiasing completo, rode: pip install pillow"
+
+# BEGIN UAVEDUSIM_TITLEBAR_NAV_MENU_PATCH
+# Transforma "☰ UAVEDUSIM" da barra superior em um menu navegável entre páginas.
+
+_UAVEDUSIM_ORIGINAL_BUILD_SHELL_FOR_NAV = UAVEDUSIMApp._build_shell
+_UAVEDUSIM_ORIGINAL_ON_ESCAPE_FOR_NAV = UAVEDUSIMApp.on_escape
+
+
+def _uavedusim_nav_close(self):
+    menu = getattr(self, "_titlebar_nav_menu", None)
+
+    if menu is not None:
+        try:
+            menu.destroy()
+        except Exception:
+            pass
+
+    self._titlebar_nav_menu = None
+
+
+def _uavedusim_nav_call(self, callback):
+    _uavedusim_nav_close(self)
+
+    try:
+        self.root.after(1, callback)
+    except Exception:
+        callback()
+
+
+def _uavedusim_nav_safe_global(self, name, fallback=None):
+    func = globals().get(name)
+
+    if callable(func):
+        return lambda: func(self)
+
+    if fallback is not None:
+        return fallback
+
+    return self.show_main_menu
+
+
+def _uavedusim_nav_items(self):
+    items = [
+        (
+            "home",
+            "Início",
+            "Tela inicial do UAVEDUSIM",
+            self.show_main_menu,
+        ),
+        (
+            "jamming_info",
+            "O que é jamming?",
+            "Conceito geral de jamming",
+            _uavedusim_nav_safe_global(self, "_uavedusim_show_jamming_info_screen", self.show_main_menu),
+        ),
+    ]
+
+    if callable(globals().get("_uavedusim_show_jamming_attacks_screen")):
+        items.append(
+            (
+                "jamming_attacks_info",
+                "Ataques de Jamming Simulados",
+                "Noise, Blackout e Pulse",
+                lambda: _uavedusim_show_jamming_attacks_screen(self),
+            )
         )
+
+    if callable(globals().get("_uavedusim_show_mitigation_screen")):
+        items.append(
+            (
+                "mitigation_info",
+                "Mitigações do Simulador",
+                "Estratégias contra os ataques",
+                lambda: _uavedusim_show_mitigation_screen(self),
+            )
+        )
+
+    items.append(
+        (
+            "simulation_flow",
+            "Iniciar simulação",
+            "Selecionar modelo e mundo",
+            self.start_uavedusim_flow,
+        )
+    )
+
+    return items
+
+
+def _uavedusim_nav_current_key(self):
+    page = str(getattr(self, "page", "") or "")
+
+    if page in ("main", "home"):
+        return "home"
+
+    if page == "jamming_info":
+        return "jamming_info"
+
+    if page == "jamming_attacks_info":
+        return "jamming_attacks_info"
+
+    if page == "mitigation_info":
+        return "mitigation_info"
+
+    if page in ("menu", "wait"):
+        return "simulation_flow"
+
+    if page == "attack":
+        return "simulation_flow"
+
+    return ""
+
+
+def _uavedusim_bind_click_recursive(widget, command):
+    try:
+        widget.bind("<Button-1>", lambda _e: command(), add="+")
+        widget.configure(cursor="hand2")
+    except Exception:
+        pass
+
+    try:
+        children = widget.winfo_children()
+    except Exception:
+        children = []
+
+    for child in children:
+        _uavedusim_bind_click_recursive(child, command)
+
+
+def _uavedusim_titlebar_nav_toggle(self, event=None):
+    existing = getattr(self, "_titlebar_nav_menu", None)
+
+    if existing is not None:
+        _uavedusim_nav_close(self)
+        return "break"
+
+    root = self.root
+    root.update_idletasks()
+
+    menu_w = max(self.px(300), 280)
+    margin = self.px(8)
+
+    try:
+        anchor = getattr(self, "logo_icon", None) or getattr(self, "logo_lbl", None)
+        x = anchor.winfo_rootx() - root.winfo_rootx()
+        y = self.titlebar.winfo_rooty() - root.winfo_rooty() + self.titlebar.winfo_height() + self.px(6)
+    except Exception:
+        x = margin
+        y = self.px(42)
+
+    root_w = max(root.winfo_width(), 1)
+    x = max(margin, min(x, root_w - menu_w - margin))
+
+    outer = tk.Frame(
+        root,
+        bg=BORDER,
+        bd=0,
+        highlightthickness=0,
+    )
+    outer.place(x=x, y=y, width=menu_w)
+    outer.lift()
+
+    inner = tk.Frame(outer, bg=BG, bd=0)
+    inner.pack(fill="both", expand=True, padx=1, pady=1)
+
+    title = tk.Frame(inner, bg=BG)
+    title.pack(fill="x", padx=self.px(10), pady=(self.px(10), self.px(6)))
+
+    tk.Label(
+        title,
+        text="Navegação",
+        bg=BG,
+        fg=TEXT,
+        anchor="w",
+        font=(self.FONT_FAMILY, self.fs(10), "bold"),
+    ).pack(side="left", fill="x", expand=True)
+
+    tk.Label(
+        title,
+        text="×",
+        bg=BG,
+        fg=MUTED,
+        cursor="hand2",
+        font=(self.FONT_FAMILY, self.fs(12), "bold"),
+    ).pack(side="right")
+
+    close_label = title.winfo_children()[-1]
+    close_label.bind("<Button-1>", lambda _e: _uavedusim_nav_close(self), add="+")
+
+    current = _uavedusim_nav_current_key(self)
+
+    for key, label, desc, command in _uavedusim_nav_items(self):
+        active = key == current
+        row_bg = SURFACE2 if active else SURFACE
+        row_fg = TEXT if active else MUTED
+        desc_fg = LAVENDER if active else "#9399b2"
+
+        row = tk.Frame(
+            inner,
+            bg=row_bg,
+            highlightthickness=1,
+            highlightbackground=ACCENT if active else BORDER,
+            bd=0,
+        )
+        row.pack(
+            fill="x",
+            padx=self.px(8),
+            pady=(0, self.px(7)),
+            ipady=self.px(5),
+        )
+
+        icon_text = "●" if active else "○"
+
+        tk.Label(
+            row,
+            text=icon_text,
+            bg=row_bg,
+            fg=ACCENT if active else BORDER,
+            font=(self.FONT_FAMILY, self.fs(9), "bold"),
+            width=1,
+        ).pack(side="left", padx=(self.px(8), self.px(4)))
+
+        txt = tk.Frame(row, bg=row_bg)
+        txt.pack(side="left", fill="x", expand=True, padx=(0, self.px(8)))
+
+        tk.Label(
+            txt,
+            text=label,
+            bg=row_bg,
+            fg=row_fg,
+            anchor="w",
+            font=(self.FONT_FAMILY, self.fs(9), "bold"),
+        ).pack(anchor="w", fill="x")
+
+        tk.Label(
+            txt,
+            text=desc,
+            bg=row_bg,
+            fg=desc_fg,
+            anchor="w",
+            font=(self.FONT_FAMILY, self.fs(8)),
+        ).pack(anchor="w", fill="x", pady=(self.px(2), 0))
+
+        _uavedusim_bind_click_recursive(
+            row,
+            lambda cmd=command: _uavedusim_nav_call(self, cmd),
+        )
+
+    hint = tk.Label(
+        inner,
+        text="Clique em uma página para navegar",
+        bg=BG,
+        fg=BORDER,
+        anchor="w",
+        font=(self.FONT_FAMILY, self.fs(8)),
+    )
+    hint.pack(fill="x", padx=self.px(10), pady=(0, self.px(10)))
+
+    self._titlebar_nav_menu = outer
+
+    outer.update_idletasks()
+    menu_h = outer.winfo_reqheight()
+    outer.place_configure(height=menu_h)
+
+    return "break"
+
+
+def _uavedusim_install_titlebar_nav(self):
+    widgets = [
+        getattr(self, "logo_icon", None),
+        getattr(self, "logo_lbl", None),
+    ]
+
+    for widget in widgets:
+        if widget is None:
+            continue
+
+        try:
+            widget.configure(cursor="hand2")
+        except Exception:
+            pass
+
+        try:
+            widget.bind("<Button-1>", lambda event, app=self: _uavedusim_titlebar_nav_toggle(app, event))
+            widget.bind("<B1-Motion>", lambda _event: None)
+        except Exception:
+            pass
+
+    try:
+        if hasattr(self, "logo_icon"):
+            self.logo_icon.configure(text="☰", fg=ACCENT)
+        if hasattr(self, "logo_lbl"):
+            self.logo_lbl.configure(text="UAVEDUSIM", fg=ACCENT)
+    except Exception:
+        pass
+
+
+def _uavedusim_build_shell_with_nav(self):
+    _UAVEDUSIM_ORIGINAL_BUILD_SHELL_FOR_NAV(self)
+    _uavedusim_install_titlebar_nav(self)
+
+
+def _uavedusim_on_escape_with_nav(self, event=None):
+    if getattr(self, "_titlebar_nav_menu", None) is not None:
+        _uavedusim_nav_close(self)
+        return
+
+    return _UAVEDUSIM_ORIGINAL_ON_ESCAPE_FOR_NAV(self, event)
+
+
+UAVEDUSIMApp._build_shell = _uavedusim_build_shell_with_nav
+UAVEDUSIMApp.on_escape = _uavedusim_on_escape_with_nav
+# END UAVEDUSIM_TITLEBAR_NAV_MENU_PATCH
+
+
+
+
+
+
+# BEGIN UAVEDUSIM_SIMULATION_START_GUARD_PATCH
+# Bloqueia a inicialização de uma nova simulação quando já existe
+# PX4/Gazebo em execução ou quando a simulação ainda está abrindo.
+# O aviso é exibido dentro da própria janela, sem notificação do sistema.
+
+_UAVEDUSIM_START_GUARD_ORIGINAL_START_FLOW = UAVEDUSIMApp.start_uavedusim_flow
+
+
+def _uavedusim_simulation_start_block_reason(self):
+    page = str(getattr(self, "page", "") or "")
+
+    if page == "wait":
+        return "A simulação já está iniciando. Aguarde o PX4/Gazebo ficar pronto ou encerre os processos antes de iniciar outra."
+
+    if page == "attack":
+        return "A simulação já está em andamento. Encerre a simulação atual antes de iniciar outra."
+
+    if getattr(self, "restart_waiting_for_cleanup", False):
+        return "A simulação está reiniciando. Aguarde a limpeza e a nova inicialização terminarem."
+
+    if getattr(self, "_uavedusim_start_guard_busy", False):
+        return "A inicialização da simulação já foi solicitada. Aguarde alguns instantes."
+
+    try:
+        remaining = self.simulation_process_lines()
+    except Exception:
+        remaining = []
+
+    if remaining:
+        return "Já existe uma simulação em andamento. Use Encerrar processos antes de iniciar outra."
+
+    try:
+        px4_ok, _px4_reason = process_indicates_px4_running()
+    except Exception:
+        px4_ok = False
+
+    if px4_ok:
+        return "PX4 já está em execução. Encerre a simulação atual antes de iniciar outra."
+
+    try:
+        gazebo_ok, _gazebo_reason = process_indicates_gazebo_ready()
+    except Exception:
+        gazebo_ok = False
+
+    if gazebo_ok:
+        return "Gazebo já está aberto. Encerre a simulação atual antes de iniciar outra."
+
+    return ""
+
+
+def _uavedusim_destroy_window_banner(self):
+    banner = getattr(self, "_uavedusim_window_banner", None)
+
+    if banner is not None:
+        try:
+            banner.destroy()
+        except Exception:
+            pass
+
+    self._uavedusim_window_banner = None
+
+
+def _uavedusim_show_window_banner(self, message, level="warn"):
+    _uavedusim_destroy_window_banner(self)
+
+    try:
+        self.root.update_idletasks()
+    except Exception:
+        pass
+
+    level = str(level or "warn").lower()
+    border = WARN if level == "warn" else DANGER
+    fg = WARN if level == "warn" else DANGER
+
+    root = self.root
+    root_w = max(root.winfo_width(), self.px(420))
+    banner_w = min(max(self.px(360), root_w - self.px(48)), self.px(760))
+
+    try:
+        titlebar_h = self.titlebar.winfo_height()
+    except Exception:
+        titlebar_h = self.px(42)
+
+    outer = tk.Frame(
+        root,
+        bg=border,
+        bd=0,
+        highlightthickness=0,
+    )
+
+    inner = tk.Frame(
+        outer,
+        bg=SURFACE,
+        bd=0,
+        highlightthickness=0,
+    )
+    inner.pack(fill="both", expand=True, padx=1, pady=1)
+
+    tk.Label(
+        inner,
+        text="⚠",
+        bg=SURFACE,
+        fg=fg,
+        font=(self.FONT_FAMILY, self.fs(12), "bold"),
+    ).pack(side="left", padx=(self.px(12), self.px(8)), pady=self.px(10), anchor="n")
+
+    tk.Label(
+        inner,
+        text=message,
+        bg=SURFACE,
+        fg=TEXT,
+        justify="left",
+        anchor="w",
+        wraplength=banner_w - self.px(70),
+        font=(self.FONT_FAMILY, self.fs(9), "bold"),
+    ).pack(side="left", fill="x", expand=True, pady=self.px(10))
+
+    close = tk.Label(
+        inner,
+        text="×",
+        bg=SURFACE,
+        fg=MUTED,
+        cursor="hand2",
+        font=(self.FONT_FAMILY, self.fs(13), "bold"),
+    )
+    close.pack(side="right", padx=(self.px(8), self.px(12)), pady=self.px(8), anchor="n")
+    close.bind("<Button-1>", lambda _e: _uavedusim_destroy_window_banner(self))
+
+    outer.update_idletasks()
+    banner_h = outer.winfo_reqheight()
+
+    x = max(self.px(12), (root_w - banner_w) // 2)
+    y = titlebar_h + self.px(10)
+
+    outer.place(x=x, y=y, width=banner_w, height=banner_h)
+    outer.lift()
+
+    self._uavedusim_window_banner = outer
+
+    try:
+        if getattr(self, "_uavedusim_window_banner_after_id", None):
+            self.root.after_cancel(self._uavedusim_window_banner_after_id)
+    except Exception:
+        pass
+
+    self._uavedusim_window_banner_after_id = self.root.after(
+        4500,
+        lambda: _uavedusim_destroy_window_banner(self),
+    )
+
+
+def _uavedusim_show_start_block_feedback(self, reason):
+    reason = str(reason or "Já existe uma simulação em andamento.")
+    log("Inicialização bloqueada: " + reason)
+
+    # Não chama notify_msg aqui: o aviso deve aparecer apenas dentro da janela.
+    _uavedusim_show_window_banner(self, reason, level="warn")
+
+    if hasattr(self, "_set_attack_status_ui"):
+        try:
+            self._set_attack_status_ui(reason, level="warn")
+        except Exception:
+            pass
+
+    if hasattr(self, "status_lbl"):
+        try:
+            self.status_lbl.configure(text=reason, fg=WARN)
+        except Exception:
+            pass
+
+
+def _uavedusim_start_uavedusim_flow_guarded(self):
+    reason = _uavedusim_simulation_start_block_reason(self)
+
+    if reason:
+        _uavedusim_show_start_block_feedback(self, reason)
+        return
+
+    self._uavedusim_start_guard_busy = True
+
+    try:
+        return _UAVEDUSIM_START_GUARD_ORIGINAL_START_FLOW(self)
+    finally:
+        try:
+            self.root.after(900, lambda: setattr(self, "_uavedusim_start_guard_busy", False))
+        except Exception:
+            self._uavedusim_start_guard_busy = False
+
+
+UAVEDUSIMApp.start_uavedusim_flow = _uavedusim_start_uavedusim_flow_guarded
+# END UAVEDUSIM_SIMULATION_START_GUARD_PATCH
+
+
+
+
+
+
+# BEGIN UAVEDUSIM_SIM_ALERT_HOME_RED_STYLE_PATCH
+# Deixa o aviso interno de simulação em andamento com as MESMAS cores
+# e fonte do alerta de manutenção da tela inicial.
+
+def _uavedusim_show_window_banner(self, message, level="warn"):
+    _uavedusim_destroy_window_banner(self)
+
+    try:
+        self.root.update_idletasks()
+    except Exception:
+        pass
+
+    root = self.root
+    root_w = max(root.winfo_width(), self.px(420))
+
+    # Exatamente o mesmo esquema do alerta da tela inicial.
+    alert_accent = DANGER
+    alert_bg = _uavedusim_blend(BG, alert_accent, 0.16)
+    alert_border = _uavedusim_blend(BG, alert_accent, 0.40)
+
+    banner_w = min(max(self.px(360), root_w - self.px(48)), self.px(760))
+
+    try:
+        titlebar_h = self.titlebar.winfo_height()
+    except Exception:
+        titlebar_h = self.px(42)
+
+    outer = tk.Frame(
+        root,
+        bg=alert_border,
+        bd=0,
+        highlightthickness=1,
+        highlightbackground=alert_border,
+    )
+
+    inner = tk.Frame(
+        outer,
+        bg=alert_bg,
+        bd=0,
+        highlightthickness=0,
+    )
+    inner.pack(fill="both", expand=True, padx=1, pady=1)
+
+    tk.Label(
+        inner,
+        text=ICONS["ataque"],
+        bg=alert_bg,
+        fg=alert_accent,
+        font=(self.FONT_FAMILY, self.fs(13)),
+    ).pack(side="left", anchor="n", padx=(self.px(14), self.px(8)), pady=self.px(12))
+
+    tk.Label(
+        inner,
+        text=message,
+        bg=alert_bg,
+        fg=alert_accent,
+        justify="left",
+        anchor="nw",
+        wraplength=banner_w - self.px(90),
+        font=(self.FONT_FAMILY, self.fs(11.5)),
+    ).pack(side="left", fill="x", expand=True, pady=self.px(12))
+
+    close = tk.Label(
+        inner,
+        text="×",
+        bg=alert_bg,
+        fg=alert_accent,
+        cursor="hand2",
+        font=(self.FONT_FAMILY, self.fs(13)),
+    )
+    close.pack(side="right", padx=(self.px(8), self.px(14)), pady=self.px(10), anchor="n")
+    close.bind("<Button-1>", lambda _e: _uavedusim_destroy_window_banner(self))
+
+    outer.update_idletasks()
+    banner_h = outer.winfo_reqheight()
+
+    x = max(self.px(12), (root_w - banner_w) // 2)
+    y = titlebar_h + self.px(10)
+
+    outer.place(x=x, y=y, width=banner_w, height=banner_h)
+    outer.lift()
+
+    self._uavedusim_window_banner = outer
+
+    try:
+        if getattr(self, "_uavedusim_window_banner_after_id", None):
+            self.root.after_cancel(self._uavedusim_window_banner_after_id)
+    except Exception:
+        pass
+
+    self._uavedusim_window_banner_after_id = self.root.after(
+        4500,
+        lambda: _uavedusim_destroy_window_banner(self),
+    )
+# END UAVEDUSIM_SIM_ALERT_HOME_RED_STYLE_PATCH
+
+
+
+# BEGIN UAVEDUSIM_STRONG_HOME_CLEANUP_PATCH
+# Faz o botão "Encerrar processos" realmente fechar PX4/Gazebo/QGroundControl
+# e também os terminais abertos pelo UAVEDUSIM.
+
+_UAVEDUSIM_ORIGINAL_RUN_CLEANUP = UAVEDUSIMApp.run_cleanup
+
+
+def _uavedusim_pkill_patterns(patterns, signal_name="TERM"):
+    for pattern in patterns:
+        try:
+            subprocess.run(
+                ["pkill", f"-{signal_name}", "-f", pattern],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except Exception:
+            pass
+
+
+def _uavedusim_force_cleanup_processes(self):
+    patterns = [
+        # PX4 / make / terminais de simulação
+        r"make\s+px4_sitl",
+        r"px4_sitl_default/bin/px4",
+        r"PX4-Autopilot/build/.*/bin/px4",
+        r"(^|[/\s])px4(\s|$)",
+        r"PX4 SITL",
+        r"uavedusim_cmd_.*\.sh",
+
+        # Gazebo / Ignition / agentes
+        r"\bgz\s+sim\b",
+        r"\bgzserver\b",
+        r"\bgzclient\b",
+        r"\bgz-gui\b",
+        r"\bgz\s+gui\b",
+        r"\bign\s+gazebo\b",
+        r"\bMicroXRCEAgent\b",
+
+        # QGroundControl em AppImage, extraído ou processo interno
+        r"QGroundControl",
+        r"QGroundControl-x86_64\.AppImage",
+        r"squashfs-root/usr/bin/QGroundControl",
+        r"/tmp/\.mount_.*QGround",
+        r"AppRun.*QGroundControl",
+    ]
+
+    log("Encerrando terminais rastreados pelo UAVEDUSIM.")
+    try:
+        self.kill_tracked_terminals()
+    except Exception as e:
+        log(f"Aviso: falha ao encerrar terminais rastreados: {e}")
+
+    log("Enviando TERM para PX4/Gazebo/QGroundControl.")
+    _uavedusim_pkill_patterns(patterns, "TERM")
+
+    try:
+        subprocess.run(
+            ["pkill", "-TERM", "-x", "px4"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        pass
+
+    time.sleep(1.0)
+
+    log("Enviando KILL para processos restantes de PX4/Gazebo/QGroundControl.")
+    _uavedusim_pkill_patterns(patterns, "KILL")
+
+    try:
+        subprocess.run(
+            ["pkill", "-KILL", "-x", "px4"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        pass
+
+    try:
+        self.px4_console_fifo.unlink(missing_ok=True)
+    except TypeError:
+        try:
+            if self.px4_console_fifo.exists():
+                self.px4_console_fifo.unlink()
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+    try:
+        PID_FILE.write_text("", encoding="utf-8")
+    except Exception:
+        pass
+
+    self.takeoff_sent = False
+    self.takeoff_waiting = False
+    self.destination_release_pending = False
+    self.destination_release_until = 0.0
+    self.destination_sent = False
+    self.active_attack_key = None
+    self.jamming_active = False
+    self.attack_status = ""
+    self.status_log_entries = []
+
+
+def _uavedusim_home_cleanup_feedback(self, message, ok=True):
+    try:
+        if callable(globals().get("_uavedusim_show_window_banner")):
+            _uavedusim_show_window_banner(self, message, level=("warn" if ok else "danger"))
+            return
+    except Exception:
+        pass
+
+    try:
+        old_badge = self.badge.cget("text")
+        self.set_badge("PROCESSOS ENCERRADOS" if ok else "ERRO")
+        self.root.after(2200, lambda: self.badge.configure(text=old_badge))
+    except Exception:
+        pass
+
+
+def _uavedusim_run_cleanup_strong(self):
+    log("Limpeza forte solicitada pela interface.")
+
+    try:
+        _uavedusim_home_cleanup_feedback(
+            self,
+            "Encerrando PX4, Gazebo, QGroundControl e terminais da simulação...",
+            ok=True,
+        )
+    except Exception:
+        pass
+
+    def worker():
+        success = True
+        error_msg = ""
+
+        try:
+            _uavedusim_force_cleanup_processes(self)
+        except Exception as e:
+            success = False
+            error_msg = str(e)
+            log(f"Erro durante limpeza forte: {e}")
+
+        def finish():
+            if success:
+                _uavedusim_home_cleanup_feedback(
+                    self,
+                    "Processos encerrados: PX4, Gazebo, QGroundControl e terminais da simulação.",
+                    ok=True,
+                )
+            else:
+                _uavedusim_home_cleanup_feedback(
+                    self,
+                    "Falha ao encerrar todos os processos. Verifique o terminal/log. " + error_msg,
+                    ok=False,
+                )
+
+        try:
+            self.root.after(0, finish)
+        except Exception:
+            pass
+
+    threading.Thread(target=worker, daemon=True).start()
+
+
+UAVEDUSIMApp.run_cleanup = _uavedusim_run_cleanup_strong
+# END UAVEDUSIM_STRONG_HOME_CLEANUP_PATCH
+
+
+
+# BEGIN UAVEDUSIM_RUNTIME_ATTACK_NAV_PATCH
+# Adiciona ao menu superior uma opção para voltar ao painel que lança ataques,
+# mas somente quando PX4 e Gazebo estiverem abertos.
+
+def _uavedusim_runtime_attack_screen_available(self):
+    if str(getattr(self, "page", "") or "") == "attack":
+        return True
+
+    try:
+        px4_ok, _px4_reason = process_indicates_px4_running()
+    except Exception:
+        px4_ok = False
+
+    try:
+        gazebo_ok, _gazebo_reason = process_indicates_gazebo_ready()
+    except Exception:
+        gazebo_ok = False
+
+    return bool(px4_ok and gazebo_ok)
+
+
+def _uavedusim_open_runtime_attack_screen(self):
+    if not _uavedusim_runtime_attack_screen_available(self):
+        try:
+            _uavedusim_show_window_banner(
+                self,
+                "O painel de ataques só fica disponível quando PX4 e Gazebo estão em execução.",
+                level="warn",
+            )
+        except Exception:
+            pass
+        return
+
+    try:
+        self.show_attack_menu()
+    except Exception as e:
+        log(f"Erro ao abrir painel de ataques pelo menu: {e}")
+        try:
+            _uavedusim_show_window_banner(
+                self,
+                "Não foi possível abrir o painel de ataques. Verifique se a simulação ainda está ativa.",
+                level="warn",
+            )
+        except Exception:
+            pass
+
+
+def _uavedusim_nav_items(self):
+    items = [
+        (
+            "home",
+            "Início",
+            "Tela inicial do UAVEDUSIM",
+            self.show_main_menu,
+        ),
+        (
+            "jamming_info",
+            "O que é jamming?",
+            "Conceito geral de jamming",
+            _uavedusim_nav_safe_global(self, "_uavedusim_show_jamming_info_screen", self.show_main_menu),
+        ),
+    ]
+
+    if callable(globals().get("_uavedusim_show_jamming_attacks_screen")):
+        items.append(
+            (
+                "jamming_attacks_info",
+                "Ataques de Jamming Simulados",
+                "Noise, Blackout e Pulse",
+                lambda: _uavedusim_show_jamming_attacks_screen(self),
+            )
+        )
+
+    if callable(globals().get("_uavedusim_show_mitigation_screen")):
+        items.append(
+            (
+                "mitigation_info",
+                "Mitigações do Simulador",
+                "Estratégias contra os ataques",
+                lambda: _uavedusim_show_mitigation_screen(self),
+            )
+        )
+
+    if _uavedusim_runtime_attack_screen_available(self):
+        items.append(
+            (
+                "attack_runtime",
+                "Painel de Ataques",
+                "Lançar ataques na simulação atual",
+                lambda: _uavedusim_open_runtime_attack_screen(self),
+            )
+        )
+
+    items.append(
+        (
+            "simulation_flow",
+            "Iniciar simulação",
+            "Selecionar modelo e mundo",
+            self.start_uavedusim_flow,
+        )
+    )
+
+    return items
+
+
+def _uavedusim_nav_current_key(self):
+    page = str(getattr(self, "page", "") or "")
+
+    if page in ("main", "home"):
+        return "home"
+
+    if page == "jamming_info":
+        return "jamming_info"
+
+    if page == "jamming_attacks_info":
+        return "jamming_attacks_info"
+
+    if page == "mitigation_info":
+        return "mitigation_info"
+
+    if page == "attack":
+        return "attack_runtime"
+
+    if page in ("menu", "wait"):
+        return "simulation_flow"
+
+    return ""
+# END UAVEDUSIM_RUNTIME_ATTACK_NAV_PATCH
+
+
+
+# BEGIN UAVEDUSIM_ATTACK_BUTTONS_AND_NAV_VISIBILITY_PATCH
+# 1) Move os botões "Enviar commander takeoff" e "Enviar destino" um pouco
+#    para a esquerda na tela de ataques, evitando corte em certas resoluções.
+# 2) Oculta "Iniciar simulação" do menu quando PX4/Gazebo já estão iniciando
+#    ou em execução.
+
+def _uavedusim_simulation_active_for_nav(self):
+    page = str(getattr(self, "page", "") or "")
+
+    if page in ("wait", "attack"):
+        return True
+
+    if getattr(self, "_uavedusim_start_guard_busy", False):
+        return True
+
+    if getattr(self, "restart_waiting_for_cleanup", False):
+        return True
+
+    try:
+        if self.simulation_process_lines():
+            return True
+    except Exception:
+        pass
+
+    try:
+        px4_ok, _ = process_indicates_px4_running()
+    except Exception:
+        px4_ok = False
+
+    try:
+        gazebo_ok, _ = process_indicates_gazebo_ready()
+    except Exception:
+        gazebo_ok = False
+
+    return bool(px4_ok or gazebo_ok)
+
+
+def _uavedusim_runtime_attack_screen_available(self):
+    if str(getattr(self, "page", "") or "") == "attack":
+        return True
+
+    try:
+        px4_ok, _px4_reason = process_indicates_px4_running()
+    except Exception:
+        px4_ok = False
+
+    try:
+        gazebo_ok, _gazebo_reason = process_indicates_gazebo_ready()
+    except Exception:
+        gazebo_ok = False
+
+    return bool(px4_ok and gazebo_ok)
+
+
+def _uavedusim_open_runtime_attack_screen(self):
+    if not _uavedusim_runtime_attack_screen_available(self):
+        try:
+            _uavedusim_show_window_banner(
+                self,
+                "O painel de ataques só fica disponível quando PX4 e Gazebo estão em execução.",
+                level="warn",
+            )
+        except Exception:
+            pass
+        return
+
+    try:
+        self.show_attack_menu()
+    except Exception as e:
+        log(f"Erro ao abrir painel de ataques pelo menu: {e}")
+        try:
+            _uavedusim_show_window_banner(
+                self,
+                "Não foi possível abrir o painel de ataques. Verifique se a simulação ainda está ativa.",
+                level="warn",
+            )
+        except Exception:
+            pass
+
+
+def _uavedusim_nav_items(self):
+    items = [
+        (
+            "home",
+            "Início",
+            "Tela inicial do UAVEDUSIM",
+            self.show_main_menu,
+        ),
+        (
+            "jamming_info",
+            "O que é jamming?",
+            "Conceito geral de jamming",
+            _uavedusim_nav_safe_global(self, "_uavedusim_show_jamming_info_screen", self.show_main_menu),
+        ),
+    ]
+
+    if callable(globals().get("_uavedusim_show_jamming_attacks_screen")):
+        items.append(
+            (
+                "jamming_attacks_info",
+                "Ataques de Jamming Simulados",
+                "Noise, Blackout e Pulse",
+                lambda: _uavedusim_show_jamming_attacks_screen(self),
+            )
+        )
+
+    if callable(globals().get("_uavedusim_show_mitigation_screen")):
+        items.append(
+            (
+                "mitigation_info",
+                "Mitigações do Simulador",
+                "Estratégias contra os ataques",
+                lambda: _uavedusim_show_mitigation_screen(self),
+            )
+        )
+
+    if _uavedusim_runtime_attack_screen_available(self):
+        items.append(
+            (
+                "attack_runtime",
+                "Painel de Ataques",
+                "Lançar ataques na simulação atual",
+                lambda: _uavedusim_open_runtime_attack_screen(self),
+            )
+        )
+
+    # Só mostra "Iniciar simulação" quando não existe simulação iniciando
+    # nem PX4/Gazebo em execução.
+    if not _uavedusim_simulation_active_for_nav(self):
+        items.append(
+            (
+                "simulation_flow",
+                "Iniciar simulação",
+                "Selecionar modelo e mundo",
+                self.start_uavedusim_flow,
+            )
+        )
+
+    return items
+
+
+def _uavedusim_nav_current_key(self):
+    page = str(getattr(self, "page", "") or "")
+
+    if page in ("main", "home"):
+        return "home"
+
+    if page == "jamming_info":
+        return "jamming_info"
+
+    if page == "jamming_attacks_info":
+        return "jamming_attacks_info"
+
+    if page == "mitigation_info":
+        return "mitigation_info"
+
+    if page == "attack":
+        return "attack_runtime"
+
+    if page in ("menu", "wait"):
+        return "simulation_flow"
+
+    return ""
+
+
+def _uavedusim_reflow_prereq_layout_v3(self, event=None):
+    if self.page != "attack" or not hasattr(self, "prereq_panel"):
+        return
+
+    width = self.prereq_panel.winfo_width() or self.content.winfo_width() or self.root.winfo_width()
+
+    compact_panel = width < self.px(760)
+    very_compact = width < self.px(520)
+
+    widgets = [
+        getattr(self, "takeoff_box", None),
+        getattr(self, "destination_box", None),
+        getattr(self, "prereq_buttons", None),
+    ]
+
+    for widget in widgets:
+        if widget is not None:
+            try:
+                widget.grid_forget()
+            except Exception:
+                pass
+
+    for col in range(3):
+        try:
+            self.prereq_panel.grid_columnconfigure(col, weight=0, minsize=0)
+        except Exception:
+            pass
+
+    if compact_panel:
+        self.prereq_panel.grid_columnconfigure(0, weight=1)
+
+        self.takeoff_box.grid(
+            row=0,
+            column=0,
+            sticky="ew",
+            padx=self.px(12),
+            pady=(self.px(8), self.px(4)),
+        )
+
+        self.destination_box.grid(
+            row=1,
+            column=0,
+            sticky="ew",
+            padx=self.px(12),
+            pady=(self.px(4), self.px(4)),
+        )
+
+        self.prereq_buttons.grid(
+            row=2,
+            column=0,
+            sticky="ew",
+            padx=self.px(12),
+            pady=(self.px(4), self.px(8)),
+        )
+
+        timer_visible = bool(getattr(self, "destination_release_pending", False))
+        self._pack_button_column_v2(
+            self.prereq_buttons,
+            vertical=(very_compact or timer_visible),
+            fill_x=True,
+        )
+
+    else:
+        # Mantém a tela em três colunas, mas puxa a coluna dos botões
+        # para a esquerda e reduz sua largura mínima para evitar corte.
+        self.prereq_panel.grid_columnconfigure(0, weight=1, minsize=self.px(205))
+        self.prereq_panel.grid_columnconfigure(1, weight=3, minsize=self.px(395))
+        self.prereq_panel.grid_columnconfigure(2, weight=0, minsize=self.px(205))
+
+        self.takeoff_box.grid(
+            row=0,
+            column=0,
+            sticky="nsew",
+            padx=(self.px(12), self.px(8)),
+            pady=self.px(8),
+        )
+
+        self.destination_box.grid(
+            row=0,
+            column=1,
+            sticky="nsew",
+            padx=(self.px(8), self.px(4)),
+            pady=self.px(8),
+        )
+
+        self.prereq_buttons.grid(
+            row=0,
+            column=2,
+            sticky="w",
+            padx=(self.px(0), self.px(8)),
+            pady=self.px(8),
+        )
+
+        self._pack_button_column_v2(
+            self.prereq_buttons,
+            vertical=True,
+            fill_x=True,
+        )
+
+    self._config_prereq_button_texts_v2(
+        compact=compact_panel,
+        very_compact=very_compact,
+    )
+
+    for box_attr, label_attr in [
+        ("takeoff_box", "takeoff_status_label"),
+        ("destination_box", "destination_status_label"),
+    ]:
+        if not hasattr(self, box_attr) or not hasattr(self, label_attr):
+            continue
+
+        box = getattr(self, box_attr)
+        label = getattr(self, label_attr)
+
+        box_width = box.winfo_width()
+        if box_width <= 1:
+            box_width = max(self.px(180), width // (1 if compact_panel else 3))
+
+        try:
+            label.configure(wraplength=max(self.px(120), box_width - self.px(14)))
+        except Exception:
+            pass
+
+    destination_width = 0
+
+    if hasattr(self, "destination_box"):
+        try:
+            destination_width = self.destination_box.winfo_width()
+        except Exception:
+            destination_width = 0
+
+    if destination_width <= 1:
+        destination_width = width if compact_panel else max(self.px(390), int(width * 0.40))
+
+    self._layout_destination_fields_v2(
+        stack=(compact_panel or destination_width < self.px(390)),
+    )
+
+    if hasattr(self, "attack_scroll_canvas"):
+        self.root.after(
+            40,
+            lambda: self.attack_scroll_canvas.configure(
+                scrollregion=self.attack_scroll_canvas.bbox("all")
+            ),
+        )
+
+
+UAVEDUSIMApp._reflow_prereq_layout = _uavedusim_reflow_prereq_layout_v3
+# END UAVEDUSIM_ATTACK_BUTTONS_AND_NAV_VISIBILITY_PATCH
+
+
+
+
+
+
+
+
+
+# BEGIN UAVEDUSIM_SELECT_HEIGHT_AND_PT_DESCRIPTIONS_PATCH
+# Mantém o botão "Selecionar" preenchido em mauve/ACCENT, com texto preto,
+# mas com a mesma altura visual do botão "Fechar".
+
+_UAVEDUSIM_ORIGINAL_SETUP_STYLES_SELECT_HEIGHT_PT = UAVEDUSIMApp._setup_styles
+
+
+def _uavedusim_setup_styles_select_height_pt(self):
+    _UAVEDUSIM_ORIGINAL_SETUP_STYLES_SELECT_HEIGHT_PT(self)
+
+    try:
+        common_padding = (self.px(11), self.px(7))
+
+        self.style.configure(
+            "Cancel.TButton",
+            font=(self.FONT_FAMILY, self.FS_BUTTON),
+            padding=common_padding,
+            background=SURFACE2,
+            foreground=MUTED,
+            relief="flat",
+            borderwidth=0,
+        )
+
+        self.style.configure(
+            "Primary.TButton",
+            font=(self.FONT_FAMILY, self.FS_BUTTON, "bold"),
+            padding=common_padding,
+            background=ACCENT,
+            foreground="#11111b",
+            relief="flat",
+            borderwidth=0,
+        )
+
+        self.style.map(
+            "Primary.TButton",
+            background=[
+                ("disabled", DISABLED_BG),
+                ("active", ACCENT_DIM),
+                ("pressed", ACCENT_DIM),
+            ],
+            foreground=[
+                ("disabled", DISABLED_FG),
+                ("active", "#11111b"),
+                ("pressed", "#11111b"),
+            ],
+        )
+    except Exception:
+        pass
+
+
+UAVEDUSIMApp._setup_styles = _uavedusim_setup_styles_select_height_pt
+# END UAVEDUSIM_SELECT_HEIGHT_AND_PT_DESCRIPTIONS_PATCH
+
+
+
+# BEGIN UAVEDUSIM_BACK_FILLED_BUTTON_RESTORE_PATCH
+# Restaura o botão "Voltar" como botão preenchido cinza, no estilo antigo:
+# fundo SURFACE2, texto MUTED, hover BORDER/TEXT e seta menor "←".
+
+_UAVEDUSIM_ORIGINAL_SETUP_STYLES_BACK_FILLED_RESTORE = UAVEDUSIMApp._setup_styles
+
+
+def _uavedusim_setup_styles_back_filled_restore(self):
+    _UAVEDUSIM_ORIGINAL_SETUP_STYLES_BACK_FILLED_RESTORE(self)
+
+    try:
+        self.style.configure(
+            "Back.TButton",
+            font=(self.FONT_FAMILY, self.FS_BUTTON),
+            padding=(self.px(8), self.px(5)),
+            background=SURFACE2,
+            foreground=MUTED,
+            relief="flat",
+            borderwidth=0,
+        )
+        self.style.map(
+            "Back.TButton",
+            background=[
+                ("disabled", DISABLED_BG),
+                ("active", BORDER),
+                ("pressed", BORDER),
+            ],
+            foreground=[
+                ("disabled", DISABLED_FG),
+                ("active", TEXT),
+                ("pressed", TEXT),
+            ],
+        )
+    except Exception:
+        pass
+
+
+UAVEDUSIMApp._setup_styles = _uavedusim_setup_styles_back_filled_restore
+# END UAVEDUSIM_BACK_FILLED_BUTTON_RESTORE_PATCH
+
+
+
+
+
+
+
+
+
+# BEGIN UAVEDUSIM_BACK_ICON_COMPACT_PATCH
+# Botão Voltar compacto: apenas o ícone, fonte maior e largura menor.
+
+_UAVEDUSIM_ORIGINAL_SETUP_STYLES_BACK_ICON_COMPACT = UAVEDUSIMApp._setup_styles
+
+
+def _uavedusim_setup_styles_back_icon_compact(self):
+    _UAVEDUSIM_ORIGINAL_SETUP_STYLES_BACK_ICON_COMPACT(self)
+
+    try:
+        self.style.configure(
+            "Back.TButton",
+            font=(self.FONT_FAMILY, self.fs(21), "bold"),
+            padding=(self.px(4), self.px(1)),
+            background=SURFACE2,
+            foreground=MUTED,
+            relief="flat",
+            borderwidth=0,
+            anchor="center",
+        )
+        self.style.map(
+            "Back.TButton",
+            background=[
+                ("disabled", DISABLED_BG),
+                ("active", BORDER),
+                ("pressed", BORDER),
+            ],
+            foreground=[
+                ("disabled", DISABLED_FG),
+                ("active", TEXT),
+                ("pressed", TEXT),
+            ],
+        )
+    except Exception:
+        pass
+
+
+UAVEDUSIMApp._setup_styles = _uavedusim_setup_styles_back_icon_compact
+# END UAVEDUSIM_BACK_ICON_COMPACT_PATCH
+
+
+
+
+
+
+# BEGIN UAVEDUSIM_JAMMING_CANVAS_INFO_SCREEN_PATCH
+# Tela "O que é jamming?" em Canvas responsivo, seguindo o layout de referência:
+# coluna esquerda de conceitos, diagrama central e coluna direita de impactos.
+
+import textwrap as _uj_textwrap
+import tkinter.font as _uj_tkfont
+
+
+def _uj_clamp(value, low, high):
+    return max(low, min(value, high))
+
+
+def _uj_font(app, size, weight="normal"):
+    # Usa a mesma família e a mesma escala responsiva usada no restante da interface.
+    try:
+        resolved = app.fs(size)
+    except Exception:
+        resolved = int(round(size))
+    return (app.FONT_FAMILY, max(10, int(round(resolved))), weight)
+
+def _uj_rr(canvas, x1, y1, x2, y2, radius, fill, outline="", width=1, tags=None):
+    radius = max(1, min(radius, (x2 - x1) / 2, (y2 - y1) / 2))
+    pts = _uavedusim_round_rect_points(x1, y1, x2, y2, radius)
+    return canvas.create_polygon(
+        pts,
+        fill=fill,
+        outline=outline,
+        width=width,
+        smooth=True,
+        splinesteps=16,
+        tags=tags,
+    )
+
+
+def _uj_wrap_lines(text, font, width):
+    # Quebra por largura real em pixels, próxima do comportamento nativo do Canvas.
+    # Isso evita quebras artificiais por quantidade fixa de caracteres.
+    try:
+        tk_font = _uj_tkfont.Font(font=font)
+        max_w = max(20, int(width))
+    except Exception:
+        return _uj_textwrap.wrap(
+            str(text),
+            width=max(20, int(width / 7)),
+            break_long_words=False,
+        )
+
+    lines = []
+
+    for paragraph in str(text).splitlines() or [""]:
+        paragraph = paragraph.strip()
+
+        if not paragraph:
+            lines.append("")
+            continue
+
+        current = ""
+
+        for word in paragraph.split():
+            trial = word if not current else f"{current} {word}"
+
+            if tk_font.measure(trial) <= max_w or not current:
+                current = trial
+                continue
+
+            lines.append(current)
+            current = word
+
+            # Fallback para tokens muito longos sem espaço.
+            if tk_font.measure(current) > max_w:
+                piece = ""
+
+                for ch in word:
+                    trial_piece = piece + ch
+
+                    if tk_font.measure(trial_piece) <= max_w or not piece:
+                        piece = trial_piece
+                    else:
+                        lines.append(piece)
+                        piece = ch
+
+                current = piece
+
+        if current:
+            lines.append(current)
+
+    return lines
+
+def _uj_text(canvas, x, y, text, font, fill, width=None, anchor="nw", justify="left", tags=None):
+    # O texto é passado cru para o Canvas; quem quebra visualmente é o Tk via width.
+    clean = str(text).strip()
+
+    if width is None:
+        return canvas.create_text(
+            x,
+            y,
+            text=clean,
+            font=font,
+            fill=fill,
+            anchor=anchor,
+            justify=justify,
+            tags=tags,
+        )
+
+    return canvas.create_text(
+        x,
+        y,
+        text=clean,
+        font=font,
+        fill=fill,
+        width=max(1, int(width)),
+        anchor=anchor,
+        justify=justify,
+        tags=tags,
+    )
+
+# Códigos (Private Use Area) de ícones do Nerd Fonts confirmados como
+# disponíveis na fonte do sistema. Só entram aqui os que foram testados
+# e realmente renderizam — os demais kinds continuam desenhados em
+# vetor (fallback seguro, sem depender de nenhuma fonte instalada).
+def _uavedusim_preferred_nerd_font_family(app=None):
+    env_family = os.environ.get("UAVEDUSIM_NERD_FONT_FAMILY")
+
+    if env_family:
+        return env_family
+
+    candidates = (
+        "Symbols Nerd Font Mono",
+        "Symbols Nerd Font",
+        "JetBrainsMono Nerd Font",
+        "JetBrainsMonoNL Nerd Font",
+        "CaskaydiaCove Nerd Font",
+        "CaskaydiaMono Nerd Font",
+        "FiraCode Nerd Font",
+        "Hack Nerd Font",
+        "MesloLGS NF",
+        "monospace",
+    )
+
+    try:
+        import tkinter.font as _uavedusim_tkfont
+        families = set(_uavedusim_tkfont.families())
+
+        for family in candidates:
+            if family in families:
+                return family
+
+        for family in sorted(families):
+            if "Nerd Font" in family or family.endswith(" NF"):
+                return family
+    except Exception:
+        pass
+
+    return getattr(app, "FONT_FAMILY", "monospace")
+
+
+_UAVEDUSIM_NERD_ICONS = {
+    "target": "\U000F04FE",
+    "antenna": "\U000F1119",
+    "shield": "\U000F0499",
+    "monitor": "\U000F0379",
+    "blackout": "\U000F00AD",
+    "info": "\ue66a",
+    "pin": "\uf041",
+    "person": "\uf415",
+    "noise": "\ueb34",
+    "pulse": "\ueb31",
+}
+
+
+def _uj_icon(canvas, kind, cx, cy, size, color, width=2, app=None):
+    s = size
+    width = max(1, int(width))
+
+    glyph = _UAVEDUSIM_NERD_ICONS.get(kind)
+    if glyph:
+        font_family = _uavedusim_preferred_nerd_font_family(app)
+        item = canvas.create_text(
+            cx,
+            cy,
+            text=glyph,
+            fill=color,
+            font=(font_family, int(s * .82)),
+            anchor="center",
+        )
+        return item
+
+    if kind == "info":
+        canvas.create_oval(cx - s / 2, cy - s / 2, cx + s / 2, cy + s / 2, outline=color, width=width)
+        canvas.create_text(cx, cy + s * 0.03, text="i", fill=color, font=("TkDefaultFont", int(s * 0.70), "bold"))
+
+    elif kind == "target":
+        canvas.create_oval(cx - s * .34, cy - s * .34, cx + s * .34, cy + s * .34, outline=color, width=width)
+        canvas.create_oval(cx - s * .06, cy - s * .06, cx + s * .06, cy + s * .06, outline=color, width=width)
+        canvas.create_line(cx - s * .52, cy, cx - s * .20, cy, fill=color, width=width, capstyle="round", joinstyle="round")
+        canvas.create_line(cx + s * .20, cy, cx + s * .52, cy, fill=color, width=width, capstyle="round", joinstyle="round")
+        canvas.create_line(cx, cy - s * .52, cx, cy - s * .20, fill=color, width=width, capstyle="round", joinstyle="round")
+        canvas.create_line(cx, cy + s * .20, cx, cy + s * .52, fill=color, width=width, capstyle="round", joinstyle="round")
+
+    elif kind == "antenna":
+        canvas.create_line(cx, cy + s * .42, cx, cy - s * .16, fill=color, width=width, capstyle="round", joinstyle="round")
+        canvas.create_polygon(cx, cy - s * .24, cx - s * .18, cy + s * .42, cx + s * .18, cy + s * .42, outline=color, fill="", width=width, joinstyle="round")
+        for r in (.28, .44):
+            canvas.create_arc(cx - s * r, cy - s * r, cx + s * r, cy + s * r, start=35, extent=110, outline=color, width=width, style="arc")
+            canvas.create_arc(cx - s * r, cy - s * r, cx + s * r, cy + s * r, start=215, extent=110, outline=color, width=width, style="arc")
+
+    elif kind in ("shield", "shield_x"):
+        pts = [
+            cx, cy - s * .48, cx + s * .35, cy - s * .28, cx + s * .28, cy + s * .22,
+            cx, cy + s * .48, cx - s * .28, cy + s * .22, cx - s * .35, cy - s * .28,
+        ]
+        canvas.create_polygon(pts, outline=color, fill="", width=width, smooth=True, joinstyle="round")
+
+        if kind == "shield":
+            canvas.create_line(cx - s * .14, cy, cx + s * .14, cy, fill=color, width=width, capstyle="round", joinstyle="round")
+            canvas.create_line(cx, cy - s * .14, cx, cy + s * .14, fill=color, width=width, capstyle="round", joinstyle="round")
+        else:
+            canvas.create_line(cx - s * .13, cy - s * .13, cx + s * .13, cy + s * .13, fill=color, width=width, capstyle="round", joinstyle="round")
+            canvas.create_line(cx + s * .13, cy - s * .13, cx - s * .13, cy + s * .13, fill=color, width=width, capstyle="round", joinstyle="round")
+
+    elif kind == "pin":
+        canvas.create_oval(cx - s * .34, cy - s * .46, cx + s * .34, cy + s * .22, outline=color, width=width)
+        canvas.create_polygon(cx - s * .18, cy + s * .10, cx + s * .18, cy + s * .10, cx, cy + s * .52, outline=color, fill="", width=width, joinstyle="round")
+        canvas.create_oval(cx - s * .08, cy - s * .24, cx + s * .08, cy - s * .08, outline=color, width=width)
+
+    elif kind == "person":
+        canvas.create_oval(cx - s * .18, cy - s * .45, cx + s * .18, cy - s * .10, outline=color, width=width)
+        canvas.create_arc(cx - s * .42, cy - s * .02, cx + s * .42, cy + s * .62, start=0, extent=180, outline=color, width=width, style="arc")
+        canvas.create_line(cx - s * .42, cy + s * .30, cx + s * .42, cy + s * .30, fill=color, width=width, capstyle="round", joinstyle="round")
+
+    elif kind == "monitor":
+        _uj_rr(canvas, cx - s * .42, cy - s * .30, cx + s * .42, cy + s * .20, s * .06, fill="", outline=color, width=width)
+        canvas.create_line(cx, cy + s * .20, cx, cy + s * .42, fill=color, width=width, capstyle="round", joinstyle="round")
+        canvas.create_line(cx - s * .22, cy + s * .42, cx + s * .22, cy + s * .42, fill=color, width=width, capstyle="round", joinstyle="round")
+
+    elif kind == "noise":
+        canvas.create_line(cx, cy + s * .43, cx, cy - s * .25, fill=color, width=width, capstyle="round", joinstyle="round")
+        canvas.create_polygon(cx, cy - s * .42, cx - s * .17, cy + s * .48, cx + s * .17, cy + s * .48, outline=color, fill="", width=width, joinstyle="round")
+        for r in (.22, .35, .48):
+            canvas.create_arc(cx - s * r, cy - s * r, cx + s * r, cy + s * r, start=35, extent=110, outline=color, width=width, style="arc")
+
+    elif kind == "blackout":
+        canvas.create_oval(cx - s * .42, cy - s * .42, cx + s * .42, cy + s * .42, outline=color, width=width + 1)
+        canvas.create_line(cx - s * .28, cy - s * .28, cx + s * .28, cy + s * .28, fill=color, width=width + 1, capstyle="round", joinstyle="round")
+
+    elif kind == "pulse":
+        pts = [
+            cx - s * .45, cy + s * .20, cx - s * .10, cy + s * .20, cx - s * .10, cy - s * .35,
+            cx + s * .13, cy - s * .35, cx + s * .13, cy + s * .20, cx + s * .45, cy + s * .20,
+        ]
+        canvas.create_line(*pts, fill=color, width=width + 1, capstyle="round", joinstyle="round")
+
+    elif kind == "wave":
+        pts = [
+            cx - s * .45, cy, cx - s * .25, cy, cx - s * .18, cy - s * .18,
+            cx - s * .08, cy + s * .18, cx, cy - s * .18, cx + s * .10, cy + s * .18,
+            cx + s * .18, cy, cx + s * .45, cy,
+        ]
+        canvas.create_line(*pts, fill=color, width=width, capstyle="round", joinstyle="round")
+
+
+def _uj_satellite(canvas, cx, cy, scale, color, angle_deg=-35):
+    sw = max(1, int(1.4 * scale))
+    thin = max(1, int(scale * .7))
+
+    theta = math.radians(angle_deg)
+    cos_t, sin_t = math.cos(theta), math.sin(theta)
+
+    def rot(dx, dy):
+        # Rotaciona um ponto (dx, dy) em torno do centro do satélite e
+        # devolve a coordenada final na tela (cx, cy) + o ponto girado.
+        return cx + dx * cos_t - dy * sin_t, cy + dx * sin_t + dy * cos_t
+
+    def rect_pts(local_cx, local_cy, w, h):
+        w2, h2 = w / 2, h / 2
+        pts = []
+        for dx, dy in ((-w2, -h2), (w2, -h2), (w2, h2), (-w2, h2)):
+            pts.extend(rot(local_cx + dx, local_cy + dy))
+        return pts
+
+    body_w, body_h = 18 * scale, 38 * scale
+    panel_w, panel_h = 40 * scale, 20 * scale
+    gap = 10 * scale
+
+    # Corpo central (retângulo rotacionado -> desenhado como polígono).
+    canvas.create_polygon(rect_pts(0, 0, body_w, body_h), outline=color, fill="", width=sw)
+
+    for side in (-1, 1):
+        panel_cx = side * (body_w / 2 + gap + panel_w / 2)
+
+        x1, y1 = rot(side * body_w / 2, 0)
+        x2, y2 = rot(side * (body_w / 2 + gap), 0)
+        canvas.create_line(x1, y1, x2, y2, fill=color, width=sw, capstyle="round")
+
+        canvas.create_polygon(rect_pts(panel_cx, 0, panel_w, panel_h), outline=color, fill="", width=sw)
+
+        for k in (-1, 1):
+            lx = panel_cx + k * panel_w / 6
+            x1, y1 = rot(lx, -panel_h / 2)
+            x2, y2 = rot(lx, panel_h / 2)
+            canvas.create_line(x1, y1, x2, y2, fill=color, width=thin, capstyle="round", joinstyle="round")
+
+        x1, y1 = rot(panel_cx - panel_w / 2, 0)
+        x2, y2 = rot(panel_cx + panel_w / 2, 0)
+        canvas.create_line(x1, y1, x2, y2, fill=color, width=thin, capstyle="round", joinstyle="round")
+
+    # Mastro.
+    mast_len = 13 * scale
+    x1, y1 = rot(0, body_h / 2)
+    x2, y2 = rot(0, body_h / 2 + mast_len)
+    canvas.create_line(x1, y1, x2, y2, fill=color, width=sw, capstyle="round", joinstyle="round")
+
+    # "Prato" em meio-círculo com a ponta cortada (lado reto), como na
+    # referência: o lado reto fica na ponta externa (longe do corpo) e
+    # a curva encosta no mastro (voltada pra dentro). Um polígono
+    # amostrado ao longo da curva fecha sozinho com uma linha reta
+    # entre as duas pontas, formando o corte.
+    dish_r = 16 * scale
+    attach_y = body_h / 2 + mast_len
+    dish_center_y = attach_y + dish_r
+    dish_pts = []
+    steps = 20
+    for i in range(steps + 1):
+        t = math.pi + math.pi * i / steps
+        lx = dish_r * math.cos(t)
+        ly = dish_center_y + dish_r * math.sin(t)
+        dish_pts.extend(rot(lx, ly))
+    canvas.create_polygon(dish_pts, outline=color, fill="", width=sw, smooth=False)
+
+
+def _uj_drone(canvas, cx, cy, scale, color):
+    sw = max(1, int(1.4 * scale))
+    body, arm, rotor = 34 * scale, 36 * scale, 15 * scale
+    canvas.create_rectangle(cx - body / 2, cy - body / 2, cx + body / 2, cy + body / 2, outline=color, fill="", width=sw)
+
+    for sx, sy in [(-1, -1), (1, -1), (-1, 1), (1, 1)]:
+        rx, ry = cx + sx * arm, cy + sy * arm
+        canvas.create_line(cx + sx * body / 2, cy + sy * body / 2, rx, ry, fill=color, width=sw, capstyle="round", joinstyle="round")
+        canvas.create_oval(rx - rotor, ry - rotor, rx + rotor, ry + rotor, outline=color, width=sw)
+
+
+def _uj_jammer(canvas, cx, cy, scale, color):
+    sw = max(1, int(1.4 * scale))
+    bw, bh = 48 * scale, 42 * scale
+
+    _uj_rr(
+        canvas,
+        cx - bw / 2,
+        cy - bh / 2,
+        cx + bw / 2,
+        cy + bh / 2,
+        6 * scale,
+        fill="",
+        outline=color,
+        width=sw,
+    )
+
+    canvas.create_line(cx, cy - bh / 2, cx, cy - bh / 2 - 44 * scale, fill=color, width=sw, capstyle="round", joinstyle="round")
+    canvas.create_oval(cx - 4 * scale, cy - 5 * scale, cx + 4 * scale, cy + 3 * scale, outline=color, width=sw)
+
+    for dx in (-14, 0, 14):
+        canvas.create_oval(
+            cx + dx * scale - 2 * scale,
+            cy + bh * .26,
+            cx + dx * scale + 2 * scale,
+            cy + bh * .26 + 4 * scale,
+            fill=color,
+            outline=color,
+        )
+
+    top = cy - bh / 2 - 44 * scale
+
+    for rr in (20, 35, 52, 70):
+        canvas.create_arc(
+            cx - rr * scale,
+            top - rr * scale,
+            cx + rr * scale,
+            top + rr * scale,
+            start=45,
+            extent=90,
+            outline=color,
+            width=sw,
+            style="arc",
+        )
+
+
+# BEGIN UAVEDUSIM_DYNAMIC_JAMMING_HEIGHT_HELPERS
+def _uj_linespace(app, font):
+    try:
+        return max(_uj_tkfont.Font(font=font).metrics("linespace"), app.fs(10))
+    except Exception:
+        return app.fs(10)
+
+
+def _uj_measure_text_height(app, text, font, width, line_gap=None):
+    lines = _uj_wrap_lines(text, font, width)
+
+    if not lines:
+        return _uj_linespace(app, font)
+
+    line_h = _uj_linespace(app, font)
+    gap = app.px(1) if line_gap is None else line_gap
+
+    # Folga para compensar pequenas diferenças entre a medição e o wrap interno do Canvas.
+    return len(lines) * line_h + max(0, len(lines) - 1) * gap + app.px(2)
+
+def _uj_info_panel_metrics(app, w, s, items):
+    title_font = _uj_font(app, 11.8 * s, "bold")
+    body_font = _uj_font(app, 10.0 * s)
+
+    top_pad = max(app.px(4), int(5 * s))
+    body_gap = max(app.px(2), int(3 * s))
+    bottom_pad = max(app.px(4), int(5 * s))
+
+    icon_x_offset = max(app.px(26), int(28 * s))
+    text_x_offset = max(app.px(48), int(50 * s))
+    right_pad = max(app.px(6), int(8 * s))
+
+    text_w = max(app.px(130), w - text_x_offset - right_pad)
+
+    rows = []
+
+    for icon, title, body in items:
+        title_h = _uj_measure_text_height(app, title, title_font, text_w)
+        body_h = _uj_measure_text_height(app, body, body_font, text_w)
+
+        row_h = top_pad + title_h + body_gap + body_h + bottom_pad
+
+        # Altura mínima com respiro para evitar texto colado nas divisórias.
+        row_h = max(row_h, app.px(66))
+
+        rows.append({
+            "icon": icon,
+            "title": title,
+            "body": body,
+            "title_font": title_font,
+            "body_font": body_font,
+            "title_h": title_h,
+            "body_h": body_h,
+            "row_h": row_h,
+            "top_pad": top_pad,
+            "body_gap": body_gap,
+            "bottom_pad": bottom_pad,
+            "icon_x_offset": icon_x_offset,
+            "text_x_offset": text_x_offset,
+            "text_w": text_w,
+        })
+
+    return rows
+
+def _uj_info_panel_required_height(app, w, s, items):
+    rows = _uj_info_panel_metrics(app, w, s, items)
+    return sum(row["row_h"] for row in rows)
+
+
+def _uj_attack_card_required_height(app, w, s, title, body):
+    title_font = _uj_font(app, 11.0 * s, "bold")
+    body_font = _uj_font(app, 9.8 * s)
+
+    text_x_offset = max(app.px(78), int(82 * s))
+    right_pad = max(app.px(12), int(14 * s))
+    text_w = max(app.px(130), w - text_x_offset - right_pad)
+
+    top_pad = max(app.px(9), int(10 * s))
+    gap = max(app.px(4), int(5 * s))
+    bottom_pad = max(app.px(9), int(10 * s))
+
+    title_h = _uj_measure_text_height(app, title, title_font, text_w)
+    body_h = _uj_measure_text_height(app, body, body_font, text_w)
+
+    return max(app.px(70), top_pad + title_h + gap + body_h + bottom_pad)
+# END UAVEDUSIM_DYNAMIC_JAMMING_HEIGHT_HELPERS
+
+def _uj_info_panel(canvas, x, y, w, h, app, s, items):
+    _uj_rr(canvas, x, y, x + w, y + h, app.px(10), fill=_uavedusim_blend(BG, SURFACE, .20), outline=BORDER, width=1)
+
+    rows = _uj_info_panel_metrics(app, w, s, items)
+    required_h = sum(row["row_h"] for row in rows)
+    current_y = y
+
+    for i, row in enumerate(rows):
+        row_h = row["row_h"]
+        yy = current_y
+
+        if i > 0:
+            canvas.create_line(
+                x + 12 * s,
+                yy,
+                x + w - 12 * s,
+                yy,
+                fill=_uavedusim_blend(SURFACE2, BORDER, .25),
+                width=1,
+            )
+
+        icon_x = x + row["icon_x_offset"]
+        icon_y = yy + row_h / 2
+        icon_size = min(30 * s, row_h * .30)
+        _uj_icon(canvas, row["icon"], icon_x, icon_y, icon_size, ACCENT, width=max(1, int(2 * s)), app=app)
+
+        tx = x + row["text_x_offset"]
+        title_y = yy + row["top_pad"]
+        body_y = title_y + row["title_h"] + row["body_gap"]
+
+        _uj_text(
+            canvas,
+            tx,
+            title_y,
+            row["title"],
+            row["title_font"],
+            ACCENT,
+            width=row["text_w"],
+        )
+
+        _uj_text(
+            canvas,
+            tx,
+            body_y,
+            row["body"],
+            row["body_font"],
+            TEXT,
+            width=row["text_w"],
+        )
+
+        current_y += row_h
+
+def _uj_attack_card(canvas, x, y, w, h, app, s, icon, color, title, body):
+    _uj_rr(canvas, x, y, x + w, y + h, app.px(9), fill=_uavedusim_blend(BG, SURFACE, .20), outline=BORDER, width=1)
+
+    icon_size = min(48 * s, h * .58)
+    _uj_icon(canvas, icon, x + 42 * s, y + h / 2, icon_size, color, width=max(1, int(2 * s)), app=app)
+
+    title_font = _uj_font(app, 10.0 * s, "bold")
+    body_font = _uj_font(app, 8.7 * s)
+
+    tx = x + max(app.px(78), int(82 * s))
+    tw = max(app.px(130), w - (tx - x) - app.px(14))
+
+    top_pad = max(app.px(11), int(12 * s))
+    gap = max(app.px(4), int(5 * s))
+
+    title_h = _uj_measure_text_height(app, title, title_font, tw)
+
+    _uj_text(canvas, tx, y + top_pad, title, title_font, ACCENT, width=tw)
+    _uj_text(canvas, tx, y + top_pad + title_h + gap, body, body_font, TEXT, width=tw)
+
+def _uj_diagram(canvas, x, y, w, h, app, s):
+    _uj_rr(canvas, x, y, x + w, y + h, app.px(10), fill=_uavedusim_blend(BG, SURFACE, .17), outline=BORDER, width=1)
+
+    dot = _uavedusim_blend(BG, BORDER, .36)
+    step = max(18, int(23 * s))
+
+    for px in range(int(x + step), int(x + w - step), step):
+        for py in range(int(y + step), int(y + h - step), step):
+            canvas.create_oval(px, py, px + 1, py + 1, fill=dot, outline="")
+
+    f = _uj_font(app, 9.6 * s, "bold")
+    sw = max(1, int(1.4 * s))
+
+    sat_x, sat_y = x + w * .24, y + h * .23
+    drone_x, drone_y = x + w * .72, y + h * .23
+    jammer_x, jammer_y = x + w * .50, y + h * .72
+
+    canvas.create_text(sat_x, y + h * .10, text="Satélite GPS", fill=TEXT, font=f, anchor="center")
+    _uj_satellite(canvas, sat_x, sat_y, s * .78, ACCENT)
+
+    canvas.create_text(drone_x, y + h * .10, text="Drone / VANT", fill=TEXT, font=f, anchor="center")
+    _uj_drone(canvas, drone_x, drone_y + h * .05, s * .70, ACCENT)
+
+    canvas.create_line(
+        sat_x + 62 * s,
+        sat_y,
+        drone_x - 60 * s,
+        drone_y + h * .05,
+        fill="#34e0c8",
+        width=sw,
+        dash=(6, 5),
+        arrow=tk.LAST,
+        arrowshape=(8 * s, 10 * s, 4 * s),
+    )
+
+    canvas.create_text(
+        (sat_x + drone_x) / 2 + 12 * s,
+        sat_y - 24 * s,
+        text="sinal GPS",
+        fill="#34e0c8",
+        font=f,
+        anchor="center",
+    )
+
+    _uj_jammer(canvas, jammer_x, jammer_y, s * .78, "#ff6f76")
+
+    canvas.create_text(
+        jammer_x,
+        jammer_y + 55 * s,
+        text="Fonte de jamming",
+        fill=TEXT,
+        font=f,
+        anchor="center",
+    )
+
+    canvas.create_line(
+        jammer_x + 24 * s,
+        jammer_y - 42 * s,
+        x + w * .56,
+        y + h * .62,
+        x + w * .66,
+        y + h * .48,
+        drone_x - 46 * s,
+        drone_y + h * .20,
+        fill="#ff6f76",
+        width=sw,
+        dash=(7, 5),
+        smooth=True,
+        arrow=tk.LAST,
+        arrowshape=(8 * s, 10 * s, 4 * s),
+    )
+
+    canvas.create_text(
+        x + w * .79,
+        y + h * .57,
+        text="interferência",
+        fill="#ff6f76",
+        font=f,
+        anchor="center",
+    )
+
+
+def _uj_gradient_pill(canvas, x, y, w, h, r, c1, c2, tags=None):
+    steps = max(36, int(w / 5))
+
+    for i in range(steps):
+        t = i / max(steps - 1, 1)
+        color = _uavedusim_blend(c1, c2, t)
+        x0 = x + r + (w - 2 * r) * i / steps
+        x1 = x + r + (w - 2 * r) * (i + 1) / steps + 1
+        canvas.create_rectangle(x0, y, x1, y + h, fill=color, outline="", tags=tags)
+
+    canvas.create_oval(x, y, x + 2 * r, y + h, fill=c1, outline="", tags=tags)
+    canvas.create_oval(x + w - 2 * r, y, x + w, y + h, fill=c2, outline="", tags=tags)
+
+
+def _uavedusim_show_jamming_info_screen(self):
+    self.page = "jamming_info"
+    self.back_callback = self.show_main_menu
+    self.selected_callback = None
+    self.clear_content()
+    self.set_badge("O QUE É JAMMING?")
+
+    header = tk.Frame(self.content, bg=SURFACE)
+    header.pack(fill="x", padx=self.CONTENT_PAD, pady=(self.HEADER_TOP_PAD, 0))
+
+    try:
+        self.style.configure(
+            "JammingBack.TButton",
+            font=(self.FONT_FAMILY, self.fs(18), "bold"),
+            padding=(self.px(8), self.px(5)),
+            background=SURFACE2,
+            foreground=TEXT,
+            relief="flat",
+            borderwidth=0,
+        )
+        self.style.map(
+            "JammingBack.TButton",
+            background=[
+                ("active", BORDER),
+                ("pressed", BORDER),
+                ("disabled", SURFACE2),
+            ],
+            foreground=[
+                ("active", TEXT),
+                ("pressed", TEXT),
+                ("disabled", DISABLED_FG),
+            ],
+        )
+    except Exception:
+        pass
+
+    ttk.Button(
+        header,
+        text="󰁎",
+        style="Back.TButton",
+        width=1,
+        command=self.show_main_menu,
+    ).pack(side="left", pady=(0, self.px(8)))
+
+    outer = tk.Frame(self.content, bg=SURFACE)
+    outer.pack(fill="both", expand=True, padx=self.CONTENT_PAD, pady=(self.px(4), 0))
+
+    canvas = tk.Canvas(outer, bg=SURFACE, bd=0, highlightthickness=0)
+    scrollbar = ModernScrollbar(
+        outer,
+        command=canvas.yview,
+        width=self.SCROLLBAR_W,
+        bg=SURFACE,
+        thumb=BORDER,
+        thumb_active=MUTED,
+    )
+
+    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.pack(side="left", fill="both", expand=True)
+
+    self._jamming_info_scroll_enabled = False
+
+    def draw(_event=None):
+        canvas.delete("all")
+
+        width = max(canvas.winfo_width(), 1)
+        visible_h = max(canvas.winfo_height(), 1)
+
+        margin = max(self.px(6), int(width * .012))
+        card_x = margin
+        card_y = self.px(4)
+        card_w = max(self.px(520), width - margin * 2)
+        usable_w = card_w - self.px(36)
+
+        s = _uj_clamp(card_w / self.px(940), .82, 1.04)
+        gap = max(self.px(6), int(8 * s))
+        inner = max(self.px(10), int(12 * s))
+
+        title_h = max(self.px(52), int(50 * s))
+        attacks_title_h = max(self.px(26), int(26 * s))
+        cta_h = max(self.px(42), int(42 * s))
+        bottom_pad = max(self.px(10), int(12 * s))
+
+        left_items = [
+            (
+                "target",
+                "Interferência intencional",
+                "Jamming é uma interferência intencional contra sinais utilizados por um sistema.",
+            ),
+            (
+                "antenna",
+                "Afeta múltiplos sinais",
+                "Em VANTs, pode afetar sinais de GPS/GNSS, telemetria, comunicação de controle e outros canais sem fio usados durante a missão.",
+            ),
+            (
+                "shield",
+                "Degrada, bloqueia ou desestabiliza",
+                "O objetivo é degradar, bloquear ou tornar instável a recepção desses sinais, prejudicando a capacidade do drone de navegar corretamente.",
+            ),
+        ]
+
+        right_items = [
+            (
+                "pin",
+                "Impactos no GPS/GNSS",
+                "Pode causar erros de posição, falta de atualizações de localização ou alternância entre períodos de funcionamento normal e falha.",
+            ),
+            (
+                "person",
+                "Compromete a missão",
+                "Mesmo sem invadir o software do drone, o atacante pode comprometer a missão ao explorar a dependência do VANT em relação aos sinais externos de navegação.",
+            ),
+            (
+                "monitor",
+                "Nesta interface",
+                "Você pode escolher o modelo do drone, o mundo, iniciar PX4/Gazebo e executar cenários de jamming simulados.",
+            ),
+        ]
+
+        attacks = [
+            (
+                "noise",
+                "#fab387",
+                "Noise jamming",
+                "Ruído adicionado às medições de GPS/GNSS, fazendo o VANT calcular uma posição diferente da real.",
+            ),
+            (
+                "blackout",
+                "#ff6f76",
+                "GPS blackout",
+                "Sinal de GPS/GNSS interrompido: o VANT para de receber atualizações de posição.",
+            ),
+            (
+                "pulse",
+                "#34e0c8",
+                "Pulsed jamming",
+                "Alterna entre ruído, bloqueio e recuperação do sinal, causando falhas intermitentes.",
+            ),
+        ]
+
+        layout_wide = usable_w >= self.px(760)
+        x0 = card_x + inner
+
+        if layout_wide:
+            side_w = (usable_w - gap * 2) * .335
+            diagram_w = usable_w - side_w * 2 - gap * 2
+
+            left_h = _uj_info_panel_required_height(self, side_w, s, left_items)
+            right_h = _uj_info_panel_required_height(self, side_w, s, right_items)
+
+            # Altura dinâmica: cresce conforme o texto, com respiro mínimo visual.
+            main_h = max(left_h, right_h, self.px(290), int(290 * s))
+            diagram_h = main_h
+        else:
+            side_w = usable_w
+            diagram_w = usable_w
+
+            left_h = _uj_info_panel_required_height(self, side_w, s, left_items)
+            right_h = _uj_info_panel_required_height(self, side_w, s, right_items)
+            diagram_h = max(self.px(300), int(300 * s))
+            main_h = left_h + gap + diagram_h + gap + right_h
+
+        attack_cols = 3 if usable_w >= self.px(700) else 1
+        attack_card_w = usable_w if attack_cols == 1 else (usable_w - gap * (attack_cols - 1)) / attack_cols
+        attack_card_h = max(
+            _uj_attack_card_required_height(self, attack_card_w, s, item[2], item[3])
+            for item in attacks
+        )
+
+        if attack_cols == 1:
+            attack_h = attack_card_h * 3 + gap * 2
+        else:
+            attack_h = attack_card_h
+
+        card_h = (
+            inner + title_h + gap + main_h + gap +
+            attacks_title_h + attack_h + gap + cta_h + bottom_pad
+        )
+
+        # Mantém o fundo claro da página até o início do rodapé,
+        # igual ao comportamento visual da tela inicial.
+        card_h = max(card_h, visible_h - card_y - self.px(4))
+
+        _uj_rr(
+            canvas,
+            card_x,
+            card_y,
+            card_x + card_w,
+            card_y + card_h,
+            self.px(14),
+            fill=SURFACE2,
+            outline=BORDER,
+            width=1,
+        )
+
+        title_x = card_x + inner
+        title_y = card_y + inner
+
+        _uj_icon(
+            canvas,
+            "info",
+            title_x + 25 * s,
+            title_y + 25 * s,
+            46 * s,
+            ACCENT,
+            width=max(2, int(3 * s)),
+            app=self,
+        )
+
+        canvas.create_text(
+            title_x + 64 * s,
+            title_y + 4 * s,
+            text="O que é jamming?",
+            fill=TEXT,
+            font=_uj_font(self, 19.5 * s, "bold"),
+            anchor="nw",
+        )
+
+        jamming_subtitle_item = canvas.create_text(
+            title_x + 64 * s,
+            title_y + 54 * s,
+            text="Interferência intencional que afeta sinais de navegação e comunicação.",
+            fill=ACCENT,
+            font=_uj_font(self, 12 * s),
+            anchor="nw",
+        )
+
+        # Mantém o espaçamento atual em janela normal.
+        # Em tela cheia/maximizada, garante respiro entre o subtítulo e os cards.
+        y_base = title_y + title_h + gap
+
+        is_fullscreen_layout = (
+            getattr(self, "fullscreen", False)
+            or self.root.winfo_height() >= self.root.winfo_screenheight() - self.px(80)
+        )
+
+        if is_fullscreen_layout:
+            subtitle_bbox = canvas.bbox(jamming_subtitle_item)
+            subtitle_bottom = subtitle_bbox[3] if subtitle_bbox else y_base
+
+            y = max(
+                y_base,
+                subtitle_bottom + max(self.px(16), int(18 * s)),
+            )
+        else:
+            y = y_base
+
+        if layout_wide:
+            left_x = x0
+            diagram_x = left_x + side_w + gap
+            right_x = diagram_x + diagram_w + gap
+
+            _uj_info_panel(canvas, left_x, y, side_w, main_h, self, s, left_items)
+            _uj_diagram(canvas, diagram_x, y, diagram_w, diagram_h, self, s)
+            _uj_info_panel(canvas, right_x, y, side_w, main_h, self, s, right_items)
+            y += main_h + gap
+        else:
+            _uj_info_panel(canvas, x0, y, side_w, left_h, self, s, left_items)
+            y += left_h + gap
+
+            _uj_diagram(canvas, x0, y, diagram_w, diagram_h, self, s)
+            y += diagram_h + gap
+
+            _uj_info_panel(canvas, x0, y, side_w, right_h, self, s, right_items)
+            y += right_h + gap
+
+        canvas.create_text(
+            card_x + inner + 4 * s,
+            y + attacks_title_h * .08,
+            text="Ataques simulados",
+            fill=ACCENT,
+            font=_uj_font(self, 12.2 * s, "bold"),
+            anchor="nw",
+        )
+
+        y += attacks_title_h
+
+        for idx, item in enumerate(attacks):
+            row = idx // attack_cols
+            col = idx % attack_cols
+            xx = x0 + col * (attack_card_w + gap)
+            yy = y + row * (attack_card_h + gap)
+            _uj_attack_card(canvas, xx, yy, attack_card_w, attack_card_h, self, s, *item)
+
+        y += attack_h + gap
+
+        cta_x = x0
+        cta_w = usable_w
+
+        _uj_gradient_pill(
+            canvas,
+            cta_x,
+            y,
+            cta_w,
+            cta_h,
+            cta_h / 2,
+            ACCENT,
+            LAVENDER,
+            tags="jamming_cta",
+        )
+
+        canvas.create_text(
+            cta_x + cta_w / 2,
+            y + cta_h / 2,
+            text="Entenda os Ataques de Jamming Simulados   ",
+            fill="#11111b",
+            font=_uj_font(self, 13.2 * s, "bold"),
+            anchor="center",
+            tags="jamming_cta",
+        )
+
+        scroll_h = max(card_y + card_h + self.px(4), visible_h)
+        canvas.configure(scrollregion=(0, 0, width, scroll_h))
+        self._jamming_info_scroll_enabled = scroll_h > visible_h + 2
+
+        if self._jamming_info_scroll_enabled:
+            if not scrollbar.winfo_ismapped():
+                scrollbar.pack(side="right", fill="y")
+        else:
+            if scrollbar.winfo_ismapped():
+                scrollbar.pack_forget()
+            canvas.yview_moveto(0)
+    def wheel(event):
+        if not getattr(self, "_jamming_info_scroll_enabled", False):
+            return "break"
+
+        if getattr(event, "num", None) == 4:
+            _uavedusim_safe_yview_scroll(canvas, -3, "units")
+        elif getattr(event, "num", None) == 5:
+            _uavedusim_safe_yview_scroll(canvas, 3, "units")
+        else:
+            _uavedusim_safe_yview_scroll(canvas, int(-1 * (getattr(event, "delta", 0) / 120)), "units")
+
+        return "break"
+
+    canvas.bind("<Configure>", draw)
+
+    canvas.bind(
+        "<Enter>",
+        lambda _e: (
+            canvas.bind_all("<MouseWheel>", wheel),
+            canvas.bind_all("<Button-4>", wheel),
+            canvas.bind_all("<Button-5>", wheel),
+        ),
+    )
+
+    canvas.bind(
+        "<Leave>",
+        lambda _e: (
+            canvas.unbind_all("<MouseWheel>"),
+            canvas.unbind_all("<Button-4>"),
+            canvas.unbind_all("<Button-5>"),
+        ),
+    )
+
+    canvas.tag_bind("jamming_cta", "<Button-1>", lambda _e: _uavedusim_show_jamming_attacks_screen(self))
+    canvas.tag_bind("jamming_cta", "<Enter>", lambda _e: canvas.configure(cursor="hand2"))
+    canvas.tag_bind("jamming_cta", "<Leave>", lambda _e: canvas.configure(cursor=""))
+
+    self.root.after_idle(draw)
+
+    footer = tk.Frame(self.content, bg=SURFACE)
+    footer.pack(fill="x", padx=self.CONTENT_PAD, pady=(self.FOOTER_TOP_PAD, self.FOOTER_BOTTOM_PAD))
+
+    tk.Frame(footer, bg=BORDER, height=1).pack(fill="x", pady=(0, self.px(10)))
+
+    btn_frame = tk.Frame(footer, bg=SURFACE)
+    btn_frame.pack(side="right")
+
+    ttk.Button(
+        btn_frame,
+        text="Fechar",
+        style="Cancel.TButton",
+        command=self.close_app,
+    ).pack(side="left", padx=(0, self.px(8)))
+# END UAVEDUSIM_JAMMING_CANVAS_INFO_SCREEN_PATCH
+
+
+
+# BEGIN UAVEDUSIM_GLOBAL_SMALL_BACK_BUTTON_PATCH
+# Reduz globalmente o botão "Voltar" em todas as telas que usam Back.TButton.
+
+_UAVEDUSIM_ORIGINAL_SETUP_STYLES_GLOBAL_SMALL_BACK = UAVEDUSIMApp._setup_styles
+
+
+def _uavedusim_setup_styles_global_small_back(self):
+    _UAVEDUSIM_ORIGINAL_SETUP_STYLES_GLOBAL_SMALL_BACK(self)
+
+    try:
+        self.style.configure(
+            "Back.TButton",
+            font=(self.FONT_FAMILY, self.fs(18), "bold"),
+            padding=(self.px(3), self.px(0)),
+            background=SURFACE2,
+            foreground=MUTED,
+            relief="flat",
+            borderwidth=0,
+            anchor="center",
+        )
+        self.style.map(
+            "Back.TButton",
+            background=[
+                ("disabled", DISABLED_BG),
+                ("active", BORDER),
+                ("pressed", BORDER),
+            ],
+            foreground=[
+                ("disabled", DISABLED_FG),
+                ("active", TEXT),
+                ("pressed", TEXT),
+            ],
+        )
+    except Exception:
+        pass
+
+
+UAVEDUSIMApp._setup_styles = _uavedusim_setup_styles_global_small_back
+# END UAVEDUSIM_GLOBAL_SMALL_BACK_BUTTON_PATCH
+
+
+
+# BEGIN UAVEDUSIM_GLOBAL_FOOTER_BACK_PATCH
+# Move globalmente os botões de voltar para o rodapé, no canto esquerdo.
+
+_UAVEDUSIM_ORIGINAL_SETUP_STYLES_FOOTER_BACK = UAVEDUSIMApp._setup_styles
+_UAVEDUSIM_ORIGINAL_CLEAR_CONTENT_FOOTER_BACK = UAVEDUSIMApp.clear_content
+_UAVEDUSIM_ORIGINAL_SET_BADGE_FOOTER_BACK = UAVEDUSIMApp.set_badge
+
+
+def _uavedusim_setup_styles_footer_back(self):
+    _UAVEDUSIM_ORIGINAL_SETUP_STYLES_FOOTER_BACK(self)
+
+    try:
+        self.style.configure(
+            "FooterBack.TButton",
+            font=(self.FONT_FAMILY, self.FS_BUTTON),
+            padding=(self.px(11), self.px(7)),
+            background=SURFACE2,
+            foreground=MUTED,
+            relief="flat",
+            borderwidth=0,
+            anchor="center",
+        )
+        self.style.map(
+            "FooterBack.TButton",
+            background=[
+                ("disabled", DISABLED_BG),
+                ("active", BORDER),
+                ("pressed", BORDER),
+            ],
+            foreground=[
+                ("disabled", DISABLED_FG),
+                ("active", TEXT),
+                ("pressed", TEXT),
+            ],
+        )
+    except Exception:
+        pass
+
+
+def _uavedusim_is_back_button_widget(widget):
+    try:
+        style = str(widget.cget("style"))
+    except Exception:
+        style = ""
+
+    try:
+        label = str(widget.cget("text") or "").strip().lower()
+    except Exception:
+        label = ""
+
+    return (
+        style in {"Back.TButton", "JammingBack.TButton"}
+        or label in {"󰁎", "←", "← voltar", "voltar", "󰁎 voltar"}
+        or label.startswith("←")
+    )
+
+
+def _uavedusim_remove_back_buttons_from(self, widget, keep=None):
+    try:
+        children = list(widget.winfo_children())
+    except Exception:
+        return
+
+    for child in children:
+        if child is keep:
+            continue
+
+        if _uavedusim_is_back_button_widget(child):
+            parent = getattr(child, "master", None)
+
+            try:
+                child.destroy()
+            except Exception:
+                pass
+
+            try:
+                if parent is not None and parent is not self.content and parent.master is self.content:
+                    if not parent.winfo_children():
+                        parent.destroy()
+            except Exception:
+                pass
+
+            continue
+
+        _uavedusim_remove_back_buttons_from(self, child, keep=keep)
+
+
+def _uavedusim_should_show_footer_back(self):
+    if getattr(self, "page", "") == "main":
+        return False
+
+    # Na tela final de controle dos ataques PX4, não deve haver botão Voltar no rodapé.
+    if getattr(self, "page", "") == "attack":
+        return False
+
+    if getattr(self, "back_callback", None) is None:
+        return False
+
+    return True
+
+
+def _uavedusim_footer_back_command(self):
+    callback = getattr(self, "back_callback", None)
+
+    if callback is not None:
+        return callback
+
+    return self.show_main_menu
+
+
+def _uavedusim_place_footer_back_button(self):
+    if not hasattr(self, "content"):
+        return
+
+    try:
+        if not self.content.winfo_exists():
+            return
+    except Exception:
+        return
+
+    old_button = getattr(self, "_global_footer_back_button", None)
+
+    if not _uavedusim_should_show_footer_back(self):
+        _uavedusim_remove_back_buttons_from(self, self.content, keep=None)
+
+        try:
+            if old_button is not None and old_button.winfo_exists():
+                old_button.destroy()
+        except Exception:
+            pass
+
+        self._global_footer_back_button = None
+        return
+
+    _uavedusim_remove_back_buttons_from(self, self.content, keep=old_button)
+
+    try:
+        if old_button is not None and old_button.winfo_exists():
+            old_button.configure(command=_uavedusim_footer_back_command(self))
+            old_button.place_configure(
+                x=self.CONTENT_PAD,
+                rely=1.0,
+                y=-(self.FOOTER_BOTTOM_PAD + self.px(2)),
+                anchor="sw",
+            )
+            old_button.lift()
+            return
+    except Exception:
+        pass
+
+    try:
+        btn = ttk.Button(
+            self.content,
+            text="󰁎 Voltar",
+            style="FooterBack.TButton",
+            command=_uavedusim_footer_back_command(self),
+        )
+        btn.place(
+            x=self.CONTENT_PAD,
+            rely=1.0,
+            y=-(self.FOOTER_BOTTOM_PAD + self.px(2)),
+            anchor="sw",
+        )
+        btn.lift()
+        self._global_footer_back_button = btn
+    except Exception:
+        pass
+
+
+def _uavedusim_clear_content_with_footer_back(self):
+    try:
+        old_button = getattr(self, "_global_footer_back_button", None)
+        if old_button is not None and old_button.winfo_exists():
+            old_button.destroy()
+    except Exception:
+        pass
+
+    self._global_footer_back_button = None
+    _UAVEDUSIM_ORIGINAL_CLEAR_CONTENT_FOOTER_BACK(self)
+
+
+def _uavedusim_set_badge_with_footer_back(self, text):
+    _UAVEDUSIM_ORIGINAL_SET_BADGE_FOOTER_BACK(self, text)
+
+    try:
+        self.root.after_idle(lambda: _uavedusim_place_footer_back_button(self))
+        self.root.after(80, lambda: _uavedusim_place_footer_back_button(self))
+        self.root.after(220, lambda: _uavedusim_place_footer_back_button(self))
+        self.root.after(500, lambda: _uavedusim_place_footer_back_button(self))
+    except Exception:
+        pass
+
+
+UAVEDUSIMApp._setup_styles = _uavedusim_setup_styles_footer_back
+UAVEDUSIMApp.clear_content = _uavedusim_clear_content_with_footer_back
+UAVEDUSIMApp.set_badge = _uavedusim_set_badge_with_footer_back
+# END UAVEDUSIM_GLOBAL_FOOTER_BACK_PATCH
+
+
+
+# BEGIN UAVEDUSIM_JAMMING_ATTACKS_CANVAS_SCREEN_PATCH
+# Tela "Ataques de jamming simulados" em Canvas.
+# Por padrão, somente o primeiro ataque fica expandido; os demais ficam recolhidos.
+
+def _ujsa_clamp(value, low, high):
+    return max(low, min(value, high))
+
+
+def _ujsa_font(app, size, weight="normal"):
+    try:
+        resolved = app.fs(size)
+    except Exception:
+        resolved = int(round(size))
+    return (app.FONT_FAMILY, max(10, int(round(resolved))), weight)
+
+
+def _ujsa_nerd_font(app, size, weight="normal"):
+    try:
+        family = _uavedusim_preferred_nerd_font_family(app)
+        resolved = app.fs(size)
+    except Exception:
+        family = "monospace"
+        resolved = int(round(size))
+    return (family, max(9, int(resolved)), weight)
+
+
+def _ujsa_rr(canvas, x1, y1, x2, y2, radius, fill, outline="", width=1, tags=None):
+    radius = max(1, min(radius, (x2 - x1) / 2, (y2 - y1) / 2))
+    points = _uavedusim_round_rect_points(x1, y1, x2, y2, radius)
+    return canvas.create_polygon(
+        points,
+        fill=fill,
+        outline=outline,
+        width=width,
+        smooth=True,
+        splinesteps=16,
+        tags=tags,
+    )
+
+
+def _ujsa_text(canvas, x, y, text, font, fill, width=None, anchor="nw", justify="left", tags=None):
+    kwargs = {
+        "text": str(text).strip(),
+        "font": font,
+        "fill": fill,
+        "anchor": anchor,
+        "justify": justify,
+        "tags": tags,
+    }
+
+    if width is not None:
+        kwargs["width"] = max(1, int(width))
+
+    return canvas.create_text(x, y, **kwargs)
+
+
+def _ujsa_draw_attack_icon(canvas, kind, cx, cy, size, color, width=2, app=None):
+    # Desenha o ícone e depois centraliza pelo bbox real.
+    # Isso corrige deslocamentos visuais dentro dos círculos dos cards.
+    before_items = set(canvas.find_all())
+
+    try:
+        _uj_icon(canvas, kind, cx, cy, size, color, width=width, app=app)
+    except Exception:
+        canvas.create_oval(
+            cx - size / 2,
+            cy - size / 2,
+            cx + size / 2,
+            cy + size / 2,
+            outline=color,
+            width=width,
+        )
+        fallback = {"noise": "≈", "blackout": "⊘", "pulse": "∿"}.get(kind, "◦")
+        canvas.create_text(
+            cx,
+            cy,
+            text=fallback,
+            fill=color,
+            font=("TkDefaultFont", int(size * 0.65), "bold"),
+        )
+
+    created_items = [item for item in canvas.find_all() if item not in before_items]
+
+    if not created_items:
+        return
+
+    bbox = None
+
+    for item in created_items:
+        item_bbox = canvas.bbox(item)
+
+        if not item_bbox:
+            continue
+
+        if bbox is None:
+            bbox = list(item_bbox)
+        else:
+            bbox[0] = min(bbox[0], item_bbox[0])
+            bbox[1] = min(bbox[1], item_bbox[1])
+            bbox[2] = max(bbox[2], item_bbox[2])
+            bbox[3] = max(bbox[3], item_bbox[3])
+
+    if not bbox:
+        return
+
+    bbox_cx = (bbox[0] + bbox[2]) / 2
+    bbox_cy = (bbox[1] + bbox[3]) / 2
+    dx = cx - bbox_cx
+    dy = cy - bbox_cy
+
+    if abs(dx) < 0.01 and abs(dy) < 0.01:
+        return
+
+    for item in created_items:
+        try:
+            canvas.move(item, dx, dy)
+        except Exception:
+            pass
+
+
+def _ujsa_draw_circle_attack_icon(canvas, kind, cx, cy, radius, color, bg, app=None):
+    # Mantém somente o ícone Nerd Font do ataque.
+    # O círculo/base ao redor foi removido.
+    _ujsa_draw_attack_icon(
+        canvas,
+        kind,
+        cx,
+        cy,
+        radius * 1.22,
+        color,
+        width=max(1, int(radius * 0.07)),
+        app=app,
+    )
+
+
+def _ujsa_draw_nerd_icon(canvas, x, y, icon, color, app, size, tags=None, anchor="center"):
+    return canvas.create_text(
+        x,
+        y,
+        text=icon,
+        fill=color,
+        font=_ujsa_nerd_font(app, size, "bold"),
+        anchor=anchor,
+        tags=tags,
+    )
+
+
+def _ujsa_draw_gradient_pill(canvas, x, y, w, h, radius, color1, color2, tags=None):
+    try:
+        _uj_gradient_pill(canvas, x, y, w, h, radius, color1, color2, tags=tags)
+        return
+    except Exception:
+        pass
+
+    steps = max(28, int(w / 5))
+
+    for i in range(steps):
+        t = i / max(steps - 1, 1)
+        color = _uavedusim_blend(color1, color2, t)
+        x0 = x + radius + (w - 2 * radius) * i / steps
+        x1 = x + radius + (w - 2 * radius) * (i + 1) / steps + 1
+        canvas.create_rectangle(x0, y, x1, y + h, fill=color, outline="", tags=tags)
+
+    canvas.create_oval(x, y, x + 2 * radius, y + h, fill=color1, outline="", tags=tags)
+    canvas.create_oval(x + w - 2 * radius, y, x + w, y + h, fill=color2, outline="", tags=tags)
+
+
+def _ujsa_draw_intro(canvas, app, x, y, w, h, s):
+    _ujsa_rr(
+        canvas,
+        x,
+        y,
+        x + w,
+        y + h,
+        app.px(12),
+        fill=_uavedusim_blend(BG, TAG_BG, 0.55),
+        outline=_uavedusim_blend(BORDER, ACCENT, 0.24),
+        width=1,
+    )
+
+    icon_x = x + max(app.px(34), 38 * s)
+    icon_y = y + h / 2
+
+    _ujsa_draw_nerd_icon(canvas, icon_x, icon_y, "", ACCENT, app, 20 * s)
+
+    body = (
+        "Nesta tela, você pode comparar três cenários de jamming simulados no UAVEDUSIM. "
+        "Cada ataque compromete a navegação de uma forma diferente, permitindo observar desde "
+        "degradação contínua até perda total ou intermitente do sinal GPS/GNSS, tudo em ambiente "
+        "seguro e sem interferência real."
+    )
+
+    _ujsa_text(
+        canvas,
+        x + max(app.px(66), 76 * s),
+        y + max(app.px(10), 11 * s),
+        body,
+        _ujsa_font(app, 9.6 * s),
+        TEXT,
+        width=w - max(app.px(90), 104 * s),
+    )
+
+
+def _ujsa_attack_detail_columns(canvas, app, x, y, w, h, color, details, s):
+    # Em telas normais, os três tópicos ficam lado a lado.
+    # Só empilha quando a área realmente estiver estreita.
+    wide = w >= max(500, app.px(500))
+
+    title_font = _ujsa_font(app, 10.0 * s, "bold")
+    body_font = _ujsa_font(app, 9.5 * s)
+
+    if wide:
+        col_gap = max(app.px(10), int(11 * s))
+        col_w = (w - col_gap * 2) / 3
+        top_y = y + max(app.px(2), int(2 * s))
+
+        for idx, (icon, title, body) in enumerate(details):
+            col_x = x + idx * (col_w + col_gap)
+
+            if idx > 0:
+                sep_x = col_x - col_gap / 2
+                canvas.create_line(
+                    sep_x,
+                    top_y,
+                    sep_x,
+                    y + h,
+                    fill=BORDER,
+                    width=1,
+                )
+
+            icon_x = col_x + max(app.px(8), int(8 * s))
+            text_x = col_x + max(app.px(27), int(29 * s))
+            text_w = max(app.px(126), col_w - (text_x - col_x) - max(app.px(5), int(5 * s)))
+
+            _ujsa_draw_nerd_icon(
+                canvas,
+                icon_x,
+                top_y + max(app.px(9), int(11 * s)),
+                icon,
+                color,
+                app,
+                10.5 * s,
+            )
+
+            _ujsa_text(
+                canvas,
+                text_x,
+                top_y,
+                title,
+                title_font,
+                color,
+                width=text_w,
+            )
+
+            _ujsa_text(
+                canvas,
+                text_x,
+                top_y + max(app.px(19), int(20 * s)),
+                body,
+                body_font,
+                TEXT,
+                width=text_w,
+            )
+
+        return
+
+    # Fallback para janela muito estreita.
+    row_gap = max(app.px(7), int(8 * s))
+    row_h = max(app.px(76), (h - row_gap * 2) / 3)
+    icon_x = x + max(app.px(8), int(9 * s))
+    text_x = x + max(app.px(30), int(33 * s))
+    text_w = max(app.px(160), w - (text_x - x) - max(app.px(8), int(8 * s)))
+
+    current_y = y
+
+    for idx, (icon, title, body) in enumerate(details):
+        if idx > 0:
+            sep_y = current_y - row_gap / 2
+            canvas.create_line(x, sep_y, x + w, sep_y, fill=BORDER, width=1)
+
+        _ujsa_draw_nerd_icon(
+            canvas,
+            icon_x,
+            current_y + max(app.px(11), int(12 * s)),
+            icon,
+            color,
+            app,
+            10.5 * s,
+        )
+
+        _ujsa_text(
+            canvas,
+            text_x,
+            current_y,
+            title,
+            title_font,
+            color,
+            width=text_w,
+        )
+
+        _ujsa_text(
+            canvas,
+            text_x,
+            current_y + max(app.px(19), int(20 * s)),
+            body,
+            body_font,
+            TEXT,
+            width=text_w,
+        )
+
+        current_y += row_h + row_gap
+
+
+def _ujsa_attack_card_height(app, w, expanded, s):
+    if expanded:
+        # Altura suficiente para resumo + divisor + três tópicos lado a lado.
+        if w >= max(620, app.px(620)):
+            return max(app.px(218), int(226 * s))
+
+        return max(app.px(382), int(392 * s))
+
+    return max(app.px(90), int(94 * s))
+
+
+def _ujsa_draw_attack_card(canvas, app, x, y, w, attack, expanded, s):
+    color = attack["color"]
+    h = _ujsa_attack_card_height(app, w, expanded, s)
+    tag = f"ujsa_attack_{attack['key']}"
+
+    bg = _uavedusim_blend(BG, SURFACE, 0.22)
+    border = color if expanded else BORDER
+
+    _ujsa_rr(
+        canvas,
+        x,
+        y,
+        x + w,
+        y + h,
+        app.px(12),
+        fill=bg,
+        outline=border,
+        width=(2 if expanded else 1),
+        tags=tag,
+    )
+
+    icon_r = max(app.px(25), int(30 * s))
+    icon_x = x + max(app.px(42), int(48 * s))
+    icon_y = y + max(app.px(43), int(46 * s))
+
+    _ujsa_draw_circle_attack_icon(canvas, attack["icon"], icon_x, icon_y, icon_r, color, bg)
+
+    title_x = x + max(app.px(86), int(96 * s))
+    right_pad = max(app.px(58), int(64 * s))
+
+    canvas.create_text(
+        x + w - right_pad / 2,
+        y + max(app.px(35), int(38 * s)),
+        text=("" if expanded else ""),
+        fill=MUTED,
+        font=_ujsa_nerd_font(app, 14 * s, "bold"),
+        anchor="center",
+        tags=tag,
+    )
+
+    _ujsa_text(
+        canvas,
+        title_x,
+        y + max(app.px(19), int(21 * s)),
+        attack["title"],
+        _ujsa_font(app, 14.8 * s, "bold"),
+        color,
+        width=w - (title_x - x) - right_pad,
+        tags=tag,
+    )
+
+    summary_item = _ujsa_text(
+        canvas,
+        title_x,
+        y + max(app.px(49), int(52 * s)),
+        attack["summary"],
+        _ujsa_font(app, 9.8 * s),
+        TEXT,
+        width=w - (title_x - x) - right_pad,
+        tags=tag,
+    )
+
+    if not expanded:
+        return h
+
+    summary_bbox = canvas.bbox(summary_item)
+    summary_bottom = summary_bbox[3] if summary_bbox else y + max(app.px(68), int(70 * s))
+    divider_y = max(
+        y + max(app.px(86), int(90 * s)),
+        summary_bottom + max(app.px(9), int(10 * s)),
+    )
+    canvas.create_line(title_x, divider_y, x + w - right_pad, divider_y, fill=BORDER, width=1)
+
+    details_y = divider_y + max(app.px(10), int(11 * s))
+    details_h = h - (details_y - y) - max(app.px(6), int(7 * s))
+
+    _ujsa_attack_detail_columns(
+        canvas,
+        app,
+        title_x,
+        details_y,
+        w - (title_x - x) - right_pad,
+        details_h,
+        color,
+        attack["details"],
+        s,
+    )
+
+    return h
+
+
+def _uavedusim_show_jamming_attacks_screen(self):
+    self.page = "jamming_attacks_info"
+    self.back_callback = lambda: _uavedusim_show_jamming_info_screen(self)
+    self.selected_callback = None
+
+    # Padrão da tela: somente o primeiro ataque aparece expandido.
+    self._jamming_attack_open_key = "noise"
+
+    self.clear_content()
+    self.set_badge("ATAQUES")
+
+    outer = tk.Frame(self.content, bg=SURFACE)
+    outer.pack(
+        fill="both",
+        expand=True,
+        padx=self.CONTENT_PAD,
+        pady=(self.HEADER_TOP_PAD, 0),
+    )
+
+    canvas = tk.Canvas(outer, bg=SURFACE, bd=0, highlightthickness=0)
+
+    scrollbar = ModernScrollbar(
+        outer,
+        command=canvas.yview,
+        width=self.SCROLLBAR_W,
+        bg=SURFACE,
+        thumb=BORDER,
+        thumb_active=MUTED,
+    )
+
+    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.pack(side="left", fill="both", expand=True)
+
+    self._jamming_attacks_scroll_enabled = False
+
+    attacks = [
+        {
+            "key": "noise",
+            "icon": "noise",
+            "color": "#fab387",
+            "title": "Jamming Noise",
+            "summary": "O sinal continua chegando, mas as medições se tornam degradadas e menos confiáveis.",
+            "details": [
+                (
+                    "",
+                    "O que acontece",
+                    "O GPS permanece ativo, porém as leituras chegam com ruído e podem variar acima do normal.",
+                ),
+                (
+                    "",
+                    "Por que é perigoso",
+                    "O VANT pode estimar posição incorreta, gerando desvios de trajetória e instabilidade na navegação.",
+                ),
+                (
+                    "",
+                    "Como é simulado",
+                    "Perturbações são adicionadas às medições de GPS/GNSS para reproduzir degradação contínua do sinal.",
+                ),
+            ],
+        },
+        {
+            "key": "blackout",
+            "icon": "blackout",
+            "color": "#ff6f76",
+            "title": "Jamming Blackout",
+            "summary": "O sinal de GPS deixa de ser recebido, causando perda temporária ou total das atualizações de posição.",
+            "details": [
+                (
+                    "",
+                    "O que acontece",
+                    "O VANT fica sem novas medições válidas de GPS e perde sua principal referência externa de localização.",
+                ),
+                (
+                    "",
+                    "Por que é perigoso",
+                    "A navegação pode se degradar rapidamente, principalmente em missões longas ou com dependência forte de posicionamento.",
+                ),
+                (
+                    "",
+                    "Como é simulado",
+                    "As atualizações de GPS são interrompidas, reproduzindo um cenário de bloqueio total do sinal.",
+                ),
+            ],
+        },
+        {
+            "key": "pulse",
+            "icon": "pulse",
+            "color": "#34e0c8",
+            "title": "Jamming Pulse",
+            "summary": "O ataque alterna entre períodos de degradação, bloqueio e recuperação parcial do sinal.",
+            "details": [
+                (
+                    "",
+                    "O que acontece",
+                    "O comportamento do GPS oscila ao longo do tempo, criando falhas intermitentes e mudanças repentinas de qualidade.",
+                ),
+                (
+                    "",
+                    "Por que é perigoso",
+                    "Esse padrão dificulta a estimativa de estado e pode confundir o controle por alternar entre falha e normalidade.",
+                ),
+                (
+                    "",
+                    "Como é simulado",
+                    "O simulador alterna ciclicamente ruído, blackout e recuperação para reproduzir interferência pulsada.",
+                ),
+            ],
+        },
+    ]
+
+    def draw(_event=None):
+        canvas.delete("all")
+
+        width = max(canvas.winfo_width(), 1)
+        visible_h = max(canvas.winfo_height(), 1)
+
+        margin = max(self.px(6), int(width * .012))
+        x = margin
+        y = self.px(4)
+        w = max(self.px(520), width - 2 * margin)
+
+        s = _ujsa_clamp(w / self.px(940), .82, 1.04)
+
+        card_bg = _uavedusim_blend(BG, SURFACE2, 0.65)
+
+        # O fundo claro da página é desenhado depois do conteúdo,
+        # para acompanhar a altura real do scroll até o rodapé.
+
+        inner = max(self.px(10), int(12 * s))
+        content_x = x + inner
+        content_w = w - 2 * inner
+        yy = y + inner
+
+        header_icon_x = content_x + 25 * s
+
+        # Ícone semântico da tela: antena/interferência de jamming.
+        _ujsa_draw_attack_icon(
+            canvas,
+            "noise",
+            header_icon_x,
+            yy + 25 * s,
+            46 * s,
+            ACCENT,
+            width=max(2, int(3 * s)),
+        )
+
+        title_x = content_x + 64 * s
+
+        _ujsa_text(
+            canvas,
+            title_x,
+            yy + 4 * s,
+            "Ataques de jamming simulados",
+            _ujsa_font(self,  19.5 * s, "bold"),
+            TEXT,
+            width=content_w - (title_x - content_x),
+        )
+
+        subtitle_item = _ujsa_text(
+            canvas,
+            title_x,
+            yy + 54 * s,
+            "Entenda como cada ataque afeta a navegação GPS/GNSS do VANT em ambiente simulado.",
+            _ujsa_font(self,  12 * s),
+            ACCENT,
+            width=content_w - (title_x - content_x),
+        )
+
+        # Mantém o espaçamento atual em janela normal.
+        # Em tela cheia/maximizada, garante respiro entre o subtítulo e o primeiro card.
+        yy_base = yy + max(self.px(52), int(50 * s)) + max(self.px(6), int(8 * s))
+
+        is_fullscreen_layout = (
+            getattr(self, "fullscreen", False)
+            or self.root.winfo_height() >= self.root.winfo_screenheight() - self.px(80)
+        )
+
+        if is_fullscreen_layout:
+            subtitle_bbox = canvas.bbox(subtitle_item)
+            subtitle_bottom = subtitle_bbox[3] if subtitle_bbox else yy_base
+
+            yy = max(
+                yy_base,
+                subtitle_bottom + max(self.px(16), int(18 * s)),
+            )
+        else:
+            yy = yy_base
+
+        intro_h = max(self.px(74), int(80 * s))
+        _ujsa_draw_intro(canvas, self, content_x, yy, content_w, intro_h, s)
+
+        yy += intro_h + max(self.px(7), int(8 * s))
+
+        for attack in attacks:
+            expanded = getattr(self, "_jamming_attack_open_key", "noise") == attack["key"]
+            h = _ujsa_draw_attack_card(canvas, self, content_x, yy, content_w, attack, expanded, s)
+            yy += h + max(self.px(7), int(8 * s))
+
+        cta_h = max(self.px(48), int(50 * s))
+
+        _ujsa_draw_gradient_pill(
+            canvas,
+            content_x,
+            yy,
+            content_w,
+            cta_h,
+            cta_h / 2,
+            ACCENT,
+            LAVENDER,
+            tags="ujsa_cta",
+        )
+
+        canvas.create_text(
+            content_x + content_w / 2,
+            yy + cta_h / 2,
+            text="Entenda as mitigações do simulador   ",
+            fill="#11111b",
+            font=_ujsa_font(self, 12.8 * s, "bold"),
+            anchor="center",
+            tags="ujsa_cta",
+        )
+
+        yy += cta_h + inner
+
+        scroll_h = max(yy + self.px(6), visible_h)
+
+        _ujsa_rr(
+            canvas,
+            x,
+            y,
+            x + w,
+            max(y + self.px(520), scroll_h - self.px(4)),
+            self.px(14),
+            fill=card_bg,
+            outline=BORDER,
+            width=1,
+            tags="ujsa_page_bg",
+        )
+        canvas.tag_lower("ujsa_page_bg")
+
+        canvas.configure(scrollregion=(0, 0, width, scroll_h))
+
+        self._jamming_attacks_scroll_enabled = scroll_h > visible_h + 2
+
+        if self._jamming_attacks_scroll_enabled:
+            # O scrollbar fica sobreposto na borda direita da área cinza,
+            # sem usar pack(). Assim ele não reduz a largura do Canvas nem
+            # muda o tamanho dos cards quando aparece.
+            try:
+                scrollbar.place(
+                    relx=1.0,
+                    rely=0.0,
+                    x=-self.px(3),
+                    y=0,
+                    anchor="ne",
+                    width=self.SCROLLBAR_W,
+                    height=visible_h,
+                )
+                scrollbar.lift()
+            except Exception:
+                pass
+        else:
+            try:
+                scrollbar.place_forget()
+            except Exception:
+                pass
+            canvas.yview_moveto(0)
+
+    def open_attack(key):
+        # Clicar no card fechado abre esse card.
+        # Clicar novamente no card já aberto fecha ele, permitindo deixar todos fechados.
+        current = getattr(self, "_jamming_attack_open_key", "noise")
+
+        if current == key:
+            self._jamming_attack_open_key = None
+        else:
+            self._jamming_attack_open_key = key
+
+        draw()
+
+    def wheel(event):
+        if not getattr(self, "_jamming_attacks_scroll_enabled", False):
+            return "break"
+
+        if getattr(event, "num", None) == 4:
+            _uavedusim_safe_yview_scroll(canvas, -3, "units")
+        elif getattr(event, "num", None) == 5:
+            _uavedusim_safe_yview_scroll(canvas, 3, "units")
+        else:
+            _uavedusim_safe_yview_scroll(canvas, int(-1 * (getattr(event, "delta", 0) / 120)), "units")
+
+        return "break"
+
+    canvas.bind("<Configure>", draw)
+
+    canvas.bind(
+        "<Enter>",
+        lambda _e: (
+            canvas.bind_all("<MouseWheel>", wheel),
+            canvas.bind_all("<Button-4>", wheel),
+            canvas.bind_all("<Button-5>", wheel),
+        ),
+    )
+
+    canvas.bind(
+        "<Leave>",
+        lambda _e: (
+            canvas.unbind_all("<MouseWheel>"),
+            canvas.unbind_all("<Button-4>"),
+            canvas.unbind_all("<Button-5>"),
+        ),
+    )
+
+    for attack in attacks:
+        key = attack["key"]
+        canvas.tag_bind(f"ujsa_attack_{key}", "<Button-1>", lambda _e, k=key: open_attack(k))
+        canvas.tag_bind(f"ujsa_attack_{key}", "<Enter>", lambda _e: canvas.configure(cursor="hand2"))
+        canvas.tag_bind(f"ujsa_attack_{key}", "<Leave>", lambda _e: canvas.configure(cursor=""))
+
+    canvas.tag_bind("ujsa_cta", "<Button-1>", lambda _e: _uavedusim_show_mitigation_screen(self))
+    canvas.tag_bind("ujsa_cta", "<Enter>", lambda _e: canvas.configure(cursor="hand2"))
+    canvas.tag_bind("ujsa_cta", "<Leave>", lambda _e: canvas.configure(cursor=""))
+
+    self.root.after_idle(draw)
+
+    footer = tk.Frame(self.content, bg=SURFACE)
+    footer.pack(
+        fill="x",
+        padx=self.CONTENT_PAD,
+        pady=(self.FOOTER_TOP_PAD, self.FOOTER_BOTTOM_PAD),
+    )
+
+    tk.Frame(footer, bg=BORDER, height=1).pack(fill="x", pady=(0, self.px(10)))
+
+    left_btns = tk.Frame(footer, bg=SURFACE)
+    left_btns.pack(side="left")
+
+    ttk.Button(
+        left_btns,
+        text="󰁎 Voltar",
+        style="FooterBack.TButton",
+        command=lambda: _uavedusim_show_jamming_info_screen(self),
+    ).pack(side="left")
+
+    right_btns = tk.Frame(footer, bg=SURFACE)
+    right_btns.pack(side="right")
+
+    ttk.Button(
+        right_btns,
+        text="Fechar",
+        style="Cancel.TButton",
+        command=self.close_app,
+    ).pack(side="left", padx=(0, self.px(8)))
+# END UAVEDUSIM_JAMMING_ATTACKS_CANVAS_SCREEN_PATCH
+
+
+# BEGIN UAVEDUSIM_WINDOW_BUTTONS_NERD_ICONS_PATCH
+# Usa Nerd Fonts nos botões superiores direitos da janela.
+# Minimizar: nf-md-window_minimize
+# Maximizar: nf-md-window_maximize
+# Restaurar: nf-md-window_restore
+# Fechar: nf-md-close
+
+UAVEDUSIM_WIN_ICON_MINIMIZE = "\U000F05B0"
+UAVEDUSIM_WIN_ICON_MAXIMIZE = "\uf2d0"
+UAVEDUSIM_WIN_ICON_RESTORE = "\uf2d2"
+UAVEDUSIM_WIN_ICON_CLOSE = "\U000F0156"
+
+
+_UAVEDUSIM_ORIGINAL_SETUP_STYLES_WIN_NERD_ICONS = UAVEDUSIMApp._setup_styles
+_UAVEDUSIM_ORIGINAL_TOGGLE_FULLSCREEN_WIN_NERD_ICONS = UAVEDUSIMApp.toggle_fullscreen
+
+
+def _uavedusim_setup_styles_win_nerd_icons(self):
+    _UAVEDUSIM_ORIGINAL_SETUP_STYLES_WIN_NERD_ICONS(self)
+
+    try:
+        try:
+            family = _uavedusim_preferred_nerd_font_family(self)
+        except Exception:
+            family = self.FONT_FAMILY
+
+        icon_font = (family, self.fs(10), "bold")
+
+        self.style.configure(
+            "WinBtn.TButton",
+            font=icon_font,
+            padding=(self.px(2), self.px(0)),
+            background=SURFACE2,
+            foreground=MUTED,
+            relief="flat",
+            borderwidth=0,
+            anchor="center",
+        )
+
+        self.style.configure(
+            "CloseBtn.TButton",
+            font=icon_font,
+            padding=(self.px(2), self.px(0)),
+            background=SURFACE2,
+            foreground=MUTED,
+            relief="flat",
+            borderwidth=0,
+            anchor="center",
+        )
+    except Exception:
+        pass
+
+
+def _uavedusim_toggle_fullscreen_win_nerd_icons(self):
+    result = _UAVEDUSIM_ORIGINAL_TOGGLE_FULLSCREEN_WIN_NERD_ICONS(self)
+
+    try:
+        btn = getattr(self, "win_full_btn", None)
+
+        if btn is not None:
+            btn.configure(
+                text=UAVEDUSIM_WIN_ICON_RESTORE
+                if getattr(self, "fullscreen", False)
+                else UAVEDUSIM_WIN_ICON_MAXIMIZE
+            )
+    except Exception:
+        pass
+
+    return result
+
+
+UAVEDUSIMApp._setup_styles = _uavedusim_setup_styles_win_nerd_icons
+UAVEDUSIMApp.toggle_fullscreen = _uavedusim_toggle_fullscreen_win_nerd_icons
+# END UAVEDUSIM_WINDOW_BUTTONS_NERD_ICONS_PATCH
+
+
+if __name__ == "__main__":
     try:
         UAVEDUSIMApp().run()
     except KeyboardInterrupt:

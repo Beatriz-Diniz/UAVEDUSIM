@@ -374,12 +374,68 @@ trap 'uavedusim_on_signal TERM' TERM
 trap 'uavedusim_on_signal HUP' HUP
 
 
+
+# BEGIN UAVEDUSIM_PILLOW_DEPENDENCY_PATCH
+# Verifica e instala Pillow, usado nos cantos arredondados com antialiasing
+# da interface Tkinter.
+ensure_python_pillow_dependency() {
+    if python3 -c 'from PIL import Image, ImageDraw, ImageTk' >/dev/null 2>&1; then
+        log "Pillow verificado."
+        return 0
+    fi
+
+    local manager
+    manager="$(detect_package_manager)"
+
+    local -a pillow_pkg=()
+
+    case "$manager" in
+        dnf)
+            pillow_pkg=(python3-pillow python3-pillow-tk)
+            ;;
+        apt)
+            pillow_pkg=(python3-pil python3-pil.imagetk)
+            ;;
+        pacman)
+            pillow_pkg=(python-pillow)
+            ;;
+        zypper)
+            pillow_pkg=(python3-Pillow)
+            ;;
+        apk)
+            pillow_pkg=(py3-pillow)
+            ;;
+        xbps)
+            pillow_pkg=(python3-Pillow)
+            ;;
+        *)
+            pillow_pkg=()
+            ;;
+    esac
+
+    if [ "${#pillow_pkg[@]}" -eq 0 ]; then
+        show_error "Pillow ausente e gerenciador de pacotes não reconhecido. Instale manualmente o Pillow para Python 3."
+        return 1
+    fi
+
+    install_system_packages "$manager" "${pillow_pkg[@]}"
+
+    if ! python3 -c 'from PIL import Image, ImageDraw, ImageTk' >/dev/null 2>&1; then
+        show_error "Pillow continua ausente após a instalação. Instale manualmente o pacote Pillow/ImageTk da sua distribuição."
+        return 1
+    fi
+
+    log "Pillow instalado e verificado."
+}
+# END UAVEDUSIM_PILLOW_DEPENDENCY_PATCH
+
 log "Iniciando UAVEDUSIM GUI"
 log "APP_DIR=$APP_DIR"
 log "Sessão: XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-vazio}, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-vazio}, DISPLAY=${DISPLAY:-vazio}"
 
 # Verifica e instala dependencias mínimas em distros suportadas.
 ensure_system_dependencies
+ensure_python_pillow_dependency
 
 if [ ! -f "$APP_DIR/uavedusim_gui_app.py" ]; then
     show_error "Não encontrei $APP_DIR/uavedusim_gui_app.py. Copie o arquivo da interface persistente para a pasta UAVEDUSIM."
