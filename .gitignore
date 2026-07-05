@@ -1,1 +1,6 @@
 Videos/*.mp4
+__pycache__/
+*.pyc
+*.log
+.uavedusim_runtime/
+.uavedusim_quiz_progress.json
