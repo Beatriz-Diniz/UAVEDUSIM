@@ -17,3 +17,7 @@ sudo apt-get install -y \
     sudo \
     wget
 ```
+Run docker
+
+Apagar docker
+sudo docker rm -f uavedusim-sim-uid1000  
