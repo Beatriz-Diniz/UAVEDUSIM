@@ -22,8 +22,11 @@ Enter the repository folder and run the script:
 
 ```bash
 cd UAVEDUSIM
+chmod +x uavedusim_gui_docker.sh
 ./uavedusim_gui_docker.sh
 ```
+
+> If you get a "Permission denied" error, it means the file doesn't have execute permission yet — the `chmod +x` command above fixes that (only needs to be run once).
 
 > ⚠️ **The first run takes 15 to 30 minutes — this is also expected.** The very first time, the script does all the heavy lifting by itself, with no manual steps required:
 > - Installs Docker automatically, if it isn't already installed on your system
