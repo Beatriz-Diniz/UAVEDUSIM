@@ -145,13 +145,33 @@ if [ "$UAVEDUSIM_USE_DOCKER" = "1" ] && [ ! -f /.dockerenv ]; then
             echo "[uavedusim_gui] Aviso: nao foi possivel gerar cookie Xauthority (comando 'xauth' ausente ou sem cookie disponivel). Seguindo so com xhost." >&2
         fi
 
+        _container_exists=0
         if _dk container inspect "$UAVEDUSIM_DOCKER_CONTAINER" >/dev/null 2>&1; then
+            _container_exists=1
+        fi
+
+        if [ "$_container_exists" = "1" ]; then
             _running="$(_dk inspect -f '{{.State.Running}}' "$UAVEDUSIM_DOCKER_CONTAINER")"
             if [ "$_running" != "true" ]; then
                 echo "[uavedusim_gui] Reiniciando container existente '$UAVEDUSIM_DOCKER_CONTAINER'..."
                 _dk start "$UAVEDUSIM_DOCKER_CONTAINER" >/dev/null
             fi
-        else
+
+            # Verifica se o mount da pasta do repositorio ainda esta saudavel.
+            # Isso pode ficar invalido se a pasta no host foi apagada e
+            # recriada com o mesmo caminho (ex: "rm -rf" seguido de um novo
+            # "git clone" no mesmo lugar) enquanto o container ja existia -
+            # nesse caso o Docker recusa comandos com um erro tecnico
+            # ("possible container breakout detected"). Detectando isso aqui,
+            # recriamos o container automaticamente em vez de falhar.
+            if ! _dk exec "$UAVEDUSIM_DOCKER_CONTAINER" test -d "$_script_dir" >/dev/null 2>&1; then
+                echo "[uavedusim_gui] Container existente com referencia invalida a pasta do repositorio (pode ter sido apagada/recriada no host). Recriando o container..."
+                _dk rm -f "$UAVEDUSIM_DOCKER_CONTAINER" >/dev/null 2>&1 || true
+                _container_exists=0
+            fi
+        fi
+
+        if [ "$_container_exists" = "0" ]; then
             echo "[uavedusim_gui] Criando container '$UAVEDUSIM_DOCKER_CONTAINER' (pacotes instalados nele serao preservados entre execucoes)..."
 
             # Deteccao automatica de GPU: cada maquina do laboratorio pode ter

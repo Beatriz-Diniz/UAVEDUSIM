@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 *.log
 .uavedusim_runtime/
-.uavedusim_quiz_progress.json
+#.uavedusim_quiz_progress.json
 
 # QGroundControl extraido do AppImage (--appimage-extract).
 # O .AppImage em si (fonte) continua versionado normalmente.
