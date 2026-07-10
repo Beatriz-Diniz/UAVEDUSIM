@@ -36,6 +36,16 @@ chmod +x uavedusim_gui_docker.sh
 >
 > **This only happens once.** From the second run onward, the script recognizes everything is already set up and opens the interface within seconds.
 
+#### What to expect when you start a simulation
+
+Once the main UAVEDUSIM interface opens and you start a simulation, **three separate windows will appear** on your screen:
+
+1. **PX4 terminal** — a console window showing the PX4 autopilot's console (SITL) log output. This is where you can see flight status messages, and even type autopilot commands directly (e.g. `commander takeoff`).
+2. **Gazebo** — the 3D simulation window, showing the drone and the environment it's flying in.
+3. **QGroundControl** — the ground control station, showing the map, flight telemetry, and drone controls (similar to what a real drone pilot would use).
+
+This is expected behavior, not a bug — the three windows work together and all need to stay open during the simulation. Closing one of them (or clicking "Terminate processes" in the interface) will end the simulation for all three.
+
 #### Removing the Docker environment (if needed)
 
 If you ever need to start fresh — for example, if something seems broken, or to free up disk space — you can remove the container and image created by the script:
