@@ -49,6 +49,68 @@ RUN mkdir -p /usr/share/fonts/nerd-fonts \
     && rm -f /tmp/JetBrainsMono.zip \
     && fc-cache -f >/dev/null
 
+# Python + Tkinter + Pillow: usados pela GUI do UAVEDUSIM (Tkinter para a
+# janela, Pillow para os componentes arredondados/degrades e para gerar o
+# icone do app). Isso e independente do PX4/Gazebo/QGroundControl, que
+# continuam fazendo parte do tutorial de instalacao manual.
+# Python + Tkinter + Pillow: used by the UAVEDUSIM GUI (Tkinter for the
+# window, Pillow for the rounded/gradient components and to generate the
+# app icon). This is independent of PX4/Gazebo/QGroundControl, which
+# remain part of the manual installation tutorial.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-tk \
+    python3-pil \
+    python3-pil.imagetk \
+    && rm -rf /var/lib/apt/lists/*
+
+# TODO: ajuste o caminho de origem abaixo para o local real do script
+# dentro do repositorio de voces (ex: src/uavedusim_gui_app.py).
+# TODO: adjust the source path below to where the script actually lives
+# in your repo (e.g. src/uavedusim_gui_app.py).
+COPY uavedusim_gui_app.py /opt/uavedusim/uavedusim_gui_app.py
+
+# Gera o icone do app (PNG, a partir do mesmo desenho usado no badge da
+# tela inicial) uma unica vez, no build da imagem - nao e um arquivo
+# "pronto" versionado a mao, e sim produzido pelo proprio script.
+# Instalado no tema de icones padrao (hicolor) para o GNOME/Ubuntu
+# conseguir resolver "Icon=uavedusim" no .desktop sem precisar de
+# caminho absoluto.
+# Generates the app icon (PNG, from the same drawing used in the home
+# screen badge) once, at image build time - not a hand-made "ready"
+# file, but produced by the script itself. Installed into the standard
+# (hicolor) icon theme so GNOME/Ubuntu can resolve "Icon=uavedusim" in
+# the .desktop file without needing an absolute path.
+RUN mkdir -p /usr/share/icons/hicolor/256x256/apps \
+    && python3 /opt/uavedusim/uavedusim_gui_app.py --export-icon \
+        /usr/share/icons/hicolor/256x256/apps/uavedusim.png --icon-size 256 \
+    && gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
+
+# Atalho .desktop para o UAVEDUSIM aparecer com nome/icone proprios no
+# menu de aplicativos, dash, alt-tab e barra de janelas abertas do
+# GNOME/Ubuntu (StartupWMClass casa com o className="UAVEDUSIM" do Tk).
+# .desktop launcher so UAVEDUSIM shows up with its own name/icon in the
+# GNOME/Ubuntu app menu, dash, alt-tab and open-windows list
+# (StartupWMClass matches the Tk className="UAVEDUSIM").
+#
+# TODO: ajuste o Exec= abaixo para o comando real que voces usam pra
+# abrir a GUI (ex: uavedusim_gui_docker.sh, um venv especifico, etc.).
+# TODO: adjust Exec= below to the actual command you use to launch the
+# GUI (e.g. uavedusim_gui_docker.sh, a specific venv, etc.).
+RUN mkdir -p /usr/share/applications \
+    && printf '%s\n' \
+        '[Desktop Entry]' \
+        'Type=Application' \
+        'Name=UAVEDUSIM' \
+        'Comment=Simulador de ataques de jamming em VANTs' \
+        'Exec=python3 /opt/uavedusim/uavedusim_gui_app.py' \
+        'Icon=uavedusim' \
+        'StartupWMClass=UAVEDUSIM' \
+        'Terminal=false' \
+        'Categories=Education;Science;' \
+        > /usr/share/applications/uavedusim.desktop
+
+
 # Usuario nao-root com sudo, para reproduzir a experiencia real de um usuario Ubuntu
 # Non-root sudo user, to reproduce the real experience of an Ubuntu user
 #

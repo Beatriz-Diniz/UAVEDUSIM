@@ -159,6 +159,97 @@ def _uavedusim_make_rounded_gradient_photo(width, height, radius, color1, color2
     return ImageTk.PhotoImage(result)
 
 
+def _uavedusim_make_app_icon_image(size):
+    """Gera (via Pillow) o ícone do app: o mesmo badge circular com o
+    glifo do drone usado no cabeçalho da tela inicial (ver
+    `_uavedusim_draw_drone_icon` e o `icon_canvas` logo abaixo dele),
+    só que desenhado direto com PIL (em vez de Canvas do Tk) pra poder
+    virar um `tk.PhotoImage` independente de qualquer widget — usado
+    como ícone da janela (`iconphoto`) em `UAVEDUSIMApp.__init__`.
+    """
+    def hex_to_rgba(h):
+        h = h.lstrip("#")
+        return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (255,)
+
+    scale = 4
+    s = max(1, int(size)) * scale
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    bg_rgba = hex_to_rgba(SURFACE)
+    ring_rgba = hex_to_rgba(ACCENT_DIM)
+    accent_rgba = hex_to_rgba(ACCENT)
+
+    # Anel externo (mesma proporção do `ring = self.px(2)` usado no
+    # badge de 70px da tela inicial).
+    ring_w = max(scale, int(s * (2 / 70)))
+    draw.ellipse(
+        [ring_w / 2, ring_w / 2, s - ring_w / 2, s - ring_w / 2],
+        fill=bg_rgba, outline=ring_rgba, width=ring_w,
+    )
+
+    # Glifo do drone (mesmas proporções de `_uavedusim_draw_drone_icon`,
+    # que recebe `icon_size * 0.72` como `size`).
+    cx = cy = s / 2
+    drone_size = s * 0.72
+    stroke = max(scale, int(drone_size * 0.052))
+
+    cs = drone_size * 0.125
+    cr = drone_size * 0.045
+    draw.rounded_rectangle(
+        [cx - cs, cy - cs, cx + cs, cy + cs],
+        radius=cr, outline=accent_rgba, width=stroke,
+    )
+
+    offset = drone_size * 0.25
+    loop_half = drone_size * 0.078
+    loop_r = drone_size * 0.04
+
+    for sx, sy in ((-1, -1), (1, -1), (-1, 1), (1, 1)):
+        lx, ly = cx + sx * offset, cy + sy * offset
+        draw.rounded_rectangle(
+            [lx - loop_half, ly - loop_half, lx + loop_half, ly + loop_half],
+            radius=loop_r, outline=accent_rgba, width=stroke,
+        )
+        draw.line(
+            [
+                cx + sx * cs * 0.7, cy + sy * cs * 0.7,
+                lx - sx * loop_half * 0.7, ly - sy * loop_half * 0.7,
+            ],
+            fill=accent_rgba, width=stroke,
+        )
+
+    size = max(1, int(size))
+    return img.resize((size, size), Image.LANCZOS)
+
+
+def _uavedusim_set_window_icon(app):
+    """Define o ícone da janela (barra de título, alt-tab, dash/lista de
+    janelas abertas etc.) usando o badge do drone gerado acima.
+
+    Sem isso, o Tk não define nenhum ícone próprio pra janela — em
+    ambientes como o GNOME/Ubuntu (que mostram um ícone por janela na
+    barra de janelas abertas), o resultado é um espaço vazio/ícone
+    genérico em vez do logo do UAVEDUSIM. Em compositores como o
+    Hyprland isso costuma passar despercebido porque eles normalmente
+    não mostram esse tipo de lista com ícone por janela.
+
+    Fornece várias resoluções pro Tk escolher a mais nítida conforme o
+    contexto (título da janela, alt-tab, dash), sem depender de nenhum
+    arquivo externo — o ícone é gerado 100% em memória com Pillow.
+    """
+    if not HAS_PIL:
+        return
+    try:
+        sizes = (16, 24, 32, 48, 64, 128, 256)
+        app._app_icon_images = [
+            ImageTk.PhotoImage(_uavedusim_make_app_icon_image(sz)) for sz in sizes
+        ]
+        app.root.iconphoto(True, *app._app_icon_images)
+    except Exception:
+        pass
+
+
 # ============================================================================
 # Internacionalização (PT-BR / EN) ------------------------------------------
 #
@@ -611,7 +702,8 @@ class RoundedButton(tk.Frame):
                  fill=ACCENT, fill_hover=None, fill_press=None,
                  text_color="#11111b", text_color_hover=None,
                  radius=8, height=40, width=120,
-                 font=None, icon=None, icon_font=None, icon_color=None, gradient=None, **kwargs):
+                 font=None, icon=None, icon_font=None, icon_color=None, gradient=None,
+                 content_offset_x=0, **kwargs):
         outer_bg = outer_bg if outer_bg is not None else fill
         super().__init__(parent, bg=outer_bg, highlightthickness=0, bd=0,
                           height=height, width=width, **kwargs)
@@ -630,6 +722,13 @@ class RoundedButton(tk.Frame):
         self._icon_color = icon_color
         self._font = font or ("TkDefaultFont", 10, "bold")
         self._icon_font = icon_font or self._font
+        # Deslocamento horizontal (em px reais) aplicado ao bloco de
+        # conteúdo (ícone+texto), além da centralização padrão. Serve
+        # para "puxar" o conteúdo pra direita/esquerda sem quebrar a
+        # centralização baseada em bbox real (que já é robusta a
+        # qualquer resolução/fonte). Default 0 = comportamento igual
+        # a antes para todos os outros botões que já usam esta classe.
+        self._content_offset_x = content_offset_x
         self._state = "normal"
         self._bg_item = None
         self._photo = None
@@ -747,11 +846,11 @@ class RoundedButton(tk.Frame):
             text_id = c.create_text(0, cy, text=self._text, fill=text_color, font=self._font, anchor="w", tags="fgtext")
             icon_w = c.bbox(icon_id)[2] - c.bbox(icon_id)[0]
             text_w = c.bbox(text_id)[2] - c.bbox(text_id)[0]
-            start_x = cx - (icon_w + gap + text_w) / 2
+            start_x = cx - (icon_w + gap + text_w) / 2 + self._content_offset_x
             c.coords(icon_id, start_x, cy)
             c.coords(text_id, start_x + icon_w + gap, cy)
         else:
-            c.create_text(cx, cy, text=self._text, fill=text_color, font=self._font, anchor="center", tags="fgtext")
+            c.create_text(cx + self._content_offset_x, cy, text=self._text, fill=text_color, font=self._font, anchor="center", tags="fgtext")
 
 
 def _uavedusim_footer_close_button(app, parent, command, width=None):
@@ -1534,6 +1633,7 @@ class UAVEDUSIMApp:
     def __init__(self):
         self.root = tk.Tk(className="UAVEDUSIM")
         self.root.title("UAVEDUSIM")
+        _uavedusim_set_window_icon(self)
         self.root.configure(bg=BG)
         self.root.resizable(True, True)
         self.root.overrideredirect(False)
@@ -3272,7 +3372,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
         )
         self.status_text.grid(row=0, column=0, sticky="nsew")
 
-        status_scroll = ModernScrollbar(
+        self.status_scroll = ModernScrollbar(
             status_text_wrap,
             command=self.status_text.yview,
             width=self.SCROLLBAR_W,
@@ -3280,8 +3380,28 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             thumb=BORDER,
             thumb_active=MUTED,
         )
-        status_scroll.grid(row=0, column=1, sticky="ns")
-        self.status_text.configure(yscrollcommand=status_scroll.set)
+        self.status_scroll.grid(row=0, column=1, sticky="ns")
+        self.status_text.configure(yscrollcommand=self._on_status_text_yscroll)
+
+        # Badge flutuante ("+N novas mensagens ▼"), mostrado por cima do
+        # log quando várias mensagens chegam de uma vez só (ver
+        # _reconcile_status_scroll) e o usuário ainda não rolou até o
+        # fim. Fica escondido (sem .place()) até ter algo a avisar.
+        self.status_unread_badge = tk.Label(
+            status_text_wrap,
+            text="",
+            bg=ACCENT,
+            fg="#11111b",
+            font=(self.FONT_FAMILY, self.FS_TINY, "bold"),
+            cursor="hand2",
+            padx=self.px(8),
+            pady=self.px(3),
+        )
+        self.status_unread_badge.bind("<Button-1>", self._jump_status_to_end)
+
+        self._status_pending_unread = 0
+        self._status_batch_start_mark = None
+        self._status_scroll_reconcile_scheduled = False
 
         # Tags de estilo para diferenciar tipo de evento no log em tempo real.
         self.status_text.tag_configure("time", foreground=BORDER)
@@ -4711,6 +4831,13 @@ sys.exit(0)
             return
 
         try:
+            # Se não há nenhuma mensagem pendente de leitura ainda, esta é
+            # a primeira de uma nova leva — guarda onde ela começa, pra
+            # eventualmente rolar até aqui (em vez de pular direto pro
+            # fim) se mais mensagens chegarem antes do usuário ver esta.
+            if getattr(self, "_status_pending_unread", 0) == 0:
+                self._status_batch_start_mark = self.status_text.index("end-1c")
+
             self.status_text.configure(state="normal")
 
             if self.status_text.index("end-1c") != "1.0":
@@ -4726,13 +4853,99 @@ sys.exit(0)
                     self.status_text.insert("end", f"    {_uavedusim_translate(line)}\n", "detail")
 
             self.status_text.configure(state="disabled")
-            self.status_text.see("end")
+
+            self._status_pending_unread = getattr(self, "_status_pending_unread", 0) + 1
+
+            # Várias chamadas de log costumam acontecer em sequência,
+            # sincronamente, dentro da mesma leva de eventos (ex.: aplicar
+            # um ataque loga 2-3 mensagens seguidas). Em vez de rolar a
+            # cada uma (o que faria o usuário só ver a última, sem saber
+            # que pulou as anteriores), adia a decisão de rolagem pra
+            # depois que toda a leva já foi inserida.
+            if not getattr(self, "_status_scroll_reconcile_scheduled", False):
+                self._status_scroll_reconcile_scheduled = True
+                self.root.after_idle(self._reconcile_status_scroll)
         except Exception:
             # A tela pode ter sido trocada/destruída entre o agendamento
             # deste callback e sua execução (ex.: reinício de simulação
             # rodando em thread). Nesse caso, só ignoramos — o evento já
             # fica registrado em status_log_entries e aparece quando a
             # tela de ataques for reaberta.
+            pass
+
+    # Decide, depois que uma leva de mensagens já foi inserida, se rola
+    # até o fim (1 mensagem nova, caso comum) ou até o início da leva +
+    # mostra o aviso "+N novas mensagens" (2+ mensagens de uma vez).
+    def _reconcile_status_scroll(self):
+        self._status_scroll_reconcile_scheduled = False
+
+        try:
+            if not self.status_text.winfo_exists():
+                return
+        except Exception:
+            return
+
+        if getattr(self, "_status_pending_unread", 0) <= 1:
+            self.status_text.see("end")
+            self._dismiss_status_unread_badge()
+            return
+
+        if self._status_batch_start_mark:
+            try:
+                self.status_text.yview(self._status_batch_start_mark)
+            except Exception:
+                self.status_text.see("end")
+
+        self._update_status_unread_badge()
+
+    # Atualiza (ou esconde) o badge "+N novas mensagens" conforme quantas
+    # mensagens da leva atual ainda ficaram fora da primeira exibida.
+    def _update_status_unread_badge(self):
+        if not hasattr(self, "status_unread_badge"):
+            return
+
+        extra = max(0, getattr(self, "_status_pending_unread", 0) - 1)
+
+        if extra <= 0:
+            self._dismiss_status_unread_badge()
+            return
+
+        label = _uavedusim_L(
+            f"+{extra} nova mensagem" if extra == 1 else f"+{extra} novas mensagens",
+            f"+{extra} new message" if extra == 1 else f"+{extra} new messages",
+        )
+        self.status_unread_badge.configure(text=f"{label}  ▼")
+        self.status_unread_badge.place(relx=0.5, rely=1.0, y=-self.px(8), anchor="s")
+
+    # Some com o badge de mensagens não vistas e zera a contagem da leva.
+    def _dismiss_status_unread_badge(self):
+        self._status_pending_unread = 0
+        self._status_batch_start_mark = None
+
+        if hasattr(self, "status_unread_badge"):
+            self.status_unread_badge.place_forget()
+
+    # Chamado ao clicar no badge (ou programaticamente): pula pro fim do
+    # log e esconde o aviso de mensagens não vistas.
+    def _jump_status_to_end(self, _event=None):
+        try:
+            self.status_text.see("end")
+        except Exception:
+            pass
+        self._dismiss_status_unread_badge()
+
+    # yscrollcommand real do log: repassa pra scrollbar normalmente e,
+    # se o usuário rolou manualmente até o fim, esconde o badge (ele já
+    # viu tudo, não precisa mais do aviso).
+    def _on_status_text_yscroll(self, *args):
+        if hasattr(self, "status_scroll"):
+            self.status_scroll.set(*args)
+
+        try:
+            _first, last = self.status_text.yview()
+            if last >= 0.999:
+                self._dismiss_status_unread_badge()
+        except Exception:
             pass
 
     # Redesenha o log inteiro (usado ao reabrir a tela de ataques).
@@ -4756,6 +4969,11 @@ sys.exit(0)
         for entry in getattr(self, "status_log_entries", []):
             self._append_status_entry(entry)
 
+        # Isto é uma recarga do histórico já existente (reabrindo a tela),
+        # não mensagens novas chegando agora — então sempre mostra o fim
+        # e não o aviso de "mensagens não vistas".
+        self._jump_status_to_end()
+
     # Limpa o histórico do log de status.
     def clear_status_log(self):
         self.status_log_entries = []
@@ -4765,6 +4983,7 @@ sys.exit(0)
             self.status_text.delete("1.0", "end")
             self.status_text.configure(state="disabled")
 
+        self._dismiss_status_unread_badge()
         self._log_status_event("Log limpo", "O histórico de eventos foi apagado.", level="detail")
 
     # Compatibilidade: mensagens antigas de status agora viram uma entrada do log em tempo real.
@@ -7540,28 +7759,55 @@ def _uavedusim_home_show_main_menu(self):
     about_link_fill_hover = _uavedusim_blend(BORDER, ACCENT, 0.28)
 
     about_link_icon = "\ue66a"
-    about_link_gap = "    "
     about_link_text = _uavedusim_translate("O que é jamming? Aprenda e desafie-se no quiz")
-    about_link_arrow = "  󰁕"
+    about_link_arrow = " 󰁕"
     about_link_font = (self.FONT_FAMILY, self.fs(11.5), "bold")
-    # Ícone e texto vão no mesmo bloco de texto (em vez do parâmetro
-    # icon=) para controlar a distância entre eles com espaçamento real.
-    about_link_full_text = about_link_icon + about_link_gap + about_link_text + about_link_arrow
+    about_link_height = self.px(34)
+    # Desloca o bloco (ícone+texto) um pouco pra direita dentro do chip,
+    # somando a mesma folga na largura total pra manter a margem direita
+    # igual à de antes (a seta continua na mesma distância da borda).
+    about_link_right_nudge = self.px(10)
+    about_link_content_offset = about_link_right_nudge / 2
+    # Folga extra de largura só pra dar respiro pra seta no fim do chip
+    # (sem isso ela ficava espremida contra a borda direita).
+    about_link_extra_width = self.px(14)
+    # O ícone vai pelo parâmetro nativo `icon=` do RoundedButton (em vez
+    # de ser colado no texto com espaços fixos). O RoundedButton mede a
+    # largura REAL do glifo do ícone renderizado no Canvas (via bbox) e
+    # calcula o espaçamento entre ícone e texto a partir dessa medida,
+    # então o resultado é sempre correto — não importa a resolução/DPI
+    # da tela nem se a fonte do ícone acaba caindo num fallback
+    # diferente em outra máquina (ex: acesso remoto). Um número fixo de
+    # caracteres de espaço, como era feito antes, não acompanha essa
+    # variação e foi o que deixava o ícone longe do texto em telas
+    # diferentes da atual.
+    about_link_text_full = about_link_text + about_link_arrow
 
     # O RoundedButton tem largura fixa (pack_propagate desligado), então
     # medimos o texto real com o mesmo font para garantir que o chip
-    # nasce largo o suficiente pra não cortar a frase.
+    # nasce largo o suficiente pra não cortar a frase (reservando também
+    # o espaço do ícone + o mesmo gap que o RoundedButton vai calcular).
     import tkinter.font as _uavedusim_home_tkfont
     _about_measure_font = _uavedusim_home_tkfont.Font(font=about_link_font)
     _about_pad_x = self.px(22)
-    about_link_width = _about_measure_font.measure(about_link_full_text) + _about_pad_x * 2
+    _about_icon_w = _about_measure_font.measure(about_link_icon)
+    _about_icon_gap = max(4, int(about_link_height * 0.16))
+    about_link_width = (
+        _about_measure_font.measure(about_link_text_full)
+        + _about_icon_w + _about_icon_gap
+        + _about_pad_x * 2
+        + about_link_right_nudge
+        + about_link_extra_width
+    )
     # Não deixa o chip espremer o cartão em janelas estreitas.
     about_link_max_width = max(self.px(260), self.win_w - self.px(210))
     about_link_width = min(about_link_width, about_link_max_width)
 
     about_link = RoundedButton(
         explainer_card.body,
-        text=about_link_full_text,
+        text=about_link_text_full,
+        icon=about_link_icon,
+        icon_color=ACCENT,
         command=_uavedusim_home_about_jamming_click,
         outer_bg=SURFACE,
         fill=about_link_fill,
@@ -7570,9 +7816,10 @@ def _uavedusim_home_show_main_menu(self):
         text_color=ACCENT,
         text_color_hover=ACCENT,
         radius=self.px(16),
-        height=self.px(34),
+        height=about_link_height,
         width=about_link_width,
         font=about_link_font,
+        content_offset_x=about_link_content_offset,
     )
     about_link.pack(anchor="w", padx=self.px(14), pady=(0, self.px(14)))
 
@@ -9811,7 +10058,25 @@ def _uavedusim_show_jamming_info_screen(self):
         gap = max(self.px(6), int(8 * s))
         inner = max(self.px(10), int(12 * s))
 
-        title_h = max(self.px(52), int(50 * s))
+        # Mede a altura real do subtítulo (mesmo texto/fonte usados mais
+        # abaixo) ANTES de fixar title_h. Sem isso, o card_h (fundo do
+        # cartão + scrollregion) nascia calculado com uma estimativa que
+        # não cobria o cabeçalho de fato renderizado, fazendo o scroll
+        # não descer o suficiente pra revelar o botão final (ele ficava
+        # cortado, fora do fundo e fora da área rolável).
+        jamming_subtitle_text = "Interferência intencional que afeta sinais de navegação e comunicação."
+        jamming_subtitle_font = _uj_font(self, 12 * s)
+        jamming_subtitle_offset_y = 54 * s
+        # Largura bem folgada pra medir como uma única linha (o texto é
+        # desenhado sem wraplength — não quebra de fato na tela).
+        jamming_subtitle_h = _uj_measure_text_height(
+            self, jamming_subtitle_text, jamming_subtitle_font, self.px(2000),
+        )
+
+        title_h = max(
+            self.px(52), int(50 * s),
+            jamming_subtitle_offset_y + jamming_subtitle_h,
+        )
         attacks_title_h = max(self.px(26), int(26 * s))
         cta_h = max(self.px(42), int(42 * s))
         bottom_pad = max(self.px(10), int(12 * s))
@@ -9953,32 +10218,28 @@ def _uavedusim_show_jamming_info_screen(self):
 
         jamming_subtitle_item = canvas.create_text(
             title_x + 64 * s,
-            title_y + 54 * s,
-            text="Interferência intencional que afeta sinais de navegação e comunicação.",
+            title_y + jamming_subtitle_offset_y,
+            text=jamming_subtitle_text,
             fill=ACCENT,
-            font=_uj_font(self, 12 * s),
+            font=jamming_subtitle_font,
             anchor="nw",
         )
 
-        # Mantém o espaçamento atual em janela normal.
-        # Em tela cheia/maximizada, garante respiro entre o subtítulo e os cards.
+        # Mede a altura real do subtítulo em vez de confiar numa estimativa
+        # fixa de altura do cabeçalho — a fonte é escalada (s) conforme o
+        # tamanho da janela/tela, então uma altura fixa pode ficar menor
+        # que o texto realmente renderizado, fazendo os cards seguintes
+        # ficarem por cima do subtítulo. Mesma lógica já usada na tela de
+        # Ataques (sem depender de a janela estar maximizada ou não).
         y_base = title_y + title_h + gap
 
-        is_fullscreen_layout = (
-            getattr(self, "fullscreen", False)
-            or self.root.winfo_height() >= self.root.winfo_screenheight() - self.px(80)
+        subtitle_bbox = canvas.bbox(jamming_subtitle_item)
+        subtitle_bottom = subtitle_bbox[3] if subtitle_bbox else y_base
+
+        y = max(
+            y_base,
+            subtitle_bottom + max(self.px(16), int(18 * s)),
         )
-
-        if is_fullscreen_layout:
-            subtitle_bbox = canvas.bbox(jamming_subtitle_item)
-            subtitle_bottom = subtitle_bbox[3] if subtitle_bbox else y_base
-
-            y = max(
-                y_base,
-                subtitle_bottom + max(self.px(16), int(18 * s)),
-            )
-        else:
-            y = y_base
 
         if layout_wide:
             left_x = x0
@@ -11328,19 +11589,18 @@ def _uavedusim_show_mitigation_screen(self):
             width=content_w - (title_x - content_x),
         )
 
+        # Mede a altura real do subtítulo em vez de confiar numa estimativa
+        # fixa de altura do cabeçalho — a fonte é escalada (s) conforme o
+        # tamanho da janela/tela, então uma altura fixa pode ficar menor
+        # que o texto realmente renderizado, fazendo o conteúdo seguinte
+        # ficar por cima do subtítulo. Mesma lógica usada nas telas de
+        # Ataques e "O que é jamming?" (sem depender de a janela estar
+        # maximizada ou não).
         yy_base = yy + max(self.px(52), int(50 * s)) + max(self.px(6), int(8 * s))
 
-        is_fullscreen_layout = (
-            getattr(self, "fullscreen", False)
-            or self.root.winfo_height() >= self.root.winfo_screenheight() - self.px(80)
-        )
-
-        if is_fullscreen_layout:
-            subtitle_bbox = canvas.bbox(subtitle_item)
-            subtitle_bottom = subtitle_bbox[3] if subtitle_bbox else yy_base
-            yy = max(yy_base, subtitle_bottom + max(self.px(16), int(18 * s)))
-        else:
-            yy = yy_base
+        subtitle_bbox = canvas.bbox(subtitle_item)
+        subtitle_bottom = subtitle_bbox[3] if subtitle_bbox else yy_base
+        yy = max(yy_base, subtitle_bottom + max(self.px(16), int(18 * s)))
 
         intro_body = (
             "O objetivo não é impedir o ataque, mas evitar que medições ruins, ausentes ou "
@@ -11573,13 +11833,28 @@ def _uavedusim_build_shuffled_quiz():
     return shuffled
 
 
-def _uavedusim_quiz_option_metrics(app, w, s, text):
+def _uavedusim_quiz_option_metrics(app, canvas, w, s, text):
     pad_x = max(app.px(13), int(14 * s))
     pad_y = max(app.px(10), int(11 * s))
     icon_w = max(app.px(22), int(24 * s))
     text_w = max(app.px(120), w - pad_x * 2 - icon_w)
     font = _uj_font(app, 10.8 * s)
-    text_h = _uj_measure_text_height(app, text, font, text_w)
+
+    # Mede a altura REAL do texto já quebrado pelo Canvas nativo (em vez
+    # de confiar só na aproximação de _uj_measure_text_height, que usa
+    # um algoritmo de quebra de linha próprio — em casos de borda ele
+    # pode discordar de onde o Tk realmente quebra a linha, fazendo o
+    # card nascer baixo demais quando o texto de fato precisa de mais
+    # uma linha do que a aproximação previu (texto vazando pra fora).
+    # Cria um item de sonda fora da área visível, mede e apaga em
+    # seguida — nunca chega a aparecer na tela.
+    probe = canvas.create_text(
+        -10000, -10000, text=str(text).strip(), font=font,
+        width=max(1, int(text_w)), anchor="nw",
+    )
+    bbox = canvas.bbox(probe)
+    canvas.delete(probe)
+    text_h = (bbox[3] - bbox[1]) if bbox else _uj_measure_text_height(app, text, font, text_w)
 
     return {
         "pad_x": pad_x, "pad_y": pad_y, "icon_w": icon_w, "text_w": text_w,
@@ -11589,7 +11864,7 @@ def _uavedusim_quiz_option_metrics(app, w, s, text):
 
 
 def _uavedusim_draw_quiz_option(canvas, app, x, y, w, s, text, state, tag=None):
-    m = _uavedusim_quiz_option_metrics(app, w, s, text)
+    m = _uavedusim_quiz_option_metrics(app, canvas, w, s, text)
     h = m["height"]
 
     if state == "correct":
@@ -12905,6 +13180,33 @@ _UAVEDUSIM_I18N_EN.update({
 
 
 if __name__ == "__main__":
+    if "--export-icon" in sys.argv:
+        # Gera o ícone do app (PNG) sem abrir a GUI e sem precisar de
+        # servidor X — usa só o Pillow (ImageTk/Tk não entram aqui).
+        # Pensado pra ser chamado 1x no build da imagem Docker (ou
+        # manualmente), assim o ícone nunca precisa ser um arquivo
+        # "pronto" versionado à mão: ele é gerado pelo próprio código
+        # sempre que for preciso, a partir do mesmo desenho usado no
+        # badge da tela inicial.
+        #
+        # Uso: python3 uavedusim_gui_app.py --export-icon /caminho/uavedusim.png [--icon-size 256]
+        if not HAS_PIL:
+            print("Pillow não está instalado; não é possível gerar o ícone.", file=sys.stderr)
+            sys.exit(1)
+
+        out_path = sys.argv[sys.argv.index("--export-icon") + 1]
+        icon_size = 256
+        if "--icon-size" in sys.argv:
+            icon_size = int(sys.argv[sys.argv.index("--icon-size") + 1])
+
+        out_dir = os.path.dirname(out_path)
+        if out_dir:
+            os.makedirs(out_dir, exist_ok=True)
+
+        _uavedusim_make_app_icon_image(icon_size).save(out_path)
+        print(f"Ícone gerado em: {out_path} ({icon_size}x{icon_size})")
+        sys.exit(0)
+
     try:
         UAVEDUSIMApp().run()
     except KeyboardInterrupt:

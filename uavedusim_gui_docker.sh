@@ -187,6 +187,11 @@ if [ "$UAVEDUSIM_USE_DOCKER" = "1" ] && [ ! -f /.dockerenv ]; then
                 if _dk info 2>/dev/null | grep -qi 'nvidia'; then
                     echo "[uavedusim_gui] GPU NVIDIA detectada, NVIDIA Container Toolkit ja configurado. Usando --gpus all."
                     _gpu_docker_args=(--gpus all)
+                    # --gpus all sozinho so libera capacidade de COMPUTACAO
+                    # (CUDA/nvidia-smi) por padrao - sem isso, o Gazebo nao
+                    # consegue usar a GPU para OpenGL/EGL (renderizacao 3D),
+                    # mesmo com a GPU visivel e funcional para outras coisas.
+                    _gpu_env_args+=(-e NVIDIA_DRIVER_CAPABILITIES=all)
                 else
                     echo "[uavedusim_gui] GPU NVIDIA detectada, mas o NVIDIA Container Toolkit nao esta configurado. Tentando instalar automaticamente..."
                     _nvctk_ok=0
@@ -222,6 +227,7 @@ if [ "$UAVEDUSIM_USE_DOCKER" = "1" ] && [ ! -f /.dockerenv ]; then
                         if _dk info 2>/dev/null | grep -qi 'nvidia'; then
                             echo "[uavedusim_gui] NVIDIA Container Toolkit instalado e configurado com sucesso. Usando --gpus all."
                             _gpu_docker_args=(--gpus all)
+                            _gpu_env_args+=(-e NVIDIA_DRIVER_CAPABILITIES=all)
                         else
                             echo "[uavedusim_gui] Aviso: instalei o toolkit, mas o Docker ainda nao reconhece o runtime NVIDIA. Seguindo sem aceleracao dedicada." >&2
                         fi
@@ -900,9 +906,41 @@ ensure_nerd_fonts_installed() {
 }
 # END UAVEDUSIM_NERD_FONTS_PATCH
 
+
+# BEGIN UAVEDUSIM_GPU_STATUS_PATCH
+# Informa, em TODA execucao, se a aceleracao de GPU esta realmente acessivel
+# de dentro do container. Isso importa porque os flags de GPU (--gpus all ou
+# --device /dev/dri) so sao aplicados na CRIACAO do container - se o
+# container ja existia de uma sessao anterior a essa funcionalidade (ou de
+# uma maquina sem os drivers corretos na epoca), ele nunca vai ter acesso a
+# GPU ate ser recriado, mesmo que o host tenha uma placa dedicada.
+report_gpu_status() {
+    local has_nvidia=0
+    local has_dri=0
+
+    if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1; then
+        has_nvidia=1
+    fi
+
+    if [ -e /dev/dri ]; then
+        has_dri=1
+    fi
+
+    if [ "$has_nvidia" = "1" ]; then
+        log "GPU: NVIDIA acessível dentro do container (--gpus all funcionando)."
+    elif [ "$has_dri" = "1" ]; then
+        log "GPU: dispositivo /dev/dri acessível dentro do container (Intel/AMD/Mesa)."
+    else
+        log "GPU: nenhuma aceleração de GPU disponível dentro deste container. Gazebo usará renderização por software (mais lento)."
+        log "GPU: se esta máquina tem uma GPU dedicada, este container provavelmente foi criado antes desse suporte existir (ou dos drivers estarem prontos). Rode 'sudo docker rm -f ${UAVEDUSIM_DOCKER_CONTAINER}' e execute o script de novo para recriar com aceleração de GPU."
+    fi
+}
+# END UAVEDUSIM_GPU_STATUS_PATCH
+
 log "Iniciando UAVEDUSIM GUI"
 log "APP_DIR=$APP_DIR"
 log "Sessão: XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-vazio}, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-vazio}, DISPLAY=${DISPLAY:-vazio}"
+report_gpu_status
 
 # Verifica e instala dependencias mínimas em distros suportadas.
 ensure_system_dependencies
