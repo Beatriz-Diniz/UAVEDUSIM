@@ -6519,9 +6519,9 @@ def _uavedusim_show_model_selection_screen(self):
 
             chevron = "⌃" if self._model_list_expanded else "⌄"
             label = (
-                _uavedusim_L(f"Esconder os outros {len(other_ids)} modelos", f"Hide the other {len(other_ids)} models")
+                _uavedusim_L(f"Ocultar os outros {len(other_ids)} modelos", f"Hide the other {len(other_ids)} models")
                 if self._model_list_expanded
-                else _uavedusim_L(f"Ver todos os {len(other_ids)} modelos", f"See all {len(other_ids)} models")
+                else _uavedusim_L(f"Ver mais {len(other_ids)} modelos", f"See {len(other_ids)} more models")
             )
 
             canvas.create_text(
@@ -7166,9 +7166,9 @@ def _uavedusim_show_world_selection_screen(self):
 
             chevron = "⌃" if self._world_list_expanded else "⌄"
             label = (
-                _uavedusim_L(f"Esconder os outros {len(other_ids)} mundos", f"Hide the other {len(other_ids)} worlds")
+                _uavedusim_L(f"Ocultar os outros {len(other_ids)} mundos", f"Hide the other {len(other_ids)} worlds")
                 if self._world_list_expanded
-                else _uavedusim_L(f"Ver todos os {len(other_ids)} mundos", f"See all {len(other_ids)} worlds")
+                else _uavedusim_L(f"Ver mais {len(other_ids)} mundos", f"See {len(other_ids)} more worlds")
             )
 
             canvas.create_text(
@@ -7871,6 +7871,18 @@ def _uavedusim_show_language_popup(self):
     tk.Label(
         content,
         text="Isso define o idioma de toda a interface do simulador.",
+        bg=SURFACE2,
+        fg=MUTED,
+        font=(self.FONT_FAMILY, self.fs(10.2)),
+        justify="center",
+        wraplength=card_w - pad * 2,
+    ).pack(pady=(0, self.px(8)))
+
+    tk.Frame(content, bg=BORDER, height=1).pack(fill="x", pady=(0, self.px(8)))
+
+    tk.Label(
+        content,
+        text="This sets the language for the whole simulator interface.",
         bg=SURFACE2,
         fg=MUTED,
         font=(self.FONT_FAMILY, self.fs(10.2)),

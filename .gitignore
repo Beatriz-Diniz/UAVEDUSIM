@@ -4,3 +4,26 @@ __pycache__/
 *.log
 .uavedusim_runtime/
 .uavedusim_quiz_progress.json
+
+# QGroundControl extraido do AppImage (--appimage-extract).
+# O .AppImage em si (fonte) continua versionado normalmente.
+/squashfs-root/
+
+# Build compilado do spoofer/attack_mitigator (UAVJamSim).
+# Especifico das bibliotecas do container/SO onde foi compilado; nunca deve
+# ser versionado - foi exatamente um binario antigo aqui que causou o bug de
+# "libtinyxml2.so.11: cannot open shared object file".
+UAVJamSim/spoofer/build/
+
+# Builds do PX4-Autopilot (SITL, NuttX, etc.) - grandes e 100% regeneraveis.
+PX4-Autopilot/build/
+PX4-Autopilot/**/build/
+
+# Logs de voo (.ulg) gerados a cada execucao do PX4 SITL.
+log/
+**/log/*.ulg
+
+# Logs de download do wget (criados quando a saida nao vai direto pra um
+# terminal - efeito colateral do nosso "tee" para o log). Ja limpos
+# automaticamente pelo script, mas por seguranca:
+wget-log*
