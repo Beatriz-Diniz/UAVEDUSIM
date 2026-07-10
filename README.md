@@ -14,7 +14,7 @@
 git clone --recursive https://github.com/Beatriz-Diniz/UAVEDUSIM.git
 ```
 
-> ⚠️ **This clone takes a while — that's expected.** The repository uses multiple Git submodules, especially `PX4-Autopilot`, which alone is hundreds of MB. Depending on your connection, it can take several minutes. Don't interrupt the command even if it looks stalled for a while — Git's progress output sometimes stops updating visibly while submodules are downloading.
+> ⚠️ **This clone takes a while — that's expected.** The repository uses multiple Git submodules, especially `PX4-Autopilot`, which alone can add up to a few GB. Depending on your connection, it can take several minutes. Don't interrupt the command even if it looks stalled for a while — Git's progress output sometimes stops updating visibly while submodules are downloading.
 
 #### Run
 
