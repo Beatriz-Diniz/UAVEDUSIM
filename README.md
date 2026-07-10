@@ -1,5 +1,7 @@
 # UAVEDUSIM
 
+🇧🇷 [Leia em Português](#portugues)
+
 #### Prerequisites
 
 - Linux (any current distribution — Ubuntu, Fedora, Arch, openSUSE, etc.)
@@ -63,3 +65,74 @@ This **does not delete anything in the cloned folder** — only the Docker envir
 #### Troubleshooting
 
 If something goes wrong during installation or while using the simulator, the full log of each run is saved to `uavedusim_gui.log`, at the root of the repository — that's the first place to check for error messages before asking for help.
+
+---
+
+<a name="portugues"></a>
+# UAVEDUSIM (Português)
+
+🇺🇸 [Read in English](#uavedusim)
+
+#### Pré-requisitos
+
+- Linux (qualquer distribuição atual — Ubuntu, Fedora, Arch, openSUSE etc.)
+- Ambiente gráfico com suporte a X11 ou Wayland/XWayland
+- Conexão com a internet (necessária na primeira execução, para baixar as dependências)
+- **Não é necessário ter o Docker instalado previamente** — o script instala automaticamente, se preciso
+- **Não é necessário nenhum conhecimento prévio de Linux, Docker, Gazebo ou PX4** — todo o processo é automático
+
+#### Clone
+
+```bash
+git clone --recursive https://github.com/Beatriz-Diniz/UAVEDUSIM.git
+```
+
+> ⚠️ **Esse clone demora bastante — isso é esperado.** O repositório usa múltiplos submódulos Git, em especial o `PX4-Autopilot`, que sozinho pode chegar a alguns GB. Dependendo da sua conexão, pode levar vários minutos. Não interrompa o comando mesmo que pareça parado por um tempo — a barra de progresso do Git às vezes fica sem atualizar visivelmente durante o download dos submódulos.
+
+#### Executar
+
+Entre na pasta do repositório e rode o script:
+
+```bash
+cd UAVEDUSIM
+chmod +x uavedusim_gui_docker.sh
+./uavedusim_gui_docker.sh
+```
+
+> Se aparecer um erro de "Permission denied", é porque o arquivo ainda não tem permissão de execução — o comando `chmod +x` acima resolve isso (só precisa rodar essa linha uma vez).
+
+> ⚠️ **A primeira execução demora entre 15 e 30 minutos — isso também é esperado.** Nessa primeira vez, o script faz *todo* o trabalho pesado sozinho, sem precisar de nenhuma ação manual:
+> - Instala o Docker automaticamente, caso ainda não esteja instalado no seu sistema
+> - Cria um container Ubuntu isolado, com aceleração de GPU (Intel, AMD ou NVIDIA — detectada automaticamente)
+> - Instala dentro dele o Gazebo, o PX4 e todas as demais dependências do simulador
+> - Compila as ferramentas de ataque/mitigação (`UAVJamSim`)
+>
+> **Isso acontece só uma vez.** Da segunda execução em diante, o script reconhece que tudo já está pronto e abre a interface em poucos segundos.
+
+#### O que esperar ao iniciar uma simulação
+
+Assim que a interface principal do UAVEDUSIM abrir e você iniciar uma simulação, **três janelas separadas vão aparecer** na sua tela:
+
+1. **Terminal do PX4** — uma janela de console mostrando a saída do autopiloto PX4 (SITL). É onde você acompanha mensagens de status de voo, e pode até digitar comandos diretamente no autopiloto (ex: `commander takeoff`).
+2. **Gazebo** — a janela de simulação 3D, mostrando o drone e o ambiente onde ele está voando.
+3. **QGroundControl** — a estação de controle em solo, mostrando o mapa, telemetria de voo e controles do drone (parecido com o que um piloto de drone real usaria).
+
+Isso é o comportamento esperado, não é um bug — as três janelas trabalham juntas e precisam continuar abertas durante a simulação. Fechar qualquer uma delas (ou clicar em "Encerrar processos" na interface) encerra a simulação nas três.
+
+#### Removendo o ambiente Docker (se necessário)
+
+Se em algum momento você precisar recomeçar do zero — por exemplo, se algo parecer quebrado, ou para liberar espaço em disco — pode remover o container e a imagem criados pelo script:
+
+```bash
+# Remove o container do simulador (mantém a imagem)
+sudo docker rm -f uavedusim-sim-uid$(id -u)
+
+# Remove também a imagem (a próxima execução reconstrói tudo do zero)
+sudo docker rmi uavedusim:uid$(id -u)
+```
+
+Isso **não apaga nada da pasta clonada** — apenas o ambiente Docker. Na próxima vez que você rodar `./uavedusim_gui_docker.sh`, ele detecta que o container/imagem não existem mais e refaz a instalação completa automaticamente (mais uma vez, 15-30 minutos).
+
+#### Solução de problemas
+
+Se algo der errado durante a instalação ou o uso do simulador, o log completo de cada execução fica salvo em `uavedusim_gui.log`, na raiz do repositório — esse é o primeiro lugar para procurar mensagens de erro antes de pedir ajuda.
