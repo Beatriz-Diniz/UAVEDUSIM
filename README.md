@@ -20,9 +20,13 @@ git clone --recursive https://github.com/Beatriz-Diniz/UAVEDUSIM.git
 
 > **If the clone fails with an SSH "Permission denied (publickey)" error** (usually while fetching the `PX4-Autopilot` submodule): this happens because that submodule is registered with an SSH URL, and you don't have an SSH key set up with GitHub. This is optional to fix — only needed if you hit this error:
 > ```bash
-> cd UAVEDUSIM
-> git config url."https://github.com/".insteadOf "git@github.com:"
-> git submodule update --init --recursive
+>cd UAVEDUSIM
+>
+>git config -f .gitmodules submodule.PX4-Autopilot.url \
+>https://github.com/Beatriz-Diniz/PX4-Autopilot.git
+>
+>git submodule sync --recursive
+>git submodule update --init --recursive
 > ```
 > This makes Git use HTTPS instead of SSH, scoped to just this repository (it won't affect your global Git settings or any other project).
 
@@ -99,9 +103,13 @@ git clone --recursive https://github.com/Beatriz-Diniz/UAVEDUSIM.git
 
 > **Se o clone falhar com um erro SSH "Permission denied (publickey)"** (geralmente ao baixar o submódulo `PX4-Autopilot`): isso acontece porque esse submódulo está registrado com uma URL SSH, e você não tem uma chave SSH configurada no GitHub. Corrigir isso é opcional — só é necessário se você bater nesse erro:
 > ```bash
-> cd UAVEDUSIM
-> git config url."https://github.com/".insteadOf "git@github.com:"
-> git submodule update --init --recursive
+>cd UAVEDUSIM
+>
+>git config -f .gitmodules submodule.PX4-Autopilot.url \
+>https://github.com/Beatriz-Diniz/PX4-Autopilot.git
+>
+>git submodule sync --recursive
+>git submodule update --init --recursive
 > ```
 > Isso faz o Git usar HTTPS em vez de SSH, só dentro desse repositório (não mexe na sua configuração global do Git nem em nenhum outro projeto).
 
