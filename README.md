@@ -18,17 +18,29 @@ git clone --recursive https://github.com/Beatriz-Diniz/UAVEDUSIM.git
 
 > ⚠️ **This clone takes a while — that's expected.** The repository uses multiple Git submodules, especially `PX4-Autopilot`, which alone can add up to a few GB. Depending on your connection, it can take several minutes. Don't interrupt the command even if it looks stalled for a while — Git's progress output sometimes stops updating visibly while submodules are downloading.
 
-> **If the clone fails with an SSH "Permission denied (publickey)" error** (usually while fetching the `PX4-Autopilot` submodule): this happens because that submodule is registered with an SSH URL, and you don't have an SSH key set up with GitHub. This is optional to fix — only needed if you hit this error:
+> **If the clone fails with an SSH "Permission denied (publickey)" error** (usually while fetching the `PX4-Autopilot` submodule or one of its nested submodules): this happens because those submodules are registered with SSH URLs, and you don't have an SSH key set up with GitHub. This is optional to fix — only needed if you hit this error:
+>
 > ```bash
->cd UAVEDUSIM
+> cd UAVEDUSIM
 >
->git config -f .gitmodules submodule.PX4-Autopilot.url \
->https://github.com/Beatriz-Diniz/PX4-Autopilot.git
+> # Use HTTPS for the PX4-Autopilot submodule
+> git config -f .gitmodules submodule.PX4-Autopilot.url \
+> https://github.com/Beatriz-Diniz/PX4-Autopilot.git
 >
->git submodule sync --recursive
->git submodule update --init --recursive
+> git submodule sync --recursive
+> git submodule update --init PX4-Autopilot
+>
+> # If the nested Gazebo models submodule also fails, switch it to HTTPS too
+> cd PX4-Autopilot
+>
+> git config -f .gitmodules submodule.Tools/simulation/gz.url \
+> https://github.com/Beatriz-Diniz/PX4-gazebo-models.git
+>
+> git submodule sync --recursive
+> git submodule update --init --recursive
 > ```
-> This makes Git use HTTPS instead of SSH, scoped to just this repository (it won't affect your global Git settings or any other project).
+>
+> This makes Git use HTTPS instead of SSH for these submodules, scoped only to this repository (it won't affect your global Git settings or any other project).
 
 #### Run
 
@@ -101,17 +113,30 @@ git clone --recursive https://github.com/Beatriz-Diniz/UAVEDUSIM.git
 
 > ⚠️ **Esse clone demora bastante — isso é esperado.** O repositório usa múltiplos submódulos Git, em especial o `PX4-Autopilot`, que sozinho pode chegar a alguns GB. Dependendo da sua conexão, pode levar vários minutos. Não interrompa o comando mesmo que pareça parado por um tempo — a barra de progresso do Git às vezes fica sem atualizar visivelmente durante o download dos submódulos.
 
-> **Se o clone falhar com um erro SSH "Permission denied (publickey)"** (geralmente ao baixar o submódulo `PX4-Autopilot`): isso acontece porque esse submódulo está registrado com uma URL SSH, e você não tem uma chave SSH configurada no GitHub. Corrigir isso é opcional — só é necessário se você bater nesse erro:
+> **Se o clone falhar com um erro SSH `Permission denied (publickey)`** (geralmente ao baixar o submódulo `PX4-Autopilot` ou o submódulo aninhado `Tools/simulation/gz`): isso acontece porque esses submódulos estão registrados com URLs SSH, e você não tem uma chave SSH configurada no GitHub. Corrigir isso é opcional — só é necessário se você encontrar esse erro:
+>
 > ```bash
->cd UAVEDUSIM
+> cd UAVEDUSIM
 >
->git config -f .gitmodules submodule.PX4-Autopilot.url \
->https://github.com/Beatriz-Diniz/PX4-Autopilot.git
+> # Usa HTTPS para o submódulo PX4-Autopilot
+> git config -f .gitmodules submodule.PX4-Autopilot.url \
+> https://github.com/Beatriz-Diniz/PX4-Autopilot.git
 >
->git submodule sync --recursive
->git submodule update --init --recursive
+> git submodule sync --recursive
+> git submodule update --init PX4-Autopilot
+>
+> # Se o submódulo aninhado do Gazebo também falhar, troque-o para HTTPS
+> cd PX4-Autopilot
+>
+> git config -f .gitmodules submodule.Tools/simulation/gz.url \
+> https://github.com/Beatriz-Diniz/PX4-gazebo-models.git
+>
+> git submodule sync --recursive
+> git submodule update --init --recursive
 > ```
-> Isso faz o Git usar HTTPS em vez de SSH, só dentro desse repositório (não mexe na sua configuração global do Git nem em nenhum outro projeto).
+>
+> Isso faz o Git usar HTTPS em vez de SSH apenas para esses submódulos, sem alterar a configuração global do Git nem afetar outros projetos.
+
 
 #### Executar
 
