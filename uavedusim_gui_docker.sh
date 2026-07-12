@@ -42,6 +42,7 @@ if [ "$UAVEDUSIM_USE_DOCKER" = "1" ] && [ ! -f /.dockerenv ]; then
         elif command -v pacman >/dev/null 2>&1; then _dpm="pacman"
         elif command -v zypper >/dev/null 2>&1; then _dpm="zypper"
         elif command -v apk >/dev/null 2>&1; then _dpm="apk"
+        elif [ -f /etc/arch-release ]; then _dpm="pacman"
         fi
 
         _sudo_install=()
@@ -60,6 +61,16 @@ if [ "$UAVEDUSIM_USE_DOCKER" = "1" ] && [ ! -f /.dockerenv ]; then
                 ;;
             pacman)
                 "${_sudo_install[@]}" pacman -Sy --needed --noconfirm docker
+                
+                # Habilita e inicia o serviço Docker (essencial no Arch/CachyOS)
+                "${_sudo_install[@]}" systemctl enable --now docker >/dev/null 2>&1 || true
+                
+                # Adiciona o usuário ao grupo docker (evita usar sudo sempre)
+                if getent group docker >/dev/null 2>&1; then
+                    "${_sudo_install[@]}" usermod -aG docker "$USER" >/dev/null 2>&1 || true
+                fi
+                
+                echo "[uavedusim_gui] Docker instalado. Pode ser necessário relogar para usar sem sudo."
                 ;;
             zypper)
                 "${_sudo_install[@]}" zypper --non-interactive install docker
