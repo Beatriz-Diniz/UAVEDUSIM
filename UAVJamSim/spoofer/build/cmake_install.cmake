@@ -1,4 +1,4 @@
-# Install script for directory: /home/lrm/bia/UAVEDUSIM/UAVJamSim/spoofer
+# Install script for directory: /home/beatrizdiniz/UAVEDUSIM/UAVJamSim/spoofer
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lrm/bia/UAVEDUSIM/UAVJamSim/spoofer/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/beatrizdiniz/UAVEDUSIM/UAVJamSim/spoofer/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

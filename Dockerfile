@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     gosu \
     lsb-release \
+    file \
     software-properties-common \
     libboost-program-options-dev \
     && rm -rf /var/lib/apt/lists/*
