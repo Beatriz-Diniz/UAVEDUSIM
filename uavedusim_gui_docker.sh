@@ -94,6 +94,111 @@ if [ "$UAVEDUSIM_USE_DOCKER" = "1" ] && [ ! -f /.dockerenv ]; then
         fi
     fi
 
+    # Detecta o gerenciador de pacotes da distro do HOST (cross-distro:
+    # dnf/apt/pacman/zypper/apk). Reaproveitado abaixo para instalar o
+    # 'xauth' e o 'git-lfs' automaticamente, do mesmo jeito que o Docker
+    # e instalado acima.
+    _uavedusim_detect_dpm() {
+        if command -v dnf >/dev/null 2>&1; then printf '%s' "dnf"
+        elif command -v apt-get >/dev/null 2>&1; then printf '%s' "apt"
+        elif command -v pacman >/dev/null 2>&1; then printf '%s' "pacman"
+        elif command -v zypper >/dev/null 2>&1; then printf '%s' "zypper"
+        elif command -v apk >/dev/null 2>&1; then printf '%s' "apk"
+        else printf '%s' ""
+        fi
+    }
+
+    _uavedusim_sudo=()
+    if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
+        _uavedusim_sudo=(sudo)
+    fi
+
+    # Garante que "xauth" esta disponivel no HOST. E' usado logo abaixo para
+    # gerar o cookie X11 compartilhado com o container - sem ele, a
+    # interface pode falhar ao conectar ao display mesmo com o container
+    # corretamente configurado (erro "Authorization required, but no
+    # authorization protocol specified").
+    if ! command -v xauth >/dev/null 2>&1; then
+        echo "[uavedusim_gui] Comando 'xauth' nao encontrado. Tentando instalar automaticamente..."
+        case "$(_uavedusim_detect_dpm)" in
+            dnf)
+                "${_uavedusim_sudo[@]}" dnf install -y xorg-x11-xauth
+                ;;
+            apt)
+                "${_uavedusim_sudo[@]}" apt-get update
+                "${_uavedusim_sudo[@]}" apt-get install -y xauth
+                ;;
+            pacman)
+                "${_uavedusim_sudo[@]}" pacman -S --needed --noconfirm xorg-xauth
+                ;;
+            zypper)
+                "${_uavedusim_sudo[@]}" zypper --non-interactive install xauth
+                ;;
+            apk)
+                "${_uavedusim_sudo[@]}" apk add --no-cache xauth
+                ;;
+            *)
+                echo "[uavedusim_gui] Nao reconheci o gerenciador de pacotes para instalar o 'xauth' automaticamente. Instale manualmente (pacote costuma se chamar 'xauth', 'xorg-xauth' ou 'xorg-x11-xauth')." >&2
+                ;;
+        esac
+
+        if command -v xauth >/dev/null 2>&1; then
+            echo "[uavedusim_gui] 'xauth' instalado com sucesso."
+        else
+            echo "[uavedusim_gui] Nao foi possivel instalar 'xauth' automaticamente. Seguindo so com xhost (menos confiavel)." >&2
+        fi
+    fi
+
+    # Garante que o Git LFS esta disponivel e que os arquivos rastreados por
+    # ele (como o QGroundControl-x86_64.AppImage) foram baixados de verdade.
+    # Sem isso, o Git deixa so um "ponteiro" de texto no lugar do binario
+    # real, o que faz a extracao do AppImage falhar mais adiante com erros
+    # confusos (ex: "version: command not found", "oid: command not found").
+    if ! command -v git-lfs >/dev/null 2>&1; then
+        echo "[uavedusim_gui] Comando 'git-lfs' nao encontrado. Tentando instalar automaticamente..."
+        case "$(_uavedusim_detect_dpm)" in
+            dnf)
+                "${_uavedusim_sudo[@]}" dnf install -y git-lfs
+                ;;
+            apt)
+                "${_uavedusim_sudo[@]}" apt-get update
+                "${_uavedusim_sudo[@]}" apt-get install -y git-lfs
+                ;;
+            pacman)
+                "${_uavedusim_sudo[@]}" pacman -S --needed --noconfirm git-lfs
+                ;;
+            zypper)
+                "${_uavedusim_sudo[@]}" zypper --non-interactive install git-lfs
+                ;;
+            apk)
+                "${_uavedusim_sudo[@]}" apk add --no-cache git-lfs
+                ;;
+            *)
+                echo "[uavedusim_gui] Nao reconheci o gerenciador de pacotes para instalar o 'git-lfs' automaticamente. Instale manualmente: https://git-lfs.com" >&2
+                ;;
+        esac
+
+        if command -v git-lfs >/dev/null 2>&1; then
+            echo "[uavedusim_gui] 'git-lfs' instalado com sucesso."
+        else
+            echo "[uavedusim_gui] Nao foi possivel instalar 'git-lfs' automaticamente. Arquivos rastreados por LFS (ex: QGroundControl-x86_64.AppImage) podem continuar como ponteiros de texto." >&2
+        fi
+    fi
+
+    if command -v git-lfs >/dev/null 2>&1 && [ -d "$_script_dir/.git" ]; then
+        ( cd "$_script_dir" && git lfs install --local >/dev/null 2>&1 || true )
+
+        # Se o AppImage do QGroundControl ainda for so o ponteiro de texto
+        # do Git LFS (poucos bytes, comecando com "version https://git-lfs
+        # ..."), baixa o binario real agora, antes do container tentar
+        # extrai-lo.
+        _uavedusim_qgc_appimage="$_script_dir/QGroundControl-x86_64.AppImage"
+        if [ -f "$_uavedusim_qgc_appimage" ] && head -c 200 "$_uavedusim_qgc_appimage" 2>/dev/null | grep -q '^version https://git-lfs.github.com/spec/v1'; then
+            echo "[uavedusim_gui] QGroundControl-x86_64.AppImage ainda e um ponteiro do Git LFS. Baixando o binario real..."
+            ( cd "$_script_dir" && git lfs pull --include="QGroundControl-x86_64.AppImage" )
+        fi
+    fi
+
     _docker_bin="docker"
     _sudo_prefix=()
     if ! "$_docker_bin" info >/dev/null 2>&1; then
