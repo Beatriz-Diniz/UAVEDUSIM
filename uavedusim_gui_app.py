@@ -2539,19 +2539,18 @@ echo '[UAVEDUSIM] Build limpo. Terminal sera fechado automaticamente.'"""
 
     # Prepara modelo, mundo e airframe do UAVEDUSIM no PX4.
     def ensure_uavjamsim_links(self, strict=False):
-        uav_dir = APP_DIR / "UAVJamSim"
-        model_src = uav_dir / "x500_uavjamsim"
+        model_src = APP_DIR / "x500_uavjamsim"
         model_dst_dir = PX4_DIR / "Tools/simulation/gz/models"
         model_dst = model_dst_dir / "x500_uavjamsim"
-        world_src = uav_dir / "worlds/default.sdf"
+        world_src = APP_DIR / "worlds/default.sdf"
         world_dst_dir = PX4_DIR / "Tools/simulation/gz/worlds"
         world_dst = world_dst_dir / "default.sdf"
-        airframe_src_dir = uav_dir / "airframes"
+        airframe_src_dir = APP_DIR / "airframes"
         airframe_src = airframe_src_dir / "4020_gz_x500_uavjamsim"
         airframe_dst_dir = PX4_DIR / "ROMFS/px4fmu_common/init.d-posix/airframes"
         airframe_dst = airframe_dst_dir / "4020_gz_x500_uavjamsim"
         airframe_cmake = airframe_dst_dir / "CMakeLists.txt"
-        px4_link = uav_dir / "px4"
+        px4_link = APP_DIR / "px4"
 
         if not PX4_DIR.is_dir():
             if strict:
@@ -2559,11 +2558,6 @@ echo '[UAVEDUSIM] Build limpo. Terminal sera fechado automaticamente.'"""
             log(f"Aviso: pasta PX4 não encontrada: {PX4_DIR}")
             return
         self.ensure_px4_submodules()
-        if not uav_dir.is_dir():
-            if strict:
-                raise RuntimeError(_uavedusim_L(f"Não encontrei a pasta: {uav_dir}", f"Couldn't find the folder: {uav_dir}"))
-            log(f"Aviso: pasta UAVJamSim não encontrada: {uav_dir}")
-            return
         if model_src.is_dir():
             model_dst_dir.mkdir(parents=True, exist_ok=True)
             if model_dst.exists() or model_dst.is_symlink():
@@ -2571,8 +2565,8 @@ echo '[UAVEDUSIM] Build limpo. Terminal sera fechado automaticamente.'"""
                     shutil.rmtree(model_dst)
                 else:
                     model_dst.unlink(missing_ok=True)
-            os.symlink("../../../../../UAVJamSim/x500_uavjamsim", model_dst)
-            log(f"Link modelo: {model_dst} -> ../../../../../UAVJamSim/x500_uavjamsim")
+            os.symlink("../../../../../x500_uavjamsim", model_dst)
+            log(f"Link modelo: {model_dst} -> ../../../../../x500_uavjamsim")
         elif strict:
             raise RuntimeError(_uavedusim_L(f"Não encontrei o modelo: {model_src}", f"Couldn't find the model: {model_src}"))
         else:
@@ -2585,8 +2579,8 @@ echo '[UAVEDUSIM] Build limpo. Terminal sera fechado automaticamente.'"""
                     shutil.rmtree(world_dst)
                 else:
                     world_dst.unlink(missing_ok=True)
-            os.symlink("../../../../../UAVJamSim/worlds/default.sdf", world_dst)
-            log(f"Link mundo default: {world_dst} -> ../../../../../UAVJamSim/worlds/default.sdf")
+            os.symlink("../../../../../worlds/default.sdf", world_dst)
+            log(f"Link mundo default: {world_dst} -> ../../../../../worlds/default.sdf")
         else:
             log(f"Aviso: mundo customizado não encontrado: {world_src}. Mantendo default do PX4, se existir.")
 
@@ -2641,8 +2635,8 @@ PX4_SIM_MODEL=${PX4_SIM_MODEL:=x500_uavjamsim}
 
         if px4_link.is_symlink() or not px4_link.exists():
             px4_link.unlink(missing_ok=True)
-            os.symlink("../PX4-Autopilot", px4_link)
-            log(f"Link px4: {px4_link} -> ../PX4-Autopilot")
+            os.symlink("PX4-Autopilot", px4_link)
+            log(f"Link px4: {px4_link} -> PX4-Autopilot")
         else:
             log(f"Aviso: {px4_link} já existe e não é link. Mantendo como esta.")
 
@@ -2908,7 +2902,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
 
     # Compila ferramentas de ataque e mitigação quando necessário.
     def ensure_spoofer_tools(self):
-        spoofer_dir = APP_DIR / "UAVJamSim/spoofer"
+        spoofer_dir = APP_DIR / "spoofer"
         build_dir = spoofer_dir / "build"
         spoofer_bin = build_dir / "spoofer"
         mitigator_bin = build_dir / "attack_mitigator"
@@ -2916,7 +2910,7 @@ echo '[UAVEDUSIM] Executando sem limpar build: make px4_sitl {self.model} PX4_GZ
             raise RuntimeError(_uavedusim_L(f"Não encontrei a pasta do spoofer: {spoofer_dir}", f"Couldn't find the spoofer folder: {spoofer_dir}"))
         if spoofer_bin.exists() and os.access(spoofer_bin, os.X_OK) and mitigator_bin.exists() and os.access(mitigator_bin, os.X_OK):
             return spoofer_bin, mitigator_bin
-        log("Compilando ferramentas do UAVJamSim/spoofer...")
+        log("Compilando ferramentas do spoofer...")
         if (spoofer_dir / "build.sh").exists() and os.access(spoofer_dir / "build.sh", os.X_OK):
             cmd = f"{load_gazebo_env_block()}\ncd {shell_quote(str(spoofer_dir))} && ./build.sh"
         else:

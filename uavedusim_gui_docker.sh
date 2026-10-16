@@ -940,7 +940,7 @@ ensure_spoofer_tools_built() {
         return 0
     fi
 
-    local spoofer_dir="$APP_DIR/UAVJamSim/spoofer"
+    local spoofer_dir="$APP_DIR/spoofer"
     local build_dir="$spoofer_dir/build"
 
     if [ ! -d "$spoofer_dir" ]; then
